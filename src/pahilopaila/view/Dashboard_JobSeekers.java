@@ -31,6 +31,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         getStarted = new javax.swing.JButton();
         learnMore = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
         featurePanel = new javax.swing.JPanel();
         vacancy = new javax.swing.JButton();
         dashboard1 = new javax.swing.JButton();
@@ -42,9 +43,12 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         signout = new javax.swing.JButton();
         logo = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
+        Searchfield = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(241, 240, 240));
+        setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(600, 400));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -79,6 +83,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\3man.png")); // NOI18N
+        jLabel3.setText("jLabel3");
+
         javax.swing.GroupLayout messagePanelLayout = new javax.swing.GroupLayout(messagePanel);
         messagePanel.setLayout(messagePanelLayout);
         messagePanelLayout.setHorizontalGroup(
@@ -86,35 +93,42 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
             .addGroup(messagePanelLayout.createSequentialGroup()
                 .addGap(39, 39, 39)
                 .addGroup(messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(messagePanelLayout.createSequentialGroup()
                         .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
-                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 274, Short.MAX_VALUE))
+                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34))
         );
         messagePanelLayout.setVerticalGroup(
             messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(messagePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getStarted)
-                    .addComponent(learnMore))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addGroup(messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(messagePanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addGap(22, 22, 22)
+                        .addGroup(messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(getStarted)
+                            .addComponent(learnMore)))
+                    .addComponent(jLabel3))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
-        getContentPane().add(messagePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 60, -1, -1));
+        getContentPane().add(messagePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 70, 620, 130));
 
         featurePanel.setBackground(new java.awt.Color(255, 255, 255));
 
         vacancy.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         vacancy.setForeground(new java.awt.Color(102, 102, 102));
+        vacancy.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\vacancy.png")); // NOI18N
         vacancy.setText("Vacancy");
+        vacancy.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         vacancy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 vacancyActionPerformed(evt);
@@ -123,7 +137,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
         dashboard1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         dashboard1.setForeground(new java.awt.Color(102, 102, 102));
+        dashboard1.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\dashboard.jpg")); // NOI18N
         dashboard1.setText("Dashboard");
+        dashboard1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         dashboard1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dashboard1ActionPerformed(evt);
@@ -132,7 +148,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
         training.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         training.setForeground(new java.awt.Color(102, 102, 102));
+        training.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\traning.png")); // NOI18N
         training.setText("Training");
+        training.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         training.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 trainingActionPerformed(evt);
@@ -141,7 +159,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
         message.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         message.setForeground(new java.awt.Color(102, 102, 102));
+        message.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\message.png")); // NOI18N
         message.setText("Message");
+        message.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         message.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 messageActionPerformed(evt);
@@ -150,7 +170,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
         applications.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         applications.setForeground(new java.awt.Color(102, 102, 102));
+        applications.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\application.png")); // NOI18N
         applications.setText("Applications");
+        applications.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         applications.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 applicationsActionPerformed(evt);
@@ -159,7 +181,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
         myaccount.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         myaccount.setForeground(new java.awt.Color(102, 102, 102));
+        myaccount.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\account.png")); // NOI18N
         myaccount.setText("My Account");
+        myaccount.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         myaccount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 myaccountActionPerformed(evt);
@@ -168,7 +192,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
         settings.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         settings.setForeground(new java.awt.Color(102, 102, 102));
+        settings.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\setting.png")); // NOI18N
         settings.setText("Settings");
+        settings.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         settings.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 settingsActionPerformed(evt);
@@ -177,7 +203,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
         signout.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         signout.setForeground(new java.awt.Color(102, 102, 102));
+        signout.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\signout.png")); // NOI18N
         signout.setText("Sign Out");
+        signout.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         signout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 signoutActionPerformed(evt);
@@ -195,7 +223,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
             .addGroup(logoLayout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         logoLayout.setVerticalGroup(
             logoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,13 +239,13 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
             featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(vacancy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(training, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(message, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(settings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(applications, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(dashboard1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(logo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(myaccount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(signout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(message, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         featurePanelLayout.setVerticalGroup(
             featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -239,10 +267,29 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 .addComponent(myaccount)
                 .addGap(18, 18, 18)
                 .addComponent(signout)
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
 
-        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 500));
+        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 170, 500));
+
+        Searchfield.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        Searchfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SearchfieldActionPerformed(evt);
+            }
+        });
+        getContentPane().add(Searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 280, 30));
+
+        jButton1.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\search.jpg")); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 30, 30));
+
+        jButton2.setIcon(new javax.swing.ImageIcon("C:\\Users\\Mibish\\OneDrive\\Desktop\\Pahilo-Paila\\logo\\filter.png")); // NOI18N
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -287,6 +334,15 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_signoutActionPerformed
 
+    private void SearchfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchfieldActionPerformed
+        // TODO add your handling code here:
+   
+    }//GEN-LAST:event_SearchfieldActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -324,12 +380,16 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Searchfield;
     private javax.swing.JButton applications;
     private javax.swing.JButton dashboard1;
     private javax.swing.JPanel featurePanel;
     private javax.swing.JButton getStarted;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JButton learnMore;
     private javax.swing.JPanel logo;
