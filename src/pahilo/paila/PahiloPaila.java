@@ -4,7 +4,9 @@
  */
 package pahilo.paila;
 
+import Pahileo.Controller.DashboardJController;
 import Pahileo.Controller.registrationController;
+import pahilopaila.view.Dashboard_JobSeekers;
 import pahilopaila.view.RegistrationEmployee;
 
 /**
@@ -17,8 +19,8 @@ public class PahiloPaila {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        RegistrationEmployee view = new RegistrationEmployee();
-        registrationController con = new registrationController(view);
+        Dashboard_JobSeekers view = new Dashboard_JobSeekers();
+        DashboardJController con = new DashboardJController(view);
         con.open();
     }
     

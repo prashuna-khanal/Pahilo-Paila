@@ -23,7 +23,8 @@ public class registrationController {
     public void close(){
     
     view.dispose();
-    
+        
+   
     
     }
 }
