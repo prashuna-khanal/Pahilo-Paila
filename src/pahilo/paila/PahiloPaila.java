@@ -4,6 +4,9 @@
  */
 package pahilo.paila;
 
+import Pahileo.Controller.registrationController;
+import pahilopaila.view.RegistrationEmployee;
+
 /**
  *
  * @author LENOVO
@@ -14,7 +17,9 @@ public class PahiloPaila {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        RegistrationEmployee view = new RegistrationEmployee();
+        registrationController con = new registrationController(view);
+        con.open();
     }
     
 }
