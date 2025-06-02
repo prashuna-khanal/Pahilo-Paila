@@ -178,7 +178,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField1.getText().equals("Name"))
         {
             jTextField1.setText("");
-            jTextField1.setForeground(new Color(153,153,153));
+            jTextField1.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField1FocusGained
 
@@ -187,7 +187,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField1.getText().equals(""))
         {
             jTextField1.setText("Name");
-            jTextField1.setForeground(new Color(153,153,153));
+            jTextField1.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField1FocusLost
 
@@ -200,7 +200,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField3.getText().equals("E-mail"))
         {
             jTextField3.setText("");
-            jTextField3.setForeground(new Color(153,153,153));
+            jTextField3.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField3FocusGained
 
@@ -209,7 +209,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField3.getText().equals(""))
         {
             jTextField3.setText("E-mail");
-            jTextField3.setForeground(new Color(153,153,153));
+            jTextField3.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField3FocusLost
 
@@ -222,7 +222,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField4.getText().equals("Password"))
         {
             jTextField4.setText("");
-            jTextField4.setForeground(new Color(153,153,153));
+            jTextField4.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField4FocusGained
 
@@ -231,7 +231,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField4.getText().equals(""))
         {
             jTextField4.setText("Password");
-            jTextField4.setForeground(new Color(153,153,153));
+            jTextField4.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField4FocusLost
 
@@ -244,7 +244,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField5.getText().equals("Confirm Password"))
         {
             jTextField5.setText("");
-            jTextField5.setForeground(new Color(153,153,153));
+            jTextField5.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField5FocusGained
 
@@ -253,7 +253,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         if(jTextField5.getText().equals(""))
         {
             jTextField5.setText("Confirm Password");
-            jTextField5.setForeground(new Color(153,153,153));
+            jTextField5.setForeground(new java.awt.Color(153,153,153));
         }
     }//GEN-LAST:event_jTextField5FocusLost
 
