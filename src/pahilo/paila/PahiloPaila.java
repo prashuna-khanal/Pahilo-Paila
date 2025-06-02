@@ -22,6 +22,7 @@ public class PahiloPaila {
         Dashboard_JobSeekers view = new Dashboard_JobSeekers();
         DashboardJController con = new DashboardJController(view);
         con.open();
+       
     }
     
 }
