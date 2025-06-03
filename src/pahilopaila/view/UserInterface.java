@@ -38,6 +38,7 @@ public class UserInterface extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pahilopaila/Adobe Express - file.jpg"))); // NOI18N
         jLabel13.setText("\n");
@@ -126,8 +127,12 @@ public class UserInterface extends javax.swing.JFrame {
         jLabel3.setText("Username");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 170, 80, -1));
 
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pahilopaila/Adobe Express - file.jpg"))); // NOI18N
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -4, 850, 460));
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -200, 850, 460));
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        jLabel5.setText("jLabel5");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -80, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -228,6 +233,7 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JTextField jTextField1;
