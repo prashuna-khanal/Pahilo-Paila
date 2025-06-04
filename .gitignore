@@ -1,7 +1,7 @@
-<<<<<<< HEAD
-/dist/
-=======
-/build/
-# add vscode extensions
 .vscode/extensions/
 >>>>>>> main
+# add vscode extensions
+/build/
+=======
+/dist/
+<<<<<<< HEAD
