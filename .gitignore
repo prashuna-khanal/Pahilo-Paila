@@ -1,0 +1,7 @@
+<<<<<<< HEAD
+/dist/
+=======
+/build/
+# add vscode extensions
+.vscode/extensions/
+>>>>>>> main

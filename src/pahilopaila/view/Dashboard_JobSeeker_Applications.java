@@ -72,11 +72,13 @@ public class Dashboard_JobSeeker_Applications extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        dashlbl.setBackground(new java.awt.Color(0, 51, 153));
         dashlbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         dashlbl.setForeground(new java.awt.Color(102, 102, 102));
         dashlbl.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/dashboard.jpg"))); // NOI18N
         dashlbl.setText("Dashboard");
 
+        vacanylbl.setBackground(new java.awt.Color(0, 51, 153));
         vacanylbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         vacanylbl.setForeground(new java.awt.Color(102, 102, 102));
         vacanylbl.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/vacancy.png"))); // NOI18N
@@ -92,6 +94,7 @@ public class Dashboard_JobSeeker_Applications extends javax.swing.JFrame {
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/message.png"))); // NOI18N
         jLabel9.setText("Message");
 
+        applicationslbl.setBackground(new java.awt.Color(0, 51, 153));
         applicationslbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         applicationslbl.setForeground(new java.awt.Color(102, 102, 102));
         applicationslbl.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/application.png"))); // NOI18N
@@ -238,7 +241,7 @@ public class Dashboard_JobSeeker_Applications extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Searchfield;
-    private javax.swing.JLabel applicationslbl;
+    public javax.swing.JLabel applicationslbl;
     public javax.swing.JLabel dashlbl;
     private javax.swing.JPanel featurePanel;
     private javax.swing.JButton jButton1;
@@ -254,7 +257,7 @@ public class Dashboard_JobSeeker_Applications extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel logo;
-    private javax.swing.JLabel vacanylbl;
+    public javax.swing.JLabel vacanylbl;
     // End of variables declaration//GEN-END:variables
     
 }

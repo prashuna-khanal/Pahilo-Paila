@@ -4,8 +4,11 @@
  */
 package pahilo.paila;
 
+import Pahileo.Controller.ApplicationJS;
+import Pahileo.Controller.Controller;
 import Pahileo.Controller.DashboardJController;
 import Pahileo.Controller.registrationController;
+import pahilopaila.view.Dashboard_JobSeeker_Applications;
 import pahilopaila.view.Dashboard_JobSeekers;
 import pahilopaila.view.RegistrationEmployee;
 
@@ -19,9 +22,9 @@ public class PahiloPaila {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Dashboard_JobSeekers view = new Dashboard_JobSeekers();
-        DashboardJController con = new DashboardJController(view);
-        con.open();
+        Dashboard_JobSeeker_Applications view = new Dashboard_JobSeeker_Applications();
+        ApplicationJS con1 = new  ApplicationJS(view);
+        con1.open();
        
     }
     

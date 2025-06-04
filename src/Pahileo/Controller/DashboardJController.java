@@ -15,31 +15,36 @@ import pahilopaila.view.Dashboard_JobSeeker_Vacancy;
  *
  * @author abi
  */
-public class DashboardJController {
+public class DashboardJController implements Controller {
     
-    private final JFrame view;
-    private final JFrame Applic;
-    private final JFrame Vacancy;
+   
+    final JFrame Applic;
+    final JFrame Vacancy;
+    private final Dashboard_JobSeekers view;
+    
     
     public DashboardJController(Dashboard_JobSeekers view){
-       CreateViews cv = new CreateViews(Dashboard_JobSeeker_Applications.class,Dashboard_JobSeeker_Vacancy.class);
        this.view = view;
-       this.Applic = cv.getView(0);
-       this.Vacancy= cv.getView(1);
-       ButtonController dash = new ButtonController(view.dashlbl,view,view);
-       ButtonController applic = new ButtonController(view.applicationslbl,view,Applic);
-       ButtonController vaca = new ButtonController(view.vacanylbl,view,Vacancy);
+        
+      
+       CreateViews rs = new CreateViews(Dashboard_JobSeeker_Applications.class,Dashboard_JobSeeker_Vacancy.class);
+      
+       this.Applic = rs.getView(0);
+      
+       this.Vacancy= rs.getView(1);
+     new ButtonController(view.dashlbl,view,view);
+     new ButtonController(view.applicationslbl,view,Applic);
+        new ButtonController(view.vacanylbl,view,Vacancy);
        
        
     }
     
+     
     public void open(){
     view.setVisible(true);
     }
     public void close(){
-    
     view.dispose();
-        
-   }
+    }
     
 }
