@@ -424,6 +424,8 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         });
     }
 
+    // This is the content when My Account is pressed 
+    
     private void showMyAccountPanel() {
         // Main panel for the "My Account" section
         JPanel mainPanel = new JPanel();
