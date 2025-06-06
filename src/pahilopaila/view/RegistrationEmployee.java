@@ -26,244 +26,160 @@ public class RegistrationEmployee extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        welcome = new javax.swing.JLabel();
+        message = new javax.swing.JLabel();
+        name = new javax.swing.JTextField();
+        mail = new javax.swing.JTextField();
+        registerButton = new javax.swing.JButton();
+        forJobSeekers = new javax.swing.JLabel();
+        forEmployeers = new javax.swing.JLabel();
+        logo = new javax.swing.JLabel();
+        confirmPassword = new javax.swing.JPasswordField();
+        password = new javax.swing.JPasswordField();
+        icon1 = new javax.swing.JLabel();
+        icon2 = new javax.swing.JLabel();
+        icon3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 21)); // NOI18N
-        jLabel1.setText("Welcome to PahiloPaila");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
+        welcome.setFont(new java.awt.Font("Segoe UI", 0, 21)); // NOI18N
+        welcome.setText("Welcome to PahiloPaila");
+        getContentPane().add(welcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Nepal's gateways to job. Step in. Stand out.");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 90, -1, -1));
+        message.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        message.setText("Nepal's gateways to job. Step in. Stand out.");
+        getContentPane().add(message, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 100, -1, -1));
 
-        jTextField1.setForeground(new java.awt.Color(153, 153, 153));
-        jTextField1.setText("Name");
-        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
+        name.setForeground(new java.awt.Color(153, 153, 153));
+        name.setText("Name");
+        name.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                jTextField1FocusGained(evt);
+                nameFocusGained(evt);
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField1FocusLost(evt);
+                nameFocusLost(evt);
             }
         });
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        name.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                nameActionPerformed(evt);
             }
         });
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 150, 220, -1));
+        getContentPane().add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 150, 220, 30));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel8.setText("Confirm Password");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 240, 140, -1));
-
-        jTextField3.setForeground(new java.awt.Color(153, 153, 153));
-        jTextField3.setText("E-mail");
-        jTextField3.addFocusListener(new java.awt.event.FocusAdapter() {
+        mail.setForeground(new java.awt.Color(153, 153, 153));
+        mail.setText("E-mail");
+        mail.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                jTextField3FocusGained(evt);
+                mailFocusGained(evt);
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField3FocusLost(evt);
+                mailFocusLost(evt);
             }
         });
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        mail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                mailActionPerformed(evt);
             }
         });
-        getContentPane().add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, 220, -1));
+        getContentPane().add(mail, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 190, 220, 30));
 
-        jTextField4.setForeground(new java.awt.Color(153, 153, 153));
-        jTextField4.setText("Password");
-        jTextField4.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                jTextField4FocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField4FocusLost(evt);
-            }
-        });
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        registerButton.setBackground(new java.awt.Color(0, 0, 102));
+        registerButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        registerButton.setForeground(new java.awt.Color(255, 255, 255));
+        registerButton.setText("Register");
+        registerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                registerButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, 220, -1));
+        getContentPane().add(registerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 330, 110, 30));
 
-        jTextField5.setForeground(new java.awt.Color(153, 153, 153));
-        jTextField5.setText("Confirm Password");
-        jTextField5.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                jTextField5FocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField5FocusLost(evt);
-            }
-        });
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 240, 220, -1));
+        forJobSeekers.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        forJobSeekers.setForeground(new java.awt.Color(0, 0, 102));
+        forJobSeekers.setText("For Job Seekers");
+        getContentPane().add(forJobSeekers, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 20, -1, -1));
 
-        jButton1.setBackground(new java.awt.Color(51, 51, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Login");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 280, 110, 20));
+        forEmployeers.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        forEmployeers.setForeground(new java.awt.Color(0, 0, 102));
+        forEmployeers.setText("For Employeers");
+        getContentPane().add(forEmployeers, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 20, -1, -1));
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("New to PahiloPaila? Create Account.");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 310, 250, -1));
+        logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
+        getContentPane().add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 50));
 
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(0, 0, 255));
-        jLabel11.setText("For Job Seekers");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 10, -1, -1));
+        confirmPassword.setText("jPasswordField1");
+        getContentPane().add(confirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 270, 220, 30));
 
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(0, 0, 255));
-        jLabel14.setText("For Employeers");
-        getContentPane().add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 10, -1, -1));
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 30, 20));
+        password.setText("jPasswordField1");
+        getContentPane().add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 230, 220, 30));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel3.setText("Name");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, 50, -1));
+        icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"))); // NOI18N
+        getContentPane().add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 150, -1, -1));
 
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/Email.png"))); // NOI18N
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 180, -1, 22));
+        icon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/email_1.png"))); // NOI18N
+        getContentPane().add(icon2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 190, -1, -1));
 
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/Screenshot_2025-05-22_211339-removebg-preview.png"))); // NOI18N
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 210, -1, -1));
+        icon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"))); // NOI18N
+        getContentPane().add(icon3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, -1, -1));
 
-        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
-        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 50));
-
-        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
-        getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        jLabel1.setText("jLabel1");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusGained
+    private void nameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameFocusGained
         // TODO add your handling code here:
 
-        if(jTextField1.getText().equals("Name"))
+        if(name.getText().equals("Name"))
         {
-            jTextField1.setText("");
-            jTextField1.setForeground(new java.awt.Color(153,153,153));
+            name.setText("");
+            name.setForeground(new java.awt.Color(153,153,153));
         }
-    }//GEN-LAST:event_jTextField1FocusGained
+    }//GEN-LAST:event_nameFocusGained
 
-    private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
+    private void nameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameFocusLost
         // TODO add your handling code here:
-        if(jTextField1.getText().equals(""))
+        if(name.getText().equals(""))
         {
-            jTextField1.setText("Name");
-            jTextField1.setForeground(new java.awt.Color(153,153,153));
+            name.setText("Name");
+            name.setForeground(new java.awt.Color(153,153,153));
         }
-    }//GEN-LAST:event_jTextField1FocusLost
+    }//GEN-LAST:event_nameFocusLost
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_nameActionPerformed
 
-    private void jTextField3FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField3FocusGained
+    private void mailFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailFocusGained
         // TODO add your handling code here:
-        if(jTextField3.getText().equals("E-mail"))
+        if(mail.getText().equals("E-mail"))
         {
-            jTextField3.setText("");
-            jTextField3.setForeground(new java.awt.Color(153,153,153));
+            mail.setText("");
+            mail.setForeground(new java.awt.Color(153,153,153));
         }
-    }//GEN-LAST:event_jTextField3FocusGained
+    }//GEN-LAST:event_mailFocusGained
 
-    private void jTextField3FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField3FocusLost
+    private void mailFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailFocusLost
         // TODO add your handling code here:
-        if(jTextField3.getText().equals(""))
+        if(mail.getText().equals(""))
         {
-            jTextField3.setText("E-mail");
-            jTextField3.setForeground(new java.awt.Color(153,153,153));
+            mail.setText("E-mail");
+            mail.setForeground(new java.awt.Color(153,153,153));
         }
-    }//GEN-LAST:event_jTextField3FocusLost
+    }//GEN-LAST:event_mailFocusLost
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void mailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mailActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_mailActionPerformed
 
-    private void jTextField4FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField4FocusGained
+    private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
         // TODO add your handling code here:
-        if(jTextField4.getText().equals("Password"))
-        {
-            jTextField4.setText("");
-            jTextField4.setForeground(new java.awt.Color(153,153,153));
-        }
-    }//GEN-LAST:event_jTextField4FocusGained
-
-    private void jTextField4FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField4FocusLost
-        // TODO add your handling code here:
-        if(jTextField4.getText().equals(""))
-        {
-            jTextField4.setText("Password");
-            jTextField4.setForeground(new java.awt.Color(153,153,153));
-        }
-    }//GEN-LAST:event_jTextField4FocusLost
-
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
-
-    private void jTextField5FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField5FocusGained
-        // TODO add your handling code here:
-        if(jTextField5.getText().equals("Confirm Password"))
-        {
-            jTextField5.setText("");
-            jTextField5.setForeground(new java.awt.Color(153,153,153));
-        }
-    }//GEN-LAST:event_jTextField5FocusGained
-
-    private void jTextField5FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField5FocusLost
-        // TODO add your handling code here:
-        if(jTextField5.getText().equals(""))
-        {
-            jTextField5.setText("Confirm Password");
-            jTextField5.setForeground(new java.awt.Color(153,153,153));
-        }
-    }//GEN-LAST:event_jTextField5FocusLost
-
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_registerButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -301,22 +217,19 @@ public class RegistrationEmployee extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JPasswordField confirmPassword;
+    private javax.swing.JLabel forEmployeers;
+    private javax.swing.JLabel forJobSeekers;
+    private javax.swing.JLabel icon1;
+    private javax.swing.JLabel icon2;
+    private javax.swing.JLabel icon3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
+    private javax.swing.JLabel logo;
+    private javax.swing.JTextField mail;
+    private javax.swing.JLabel message;
+    private javax.swing.JTextField name;
+    private javax.swing.JPasswordField password;
+    private javax.swing.JButton registerButton;
+    private javax.swing.JLabel welcome;
     // End of variables declaration//GEN-END:variables
 }
