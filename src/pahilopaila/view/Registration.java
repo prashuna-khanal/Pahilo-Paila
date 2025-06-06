@@ -38,6 +38,10 @@ public class Registration extends javax.swing.JFrame {
         logo = new javax.swing.JLabel();
         password = new javax.swing.JPasswordField();
         confirmPassword = new javax.swing.JPasswordField();
+        icon1 = new javax.swing.JLabel();
+        icon2 = new javax.swing.JLabel();
+        icon3 = new javax.swing.JLabel();
+        background = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -50,7 +54,7 @@ public class Registration extends javax.swing.JFrame {
         message.setText("Connect with qualified Candidates across Nepal.");
         getContentPane().add(message, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 100, 310, -1));
 
-        companyName.setForeground(new java.awt.Color(153, 153, 153));
+        companyName.setForeground(new java.awt.Color(125, 125, 186));
         companyName.setText("Company Name");
         companyName.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -67,7 +71,7 @@ public class Registration extends javax.swing.JFrame {
         });
         getContentPane().add(companyName, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 150, 220, 30));
 
-        mail.setForeground(new java.awt.Color(153, 153, 153));
+        mail.setForeground(new java.awt.Color(125, 125, 186));
         mail.setText("E-mail");
         mail.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -113,6 +117,19 @@ public class Registration extends javax.swing.JFrame {
 
         confirmPassword.setText("jPasswordField2");
         getContentPane().add(confirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 230, 220, 30));
+
+        icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"))); // NOI18N
+        getContentPane().add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, -1, -1));
+
+        icon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/email_1.png"))); // NOI18N
+        getContentPane().add(icon2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 190, -1, -1));
+
+        icon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"))); // NOI18N
+        getContentPane().add(icon3, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 230, -1, -1));
+
+        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        background.setText("jLabel1");
+        getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(-2, -4, 850, 460));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -202,10 +219,14 @@ public class Registration extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel background;
     private javax.swing.JTextField companyName;
     private javax.swing.JPasswordField confirmPassword;
     private javax.swing.JLabel forEmployeers;
     private javax.swing.JLabel forJobsSeekrs;
+    private javax.swing.JLabel icon1;
+    private javax.swing.JLabel icon2;
+    private javax.swing.JLabel icon3;
     private javax.swing.JLabel logo;
     private javax.swing.JTextField mail;
     private javax.swing.JLabel message;
