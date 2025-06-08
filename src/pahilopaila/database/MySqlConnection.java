@@ -5,7 +5,6 @@
 package pahilopaila.database;
 
 import java.sql.*;
-
 /**
  *
  * @author Mibish
