@@ -5,6 +5,8 @@
 package pahilopaila.view;
 
 import java.awt.Color;
+import java.awt.event.ActionListener;
+import javax.swing.JPasswordField;
 
 public class UserInterface extends javax.swing.JFrame {
 
@@ -47,36 +49,30 @@ public class UserInterface extends javax.swing.JFrame {
         jLabel4.setText("Nepal's gateways to job. Step in. Stand out.");
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 130, -1, -1));
 
-        jTextField1.setForeground(new java.awt.Color(153, 153, 153));
-        jTextField1.setText("Name");
-        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
+        NameField.setForeground(new java.awt.Color(153, 153, 153));
+        NameField.setText("Name");
+        NameField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                jTextField1FocusGained(evt);
+                NameFieldFocusGained(evt);
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField1FocusLost(evt);
+                NameFieldFocusLost(evt);
             }
         });
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        NameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                NameFieldActionPerformed(evt);
             }
         });
         getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 180, 220, -1));
 
-        jTextField4.setForeground(new java.awt.Color(153, 153, 153));
-        jTextField4.setText("Password");
-        jTextField4.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                jTextField4FocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField4FocusLost(evt);
-            }
-        });
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        loginButton.setBackground(new java.awt.Color(51, 51, 255));
+        loginButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        loginButton.setForeground(new java.awt.Color(255, 255, 255));
+        loginButton.setText("Login");
+        loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                loginButtonActionPerformed(evt);
             }
         });
         getContentPane().add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 220, 220, -1));
@@ -122,58 +118,46 @@ public class UserInterface extends javax.swing.JFrame {
         jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
 
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_loginButtonActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void NameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NameFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_NameFieldActionPerformed
     
-    private void jTextField1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusGained
+    private void NameFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_NameFieldFocusGained
         // TODO add your handling code here:
         
-        if(jTextField1.getText().equals("Name"))
+        if(NameField.getText().equals("Name"))
         {
-            jTextField1.setText("");
-            jTextField1.setForeground(new Color(153,153,153));
+            NameField.setText("");
+            NameField.setForeground(new Color(153,153,153));
         }    
       
-    }//GEN-LAST:event_jTextField1FocusGained
+    }//GEN-LAST:event_NameFieldFocusGained
     
-    private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
+    private void NameFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_NameFieldFocusLost
         // TODO add your handling code here:
-      if(jTextField1.getText().equals(""))
+      if(NameField.getText().equals(""))
         {
-            jTextField1.setText("Name");
-            jTextField1.setForeground(new Color(153,153,153));
+            NameField.setText("Name");
+            NameField.setForeground(new Color(153,153,153));
         }                   
-    }//GEN-LAST:event_jTextField1FocusLost
+    }//GEN-LAST:event_NameFieldFocusLost
 
-    private void jTextField4FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField4FocusGained
+    private void PasswordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PasswordFieldActionPerformed
         // TODO add your handling code here:
-        if(jTextField4.getText().equals("Password"))
+        if(Passwordfield.getText().equals("Password"))
         {
-            jTextField4.setText("");
-            jTextField4.setForeground(new Color(153,153,153));
+            Passwordfield.setText("");
+            Passwordfield.setForeground(new Color(153,153,153));
         } 
-    }//GEN-LAST:event_jTextField4FocusGained
-
-    private void jTextField4FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField4FocusLost
-        // TODO add your handling code here:
-        if(jTextField4.getText().equals(""))
-        {
-            jTextField4.setText("Password");
-            jTextField4.setForeground(new Color(153,153,153));
-        } 
-    }//GEN-LAST:event_jTextField4FocusLost
+    }//GEN-LAST:event_PasswordFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -211,7 +195,9 @@ public class UserInterface extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JTextField NameField;
+    private javax.swing.JPasswordField PasswordField;
+    private javax.swing.JLabel Passwordfield;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -223,5 +209,15 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField4;
+
     // End of variables declaration//GEN-END:variables
+    public javax.swing.JTextField getNameField(){
+        return NameField;
+    }
+    public javax.swing.JPasswordField getPasswordField(){
+        return PasswordField;
+    }
+    public void loginUser(ActionListener listener){
+        loginButton.addActionListener(listener);
+    }
 }
