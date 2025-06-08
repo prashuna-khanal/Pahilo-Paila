@@ -1,12 +1,5 @@
-.vscode/extensions/
->>>>>>> main
-# add vscode extensions
-<<<<<<< HEAD
+
 /build/
-=======
-/dist/
-<<<<<<< HEAD
-=======
+# add vscode extensions
 .vscode/extensions/
 /nbproject/private/
->>>>>>> main
