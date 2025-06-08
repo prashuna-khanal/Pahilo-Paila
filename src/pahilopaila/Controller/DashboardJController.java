@@ -26,9 +26,9 @@ public class DashboardJController {
        this.view = view;
        this.Applic = cv.getView(0);
        this.Vacancy= cv.getView(1);
-       ButtonController dash = new ButtonController(view.dashlbl,view,view);
-       ButtonController applic = new ButtonController(view.applicationslbl,view,Applic);
-       ButtonController vaca = new ButtonController(view.vacanylbl,view,Vacancy);
+       ButtonController dash = new ButtonController(view.dashboard,view,view);
+       ButtonController applic = new ButtonController(view.appliccation,view,Applic);
+       ButtonController vaca = new ButtonController(view.vacancy,view,Vacancy);
        
        
     }
