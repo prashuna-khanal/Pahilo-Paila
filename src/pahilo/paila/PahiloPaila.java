@@ -5,12 +5,12 @@
 package pahilo.paila;
 
 import Pahileo.Controller.ApplicationJS;
-import Pahileo.Controller.Controller;
 import Pahileo.Controller.DashboardJController;
-import Pahileo.Controller.registrationController;
+import pahilopaila.Controller.forgetpasscon.registrationController;
 import pahilopaila.view.Dashboard_JobSeeker_Applications;
 import pahilopaila.view.Dashboard_JobSeekers;
 import pahilopaila.view.RegistrationEmployee;
+import Pahileo.Controller.controller;
 
 /**
  *
