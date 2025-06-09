@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package pahilopaila.Controller.userVerification;
+package pahilopaila.Controller;
 
 import pahilopaila.database.MySqlConnection; // Import your existing database connection class
 import java.sql.Connection;
