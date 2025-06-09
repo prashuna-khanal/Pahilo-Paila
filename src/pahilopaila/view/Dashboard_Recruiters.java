@@ -6,25 +6,17 @@ package pahilopaila.view;
 
 import java.awt.Color;
 import java.awt.Cursor;
-
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.JOptionPane;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 /**
  *
  * @author LENOVO
  */
-
 public class Dashboard_Recruiters extends javax.swing.JFrame {
 
     // State variables for each label to track hover and pressed states
@@ -182,7 +174,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         appliccation = createStyledLabel("Applications", "/logo/application.png", null);
         settings = createStyledLabel("Settings", "/logo/setting.png", null);
         myAccount = createStyledLabel("My Account", "/logo/account.png", this::showMyAccountPanel);
-        signOut = createStyledLabel("Sign Out", "/logo/signout.png",this::handleSignOut );
+        signOut = createStyledLabel("Sign Out", "/logo/signout.png", null);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAutoRequestFocus(false);
@@ -431,198 +423,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             }
         });
     }
-    private void handleSignOut() {
-    int response = JOptionPane.showConfirmDialog(
-            this,
-            "Are you sure you want to sign out?",
-            "Sign Out Confirmation",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE
-        );
-
-        if (response == JOptionPane.YES_OPTION) {
-            System.err.println("DEBUG: Signing out user: " + username.getText());
-            try {
-                // Clear username and email
-                username.setText("");
-                email.setText("");
-                
-                // Create login panel
-                JPanel loginPanel = new JPanel();
-                loginPanel.setBackground(new Color(245, 245, 245));
-                loginPanel.setLayout(new BorderLayout(15, 15));
-                loginPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
-                // Header panel
-                JPanel headerPanel = new JPanel() {
-                    @Override
-                    protected void paintComponent(java.awt.Graphics g) {
-                        super.paintComponent(g);
-                        java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
-                        g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                        java.awt.GradientPaint gp = new java.awt.GradientPaint(
-                            0, 0, new Color(0, 4, 80),
-                            0, getHeight(), new Color(0, 20, 120)
-                        );
-                        g2d.setPaint(gp);
-                        g2d.fillRect(0, 0, getWidth(), getHeight());
-                    }
-                };
-                headerPanel.setPreferredSize(new java.awt.Dimension(680, 70));
-                headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 20));
-
-                JLabel headerLabel = new JLabel("Login");
-                headerLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
-                headerLabel.setForeground(Color.WHITE);
-                headerPanel.add(headerLabel);
-
-                // Form panel
-                JPanel formPanel = new JPanel();
-                formPanel.setBackground(new Color(252, 252, 252));
-                formPanel.setLayout(new GridBagLayout());
-                formPanel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                    javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20),
-                    javax.swing.BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true)
-                ));
-
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.insets = new java.awt.Insets(15, 15, 15, 15);
-                gbc.fill = GridBagConstraints.NONE;
-                gbc.anchor = GridBagConstraints.CENTER;
-
-                // Username row
-                JPanel usernameRow = new JPanel();
-                usernameRow.setBackground(new Color(252, 252, 252));
-                usernameRow.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-
-                JLabel usernameLabel = new JLabel("Username:");
-                usernameLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
-                usernameLabel.setForeground(new Color(0, 0, 102));
-                usernameRow.add(usernameLabel);
-
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                formPanel.add(usernameRow, gbc);
-
-                JTextField usernameField = new JTextField(25);
-                usernameField.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
-                usernameField.setBackground(new Color(245, 245, 245));
-                usernameField.setPreferredSize(new java.awt.Dimension(usernameField.getPreferredSize().width, 25));
-                usernameField.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                    javax.swing.BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-                    javax.swing.BorderFactory.createEmptyBorder(4, 8, 4, 8)
-                ));
-                gbc.gridx = 1;
-                gbc.gridy = 0;
-                formPanel.add(usernameField, gbc);
-
-                // Password row
-                JPanel passwordRow = new JPanel();
-                passwordRow.setBackground(new Color(252, 252, 252));
-                passwordRow.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-
-                JLabel passwordLabel = new JLabel("Password:");
-                passwordLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
-                passwordLabel.setForeground(new Color(0, 0, 102));
-                passwordRow.add(passwordLabel);
-
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                formPanel.add(passwordRow, gbc);
-
-                JPasswordField passwordField = new JPasswordField(25);
-                passwordField.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
-                passwordField.setBackground(new Color(245, 245, 245));
-                passwordField.setPreferredSize(new java.awt.Dimension(passwordField.getPreferredSize().width, 25));
-                passwordField.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                    javax.swing.BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-                    javax.swing.BorderFactory.createEmptyBorder(4, 8, 4, 8)
-                ));
-                gbc.gridx = 1;
-                gbc.gridy = 1;
-                formPanel.add(passwordField, gbc);
-
-                // Login button
-                JButton loginButton = new JButton("Login") {
-                    @Override
-                    protected void paintComponent(java.awt.Graphics g) {
-                        java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
-                        g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                        if (getModel().isRollover()) {
-                            g2d.setColor(new Color(0, 20, 120));
-                        } else {
-                            g2d.setColor(new Color(0, 4, 80));
-                        }
-                        g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                        super.paintComponent(g);
-                    }
-                };
-                loginButton.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
-                loginButton.setForeground(Color.WHITE);
-                loginButton.setContentAreaFilled(false);
-                loginButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 20, 8, 20));
-                loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                loginButton.setFocusPainted(false);
-                gbc.gridx = 1;
-                gbc.gridy = 2;
-                gbc.fill = GridBagConstraints.NONE;
-                gbc.anchor = GridBagConstraints.CENTER;
-                formPanel.add(loginButton, gbc);
-
-                loginButton.addActionListener(e -> {
-                    String enteredUsername = usernameField.getText().trim();
-                    String enteredPassword = new String(passwordField.getPassword()).trim();
-                    if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
-                        JOptionPane.showMessageDialog(
-                            this,
-                            "Please enter both username and password.",
-                            "Login Error",
-                            JOptionPane.ERROR_MESSAGE
-                        );
-                    } else {
-                        // Simulate successful login by resetting the dashboard
-                        username.setText(enteredUsername);
-                        email.setText("@" + enteredUsername.toLowerCase());
-                        content.removeAll();
-                        content.setLayout(new BorderLayout());
-                        content.add(messagePanel, BorderLayout.CENTER);
-                        content.revalidate();
-                        content.repaint();
-                        System.err.println("DEBUG: Login successful for user: " + enteredUsername);
-                    }
-                });
-
-                // Center-align form panel
-                JPanel centerWrapper = new JPanel();
-                centerWrapper.setBackground(new Color(245, 245, 245));
-                centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-                centerWrapper.add(formPanel);
-
-                // Add panels to login panel
-                loginPanel.add(headerPanel, BorderLayout.NORTH);
-                loginPanel.add(centerWrapper, BorderLayout.CENTER);
-
-                // Update content panel
-                content.removeAll();
-                content.setLayout(new BorderLayout());
-                content.add(loginPanel, BorderLayout.CENTER);
-                content.revalidate();
-                content.repaint();
-
-                System.err.println("DEBUG: Sign-out successful. Login panel displayed.");
-            } catch (Exception e) {
-                System.err.println("ERROR: Error during sign-out process: " + e.getMessage());
-                JOptionPane.showMessageDialog(
-                    this,
-                    "An error occurred during sign-out: " + e.getMessage(),
-                    "Sign-Out Error",
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
-        } else {
-            System.err.println("DEBUG: Sign-out cancelled by user.");
-        }   
-}
 
     // This is the content when My Account is pressed 
     
@@ -878,7 +678,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
     private javax.swing.JLabel right;
     private javax.swing.JLabel settings;
     private javax.swing.JLabel signOut;
-    
     private javax.swing.JLabel training;
     private javax.swing.JLabel username;
     public javax.swing.JLabel vacancy;
