@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package pahilopaila.view;
-
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import javax.swing.JPasswordField;
@@ -26,18 +26,30 @@ public class UserInterface extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel13 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        login = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        name = new javax.swing.JTextField();
+        password = new javax.swing.JPasswordField();
+        icon1 = new javax.swing.JLabel();
+        icon3 = new javax.swing.JLabel();
+        forJobSeekers = new javax.swing.JLabel();
+        forEmployeers = new javax.swing.JLabel();
+        forEmployeers1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+
+        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pahilopaila/Adobe Express - file.jpg"))); // NOI18N
+        jLabel13.setText("\n");
+
+        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pahilopaila/Adobe Express - file.jpg"))); // NOI18N
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        jLabel5.setText("jLabel5");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -49,75 +61,68 @@ public class UserInterface extends javax.swing.JFrame {
         jLabel4.setText("Nepal's gateways to job. Step in. Stand out.");
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 130, -1, -1));
 
-        NameField.setForeground(new java.awt.Color(153, 153, 153));
-        NameField.setText("Name");
-        NameField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                NameFieldFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                NameFieldFocusLost(evt);
-            }
-        });
-        NameField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NameFieldActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 180, 220, -1));
-
-        loginButton.setBackground(new java.awt.Color(51, 51, 255));
-        loginButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        loginButton.setForeground(new java.awt.Color(255, 255, 255));
-        loginButton.setText("Login");
-        loginButton.addActionListener(new java.awt.event.ActionListener() {
+        login.setBackground(new java.awt.Color(0, 0, 102));
+        login.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        login.setForeground(new java.awt.Color(255, 255, 255));
+        login.setText("Login");
+        login.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 220, 220, -1));
-
-        jButton1.setBackground(new java.awt.Color(51, 51, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Login");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 270, 120, 30));
+        getContentPane().add(login, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 270, 120, 30));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("New to PahiloPaila? Create Account.");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 320, 250, -1));
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(0, 0, 255));
-        jLabel11.setText("For Job Seekers");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 20, -1, -1));
-
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(0, 0, 255));
-        jLabel14.setText("For Employeers");
-        getContentPane().add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 20, -1, -1));
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel3.setText("Username");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 180, 80, -1));
+        jLabel10.setText("New to PahiloPaila?");
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 320, 140, -1));
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, -30, 850, 180));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, -20, 130, 180));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jLabel8.setText("Password");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 220, 80, -1));
+        name.setForeground(new java.awt.Color(125, 125, 186));
+        name.setText("Name");
+        name.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                nameFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                nameFocusLost(evt);
+            }
+        });
+        name.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nameActionPerformed(evt);
+            }
+        });
+        getContentPane().add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 170, 220, 30));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
-        jLabel5.setText("jLabel5");
-        jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
+        password.setText("jPasswordField1");
+        getContentPane().add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 220, 220, 30));
 
+        icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"))); // NOI18N
+        getContentPane().add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 170, -1, -1));
+
+        icon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"))); // NOI18N
+        getContentPane().add(icon3, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 220, -1, -1));
+
+        forJobSeekers.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        forJobSeekers.setForeground(new java.awt.Color(0, 0, 102));
+        forJobSeekers.setText("For Job Seekers");
+        getContentPane().add(forJobSeekers, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, -1, -1));
+
+        forEmployeers.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        forEmployeers.setForeground(new java.awt.Color(0, 0, 102));
+        forEmployeers.setText("Create Account");
+        getContentPane().add(forEmployeers, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 321, 110, 20));
+
+        forEmployeers1.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        forEmployeers1.setForeground(new java.awt.Color(0, 0, 102));
+        forEmployeers1.setText("For Employeers");
+        getContentPane().add(forEmployeers1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 20, -1, -1));
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        jLabel3.setText("jLabel3");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -125,39 +130,29 @@ public class UserInterface extends javax.swing.JFrame {
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_loginButtonActionPerformed
-
-    private void NameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NameFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_NameFieldActionPerformed
-    
-    private void NameFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_NameFieldFocusGained
-        // TODO add your handling code here:
         
-        if(NameField.getText().equals("Name"))
-        {
-            NameField.setText("");
-            NameField.setForeground(new Color(153,153,153));
-        }    
-      
-    }//GEN-LAST:event_NameFieldFocusGained
-    
-    private void NameFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_NameFieldFocusLost
+    private void nameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameFocusGained
         // TODO add your handling code here:
-      if(NameField.getText().equals(""))
-        {
-            NameField.setText("Name");
-            NameField.setForeground(new Color(153,153,153));
-        }                   
-    }//GEN-LAST:event_NameFieldFocusLost
 
-    private void PasswordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PasswordFieldActionPerformed
-        // TODO add your handling code here:
-        if(Passwordfield.getText().equals("Password"))
+        if(name.getText().equals("Name"))
         {
-            Passwordfield.setText("");
-            Passwordfield.setForeground(new Color(153,153,153));
-        } 
-    }//GEN-LAST:event_PasswordFieldActionPerformed
+            name.setText("");
+            name.setForeground(new java.awt.Color(153,153,153));
+        }
+    }//GEN-LAST:event_nameFocusGained
+
+    private void nameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameFocusLost
+        // TODO add your handling code here:
+        if(name.getText().equals(""))
+        {
+            name.setText("Name");
+            name.setForeground(new java.awt.Color(153,153,153));
+        }
+    }//GEN-LAST:event_nameFocusLost
+
+    private void nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -195,29 +190,30 @@ public class UserInterface extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField NameField;
-    private javax.swing.JPasswordField PasswordField;
-    private javax.swing.JLabel Passwordfield;
+    private javax.swing.JLabel forEmployeers;
+    private javax.swing.JLabel forEmployeers1;
+    private javax.swing.JLabel forJobSeekers;
+    private javax.swing.JLabel icon1;
+    private javax.swing.JLabel icon3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField4;
-
+    private javax.swing.JButton login;
+    private javax.swing.JTextField name;
+    private javax.swing.JPasswordField password;
     // End of variables declaration//GEN-END:variables
     public javax.swing.JTextField getNameField(){
-        return NameField;
+        return name;
     }
     public javax.swing.JPasswordField getPasswordField(){
-        return PasswordField;
+        return password;
     }
     public void loginUser(ActionListener listener){
-        loginButton.addActionListener(listener);
+        login.addActionListener(listener);
     }
 }
