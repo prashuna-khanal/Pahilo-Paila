@@ -1,4 +1,4 @@
-package Pahileo.Controller;
+package pahilopaila.Controller;
 
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
