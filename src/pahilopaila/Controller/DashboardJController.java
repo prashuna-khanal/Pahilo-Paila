@@ -2,12 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package pahilopaila.Controller.forgetpasscon;
+package pahilopaila.Controller;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import pahilopaila.Controller.forgetpasscon.ButtonController;
-import pahilopaila.Controller.forgetpasscon.controller;
+import pahilopaila.Controller.forgetpasscon.ButtonController;
+import pahilopaila.Controller.controller;
 import pahilopaila.view.Dashboard_JobSeekers;
 import pahilopaila.view.RegistrationEmployee;
 import pahilopaila.view.Dashboard_JobSeeker_Applications;

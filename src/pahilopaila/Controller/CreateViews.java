@@ -1,4 +1,4 @@
-package pahilopaila.Controller.forgetpasscon;
+package pahilopaila.Controller;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
