@@ -8,6 +8,6 @@ package pahilopaila.Controller;
  *
  * @author abi
  */
-public class Smtpemailsender {
+public class SMTPSMailSender {
     
 }
