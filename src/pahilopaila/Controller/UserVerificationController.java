@@ -4,7 +4,8 @@
  */
 package pahilopaila.Controller;
 
-import pahilopaila.database.MySqlConnection; // Import your existing database connection class
+import pahilopaila.database.MySqlConnection;
+import java.sql.Timestamp; // <--- ADD THIS LINE// Import your existing database connection class
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -287,3 +288,4 @@ public class UserVerificationController {
         return String.valueOf(password.hashCode());
     }
 }
+

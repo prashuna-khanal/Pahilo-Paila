@@ -4,13 +4,15 @@
  */
 package pahilopaila;
 
-import Pahileo.Controller.ApplicationJS;
-import Pahileo.Controller.DashboardJController;
-import pahilopaila.Controller.registrationController;
-import pahilopaila.view.Dashboard_JobSeeker_Applications;
-import pahilopaila.view.Dashboard_JobSeekers;
-import pahilopaila.view.RegistrationEmployee;
-import Pahileo.Controller.controller;
+
+
+
+import pahilopaila.Controller.controller;
+import pahilopaila.view.forgotpassview;
+import pahilopaila.Controller.ForgetPasswordController;
+import pahilopaila.Controller.UserVerificationController;
+import pahilopaila.Controller.SMTPSMailSender;
+import pahilopaila.database.MySqlConnection;
 
 /**
  *
@@ -22,8 +24,8 @@ public class PahiloPaila {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Dashboard_JobSeeker_Applications view = new Dashboard_JobSeeker_Applications();
-        ApplicationJS con1 = new  ApplicationJS(view);
+        forgotpassview view = new forgotpassview();
+        ForgetPasswordController con1 = new  ForgetPasswordController(view);
         con1.open();
        
     }
