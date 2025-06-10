@@ -16,8 +16,8 @@ import java.time.temporal.ChronoUnit;
 public class SMTPSMailSender {
     private static final String host = "smtp.gmail.com";
     private static final String port = "587";    
-    private static final String email = "ENTER YOUR EMAIL"; // **CHANGE THIS** Your sending email address
-    private static String password = "ENTER YOUR APP PASSWORD"; // **CHANGE THIS** Your email password or app-specific password
+    private static final String email = "abi.mukhiya@gmail.com"; // **CHANGE THIS** Your sending email address
+    private static String password = "cghj tjst vwdz pnxf "; // **CHANGE THIS** Your email password or app-specific password
 
     // Instantiate your new UserVerificationController
     private static final UserVerificationController userVerifier = new UserVerificationController();

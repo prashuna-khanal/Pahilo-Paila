@@ -17,8 +17,8 @@ public class PahiloPaila {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Dashboard_JobSeeker_Applications view = new Dashboard_JobSeeker_Applications();
-        ApplicationJS con1 = new  ApplicationJS(view);
+        forgotpassview view = new forgotpassview();
+        ForgetPasswordController con1 = new  ForgetPasswordController(view);
         con1.open();
        
     }
