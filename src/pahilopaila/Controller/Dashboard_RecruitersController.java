@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.LayoutStyle; // Added for LayoutStyle.ComponentPlacement
 
 /**
- * Controller for the Dashboard_Recruiters view, handling user interactions and navigation.
+ * Controller for the Dashboard_Recruiters view, handling user interactions and navigation. Function Methods added to write codes.
  */
 public class Dashboard_RecruitersController {
     private final Dashboard_Recruiters view;
