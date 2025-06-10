@@ -18,7 +18,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
     // State variables for label hover and pressed states
     private boolean dashboardPressed = false, dashboardHovered = false;
     private boolean vacancyPressed = false, vacancyHovered = false;
-    private boolean applicationPressed = false, applicationHovered = false;
+    private boolean appliccationPressed = false, appliccationHovered = false;
     private boolean settingsPressed = false, settingsHovered = false;
     private boolean myAccountPressed = false, myAccountHovered = false;
     private boolean signOutPressed = false, signOutHovered = false;
@@ -41,11 +41,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                 java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
                 g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                 if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
-                    this == application && applicationPressed || this == settings && settingsPressed ||
+                    this == appliccation && appliccationPressed || this == settings && settingsPressed ||
                     this == myAccount && myAccountPressed || this == signOut && signOutPressed) {
                     g2d.setColor(new Color(200, 200, 200));
                 } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
-                           this == application && applicationHovered || this == settings && settingsHovered ||
+                           this == appliccation && appliccationHovered || this == settings && settingsHovered ||
                            this == myAccount && myAccountHovered || this == signOut && signOutHovered) {
                     g2d.setColor(new Color(230, 230, 230));
                 } else {
@@ -75,7 +75,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardPressed = true;
                 else if (label == vacancy) vacancyPressed = true;
-                else if (label == application) applicationPressed = true;
+                else if (label == appliccation) appliccationPressed = true;
                 else if (label == settings) settingsPressed = true;
                 else if (label == myAccount) myAccountPressed = true;
                 else if (label == signOut) signOutPressed = true;
@@ -90,7 +90,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                     public void run() {
                         if (label == dashboard) dashboardPressed = false;
                         else if (label == vacancy) vacancyPressed = false;
-                        else if (label == application) applicationPressed = false;
+                        else if (label == appliccation) appliccationPressed = false;
                         else if (label == settings) settingsPressed = false;
                         else if (label == myAccount) myAccountPressed = false;
                         else if (label == signOut) signOutPressed = false;
@@ -108,7 +108,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = true;
                 else if (label == vacancy) vacancyHovered = true;
-                else if (label == application) applicationHovered = true;
+                else if (label == appliccation) appliccationHovered = true;
                 else if (label == settings) settingsHovered = true;
                 else if (label == myAccount) myAccountHovered = true;
                 else if (label == signOut) signOutHovered = true;
@@ -120,7 +120,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = false;
                 else if (label == vacancy) vacancyHovered = false;
-                else if (label == application) applicationHovered = false;
+                else if (label == appliccation) appliccationHovered = false;
                 else if (label == settings) settingsHovered = false;
                 else if (label == myAccount) myAccountHovered = false;
                 else if (label == signOut) signOutHovered = false;
@@ -350,7 +350,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                         .addComponent(signOut)
                         .addComponent(settings)
                         .addComponent(myAccount)
-                        .addComponent(application)
+                        .addComponent(appliccation)
                         .addComponent(vacancy)
                         .addComponent(dashboard))
                     .addContainerGap(15, Short.MAX_VALUE))
@@ -368,7 +368,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                     .addGap(20, 20, 20)
                     .addComponent(vacancy)
                     .addGap(20, 20, 20)
-                    .addComponent(application)
+                    .addComponent(appliccation)
                     .addGap(20, 20, 20)
                     .addComponent(settings)
                     .addGap(40, 40, 40)
@@ -457,7 +457,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         JLabel usernameIcon = new JLabel();
         try {
             javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
+           
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             usernameIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             usernameIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -496,7 +496,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         JLabel passwordIcon = new JLabel();
         try {
             javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             passwordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             passwordIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -533,7 +532,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel newPasswordIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             newPasswordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
@@ -796,7 +794,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
     // Variables declaration
     public javax.swing.JTextField Searchfield;
-    public javax.swing.JLabel application;
+    public javax.swing.JLabel appliccation;
     public javax.swing.JPanel content;
     public javax.swing.JLabel dashboard;
     public javax.swing.JLabel email;
