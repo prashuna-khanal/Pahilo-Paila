@@ -1,15 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbproject/ide-file-targets/nb-generated/GUIForms/JFrame.java to edit this template
- */
+
 package pahilopaila.view;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,8 +16,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
     // State variables for each label to track hover and pressed states
     private boolean dashboardPressed = false, dashboardHovered = false;
     private boolean vacancyPressed = false, vacancyHovered = false;
-    private boolean trainingPressed = false, trainingHovered = false;
-    private boolean messagePressed = false, messageHovered = false;
     private boolean appliccationPressed = false, appliccationHovered = false;
     private boolean settingsPressed = false, settingsHovered = false;
     private boolean myAccountPressed = false, myAccountHovered = false;
@@ -45,12 +37,10 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                 g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                 // Set background color based on state
                 if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
-                    this == training && trainingPressed || this == message && messagePressed ||
                     this == appliccation && appliccationPressed || this == settings && settingsPressed ||
                     this == myAccount && myAccountPressed || this == signOut && signOutPressed) {
                     g2d.setColor(new Color(200, 200, 200)); // Light gray when pressed
                 } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
-                           this == training && trainingHovered || this == message && messageHovered ||
                            this == appliccation && appliccationHovered || this == settings && settingsHovered ||
                            this == myAccount && myAccountHovered || this == signOut && signOutHovered) {
                     g2d.setColor(new Color(230, 230, 230)); // Slightly darker gray on hover
@@ -63,7 +53,14 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         };
         label.setFont(new java.awt.Font("Segoe UI", 1, 14)); // Reverted font size back to 14
         label.setForeground(new Color(45, 22, 116)); // #2d1674
-        label.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconPath)));
+        try {
+            label.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconPath)));
+            label.setVerticalTextPosition(JLabel.CENTER);
+            label.setHorizontalTextPosition(JLabel.RIGHT);
+            label.setIconTextGap(10); // Space between icon and text
+        } catch (Exception e) {
+            System.out.println("Error loading icon for " + text + " at path " + iconPath + ": " + e.getMessage());
+        }
         label.setOpaque(false);
         label.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 15, 8, 15)); // Reverted padding
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -74,8 +71,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardPressed = true;
                 else if (label == vacancy) vacancyPressed = true;
-                else if (label == training) trainingPressed = true;
-                else if (label == message) messagePressed = true;
                 else if (label == appliccation) appliccationPressed = true;
                 else if (label == settings) settingsPressed = true;
                 else if (label == myAccount) myAccountPressed = true;
@@ -91,8 +86,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                     public void run() {
                         if (label == dashboard) dashboardPressed = false;
                         else if (label == vacancy) vacancyPressed = false;
-                        else if (label == training) trainingPressed = false;
-                        else if (label == message) messagePressed = false;
                         else if (label == appliccation) appliccationPressed = false;
                         else if (label == settings) settingsPressed = false;
                         else if (label == myAccount) myAccountPressed = false;
@@ -109,8 +102,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = true;
                 else if (label == vacancy) vacancyHovered = true;
-                else if (label == training) trainingHovered = true;
-                else if (label == message) messageHovered = true;
                 else if (label == appliccation) appliccationHovered = true;
                 else if (label == settings) settingsHovered = true;
                 else if (label == myAccount) myAccountHovered = true;
@@ -122,8 +113,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = false;
                 else if (label == vacancy) vacancyHovered = false;
-                else if (label == training) trainingHovered = false;
-                else if (label == message) messageHovered = false;
                 else if (label == appliccation) appliccationHovered = false;
                 else if (label == settings) settingsHovered = false;
                 else if (label == myAccount) myAccountHovered = false;
@@ -167,14 +156,12 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         featurePanel = new javax.swing.JPanel();
         logo = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        dashboard = createStyledLabel("Dashboard", "/logo/dashboard.jpg", null);
-        vacancy = createStyledLabel("Vacancy", "/logo/vacancy.png", null);
-        training = createStyledLabel("Training", "/logo/traning.png", null);
-        message = createStyledLabel("Message", "/logo/message.png", null);
-        appliccation = createStyledLabel("Applications", "/logo/application.png", null);
-        settings = createStyledLabel("Settings", "/logo/setting.png", null);
-        myAccount = createStyledLabel("My Account", "/logo/account.png", this::showMyAccountPanel);
-        signOut = createStyledLabel("Sign Out", "/logo/signout.png", null);
+        dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg", null);
+        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", null);
+        appliccation = createStyledLabel("Applications", "/Image/logo/application.png", null);
+        settings = createStyledLabel("Settings", "/Image/logo/setting.png", null);
+        myAccount = createStyledLabel("My Account", "/Image/logo/account.png", this::showMyAccountPanel);
+        signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png", null);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAutoRequestFocus(false);
@@ -189,7 +176,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         });
         getContentPane().add(Searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 280, 30));
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/search.jpg"))); // NOI18N
+        try {
+            jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/search.jpg")));
+        } catch (Exception e) {
+            System.out.println("Error loading search icon: " + e.getMessage());
+        }
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -197,7 +188,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         });
         getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 30, 30));
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/filter.png"))); // NOI18N
+        try {
+            jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/filter.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading filter icon: " + e.getMessage());
+        }
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
 
         username.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
@@ -209,7 +204,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         email.setText("@ramkumar");
         getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 50, -1, -1));
 
-        profileIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/ram.png"))); // NOI18N
+        try {
+            profileIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/ram.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading profile icon: " + e.getMessage());
+        }
         getContentPane().add(profileIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 40, 60));
 
         content.setBackground(new java.awt.Color(245, 245, 245));
@@ -245,7 +244,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/3man.png"))); // NOI18N
+        try {
+            jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/3man.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading 3man icon: " + e.getMessage());
+        }
         jLabel1.setText("jLabel1");
 
         javax.swing.GroupLayout messagePanelLayout = new javax.swing.GroupLayout(messagePanel);
@@ -305,7 +308,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         logo.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
+        try {
+            jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading logo icon: " + e.getMessage());
+        }
 
         javax.swing.GroupLayout logoLayout = new javax.swing.GroupLayout(logo);
         logo.setLayout(logoLayout);
@@ -332,13 +339,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addGroup(featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(signOut)
-                    .addComponent(training)
-                    .addComponent(dashboard)
-                    .addComponent(vacancy)
-                    .addComponent(message)
                     .addComponent(settings)
                     .addComponent(myAccount)
-                    .addComponent(appliccation))
+                    .addComponent(appliccation)
+                    .addComponent(vacancy)
+                    .addComponent(dashboard))
                 .addContainerGap(15, Short.MAX_VALUE))
             .addGroup(featurePanelLayout.createSequentialGroup()
                 .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -349,19 +354,15 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             .addGroup(featurePanelLayout.createSequentialGroup()
                 .addContainerGap(5, Short.MAX_VALUE)
                 .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
+                .addGap(5,5,5)
                 .addComponent(dashboard)
-                .addGap(10, 10, 10)
+                .addGap(20,20,20)
                 .addComponent(vacancy)
-                .addGap(10, 10, 10)
-                .addComponent(training)
-                .addGap(10, 10, 10)
-                .addComponent(message)
-                .addGap(10, 10, 10)
+                .addGap(20,20,20) // Adjusted gap to account for removed items
                 .addComponent(appliccation)
-                .addGap(10, 10, 10)
+                .addGap(20,20,20)
                 .addComponent(settings)
-                .addGap(20, 20, 20)
+                .addGap(40, 40, 40)
                 .addComponent(myAccount)
                 .addGap(10, 10, 10)
                 .addComponent(signOut)
@@ -424,8 +425,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         });
     }
 
-    // This is the content when My Account is pressed 
-    
     private void showMyAccountPanel() {
         // Main panel for the "My Account" section
         JPanel mainPanel = new JPanel();
@@ -487,9 +486,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel usernameIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(
-                "C:\\Users\\LENOVO\\Documents\\NetBeansProjects\\Pahilo-Paila\\src\\Image\\profile-user .png"
-            );
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             usernameIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             usernameIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5)); // Padding
@@ -528,9 +525,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel passwordIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(
-                "C:\\Users\\LENOVO\\Documents\\NetBeansProjects\\Pahilo-Paila\\src\\Image\\locked-computer.png"
-            );
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             passwordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             passwordIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -568,9 +563,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel newPasswordIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(
-                "C:\\Users\\LENOVO\\Documents\\NetBeansProjects\\Pahilo-Paila\\src\\Image\\locked-computer.png"
-            );
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             newPasswordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             newPasswordIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -671,14 +664,12 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JButton learnMore;
     private javax.swing.JPanel logo;
-    private javax.swing.JLabel message;
     private javax.swing.JPanel messagePanel;
     private javax.swing.JLabel myAccount;
     private javax.swing.JLabel profileIcon;
     private javax.swing.JLabel right;
     private javax.swing.JLabel settings;
     private javax.swing.JLabel signOut;
-    private javax.swing.JLabel training;
     private javax.swing.JLabel username;
     public javax.swing.JLabel vacancy;
     // End of variables declaration//GEN-END:variables
