@@ -2,16 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package pahilopaila.database;
-import java.sql.*;
+package pahilopaila.Controller;
+
+import javax.swing.JFrame;
 
 /**
  *
- * @author Mibish
+ * @author abi
  */
-public interface dbconnection {
-    Connection openConnection();
-    void closeConnection(Connection conn);
+public interface controller {
     
-    
+  void open();
+   void close();
 }

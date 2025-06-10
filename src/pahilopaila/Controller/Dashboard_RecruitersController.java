@@ -1,4 +1,4 @@
-package pahilopaila.controller; // Matches pahilopaila/controller directory
+package pahilopaila.Controller; // Matches pahilopaila/controller directory
 
 import pahilopaila.view.Dashboard_Recruiters;
 import javax.swing.*;

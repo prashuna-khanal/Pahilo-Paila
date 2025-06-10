@@ -3,9 +3,10 @@ package pahilopaila.view;
 import java.awt.Color;
 import java.awt.Cursor;
 import javax.swing.*;
+import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
-import pahilopaila.controller.Dashboard_RecruitersController; // Updated import for controller
+import pahilopaila.Controller.Dashboard_RecruitersController; // Updated import for controller
 
 /**
  * Dashboard view for recruiters.
@@ -186,6 +187,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("Error loading filter icon: " + e.getMessage());
         }
+        try {
+            jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/filter.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading filter icon: " + e.getMessage());
+        }
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
 
         username.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18));
@@ -197,6 +203,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         email.setText("@ramkumar");
         getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 50, -1, -1));
 
+        try {
+            profileIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/ram.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading profile icon: " + e.getMessage());
+        }
         try {
             profileIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/ram.png")));
         } catch (Exception e) {
@@ -296,6 +307,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         logo.setBackground(new java.awt.Color(255, 255, 255));
 
+        try {
+            jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading logo icon: " + e.getMessage());
+        }
         try {
             jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png")));
         } catch (Exception e) {
@@ -436,6 +452,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         JLabel usernameIcon = new JLabel();
         try {
             javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             usernameIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             usernameIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -474,6 +491,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         JLabel passwordIcon = new JLabel();
         try {
             javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             passwordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             passwordIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -510,6 +528,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel newPasswordIcon = new JLabel();
         try {
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             newPasswordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
