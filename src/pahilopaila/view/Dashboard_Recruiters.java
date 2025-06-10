@@ -22,6 +22,8 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
     private boolean settingsPressed = false, settingsHovered = false;
     private boolean myAccountPressed = false, myAccountHovered = false;
     private boolean signOutPressed = false, signOutHovered = false;
+    private boolean isVacancyPosted = false;
+    
 
     /**
      * Creates new form Dashboard_Recruiters
@@ -159,8 +161,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         logo = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg", null);
-        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", null);
-        application = createStyledLabel("Applications", "/Image/logo/application.png", null);
+
+
+        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", this::showVacancyPanel);
+        appliccation = createStyledLabel("Applications", "/Image/logo/application.png", null);
+
         settings = createStyledLabel("Settings", "/Image/logo/setting.png", null);
         myAccount = createStyledLabel("My Account", "/Image/logo/account.png", this::showMyAccountPanel);
         signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png", null);
@@ -609,6 +614,162 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         System.out.println("Content panel bounds: " + content.getBounds());
         System.out.println("Content panel visible: " + content.isVisible());
     }
+    private void showVacancyPanel() {
+        // Main panel for the "Vacancy" section
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setLayout(new java.awt.BorderLayout(15, 15));
+        mainPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        // Header panel with gradient background
+        JPanel headerPanel = new JPanel() {
+            @Override
+            protected void paintComponent(java.awt.Graphics g) {
+                super.paintComponent(g);
+                java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
+                g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                java.awt.GradientPaint gp = new java.awt.GradientPaint(
+                    0, 0, new Color(0, 4, 80),
+                    0, getHeight(), new Color(0, 20, 120)
+                );
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        headerPanel.setPreferredSize(new java.awt.Dimension(680, 70));
+        headerPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
+
+        JLabel headerLabel = new JLabel("Vacancy Management");
+        headerLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
+        headerLabel.setForeground(Color.WHITE);
+        headerPanel.add(headerLabel);
+
+        // Center-align wrapper panel for the form
+        JPanel centerWrapper = new JPanel();
+        centerWrapper.setBackground(new Color(245, 245, 245));
+        centerWrapper.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+
+        // Form panel for vacancy details
+        JPanel formPanel = new JPanel();
+        formPanel.setBackground(new Color(252, 252, 252));
+        formPanel.setLayout(new java.awt.GridBagLayout());
+        formPanel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20),
+            javax.swing.BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true)
+        ));
+
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.insets = new java.awt.Insets(15, 15, 15, 15);
+        gbc.fill = java.awt.GridBagConstraints.NONE;
+        gbc.anchor = java.awt.GridBagConstraints.CENTER;
+
+        // Job Title row
+        JPanel jobTitleRow = new JPanel();
+        jobTitleRow.setBackground(new Color(252, 252, 252));
+        jobTitleRow.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 0));
+        JLabel jobTitleIcon = new JLabel();
+        try {
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/logo/job.png"));
+            java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
+            jobTitleIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
+        } catch (Exception e) {
+            System.out.println("Error loading job title icon: " + e.getMessage());
+            jobTitleIcon.setText("J");
+        }
+        jobTitleRow.add(jobTitleIcon);
+        JLabel jobTitleLabel = new JLabel("Job Title:");
+        jobTitleLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        jobTitleLabel.setForeground(new Color(0, 0, 102));
+        jobTitleRow.add(jobTitleLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(jobTitleRow, gbc);
+
+        JTextField jobTitleField = new JTextField(25);
+        jobTitleField.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
+        jobTitleField.setBackground(new Color(245, 245, 245));
+        jobTitleField.setPreferredSize(new java.awt.Dimension(jobTitleField.getPreferredSize().width, 25));
+        jobTitleField.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            javax.swing.BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        formPanel.add(jobTitleField, gbc);
+        // Added: Status label to show posting result
+        JLabel statusLabel = new JLabel();
+        statusLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 12));
+        statusLabel.setForeground(Color.RED);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        formPanel.add(statusLabel, gbc);
+
+        // Update status label based on isVacancyPosted
+        if (isVacancyPosted) {
+            statusLabel.setText("Vacancy posted successfully!");
+            statusLabel.setForeground(Color.GREEN);
+        } else {
+            statusLabel.setText("Vacancy not posted yet.");
+            statusLabel.setForeground(Color.RED);
+        }
+
+        // Post Vacancy button
+        javax.swing.JButton postButton = new javax.swing.JButton("Post Vacancy") {
+            @Override
+            protected void paintComponent(java.awt.Graphics g) {
+                java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
+                g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                if (getModel().isRollover()) {
+                    g2d.setColor(new Color(0, 20, 120));
+                } else {
+                    g2d.setColor(new Color(0, 4, 80));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
+        postButton.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        postButton.setForeground(Color.WHITE);
+        postButton.setContentAreaFilled(false);
+        postButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 20, 8, 20));
+        postButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        postButton.setFocusPainted(false);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.fill = java.awt.GridBagConstraints.NONE;
+        gbc.anchor = java.awt.GridBagConstraints.CENTER;
+        formPanel.add(postButton, gbc);
+
+        // Modified: Action listener to update isVacancyPosted and refresh status
+        postButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                String jobTitle = jobTitleField.getText().trim();
+                if (!jobTitle.isEmpty()) {
+                    isVacancyPosted = true;
+                    statusLabel.setText("Vacancy posted successfully!");
+                    statusLabel.setForeground(Color.GREEN);
+                    System.out.println("Vacancy posted: " + jobTitle);
+                } else {
+                    statusLabel.setText("Please enter a job title.");
+                    statusLabel.setForeground(Color.RED);
+                }
+                formPanel.revalidate();
+                formPanel.repaint();
+            }
+        });
+
+        centerWrapper.add(formPanel);
+        mainPanel.add(headerPanel, java.awt.BorderLayout.NORTH);
+        mainPanel.add(centerWrapper, java.awt.BorderLayout.CENTER);
+
+        content.removeAll();
+        content.setLayout(new java.awt.BorderLayout());
+        content.add(mainPanel, java.awt.BorderLayout.CENTER);
+        content.revalidate();
+        content.repaint();
+
+        System.out.println("Vacancy panel added. Main panel bounds: " + mainPanel.getBounds());
+    }
 
     /**
      * Main method to run the application
@@ -657,3 +818,4 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
     public javax.swing.JLabel username;
     public javax.swing.JLabel vacancy;
 }
+
