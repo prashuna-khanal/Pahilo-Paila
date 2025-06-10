@@ -4,15 +4,8 @@
  */
 package pahilopaila;
 
-
-
-
-import pahilopaila.Controller.controller;
-import pahilopaila.view.forgotpassview;
-import pahilopaila.Controller.ForgetPasswordController;
-import pahilopaila.Controller.UserVerificationController;
-import pahilopaila.Controller.SMTPSMailSender;
-import pahilopaila.database.MySqlConnection;
+import pahilopaila.Controller.ApplicationJS;
+import pahilopaila.view.Dashboard_JobSeeker_Applications;
 
 /**
  *
