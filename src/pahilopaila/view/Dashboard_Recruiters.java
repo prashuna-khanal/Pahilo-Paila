@@ -1,15 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbproject/ide-file-targets/nb-generated/GUIForms/JFrame.java to edit this template
- */
+
 package pahilopaila.view;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,8 +16,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
     // State variables for each label to track hover and pressed states
     private boolean dashboardPressed = false, dashboardHovered = false;
     private boolean vacancyPressed = false, vacancyHovered = false;
-    private boolean trainingPressed = false, trainingHovered = false;
-    private boolean messagePressed = false, messageHovered = false;
     private boolean appliccationPressed = false, appliccationHovered = false;
     private boolean settingsPressed = false, settingsHovered = false;
     private boolean myAccountPressed = false, myAccountHovered = false;
@@ -45,12 +37,10 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                 g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                 // Set background color based on state
                 if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
-                    this == training && trainingPressed || this == message && messagePressed ||
                     this == appliccation && appliccationPressed || this == settings && settingsPressed ||
                     this == myAccount && myAccountPressed || this == signOut && signOutPressed) {
                     g2d.setColor(new Color(200, 200, 200)); // Light gray when pressed
                 } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
-                           this == training && trainingHovered || this == message && messageHovered ||
                            this == appliccation && appliccationHovered || this == settings && settingsHovered ||
                            this == myAccount && myAccountHovered || this == signOut && signOutHovered) {
                     g2d.setColor(new Color(230, 230, 230)); // Slightly darker gray on hover
@@ -63,7 +53,14 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         };
         label.setFont(new java.awt.Font("Segoe UI", 1, 14)); // Reverted font size back to 14
         label.setForeground(new Color(45, 22, 116)); // #2d1674
-        label.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconPath)));
+        try {
+            label.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconPath)));
+            label.setVerticalTextPosition(JLabel.CENTER);
+            label.setHorizontalTextPosition(JLabel.RIGHT);
+            label.setIconTextGap(10); // Space between icon and text
+        } catch (Exception e) {
+            System.out.println("Error loading icon for " + text + " at path " + iconPath + ": " + e.getMessage());
+        }
         label.setOpaque(false);
         label.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 15, 8, 15)); // Reverted padding
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -74,8 +71,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardPressed = true;
                 else if (label == vacancy) vacancyPressed = true;
-                else if (label == training) trainingPressed = true;
-                else if (label == message) messagePressed = true;
                 else if (label == appliccation) appliccationPressed = true;
                 else if (label == settings) settingsPressed = true;
                 else if (label == myAccount) myAccountPressed = true;
@@ -91,8 +86,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                     public void run() {
                         if (label == dashboard) dashboardPressed = false;
                         else if (label == vacancy) vacancyPressed = false;
-                        else if (label == training) trainingPressed = false;
-                        else if (label == message) messagePressed = false;
                         else if (label == appliccation) appliccationPressed = false;
                         else if (label == settings) settingsPressed = false;
                         else if (label == myAccount) myAccountPressed = false;
@@ -109,8 +102,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = true;
                 else if (label == vacancy) vacancyHovered = true;
-                else if (label == training) trainingHovered = true;
-                else if (label == message) messageHovered = true;
                 else if (label == appliccation) appliccationHovered = true;
                 else if (label == settings) settingsHovered = true;
                 else if (label == myAccount) myAccountHovered = true;
@@ -122,8 +113,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = false;
                 else if (label == vacancy) vacancyHovered = false;
-                else if (label == training) trainingHovered = false;
-                else if (label == message) messageHovered = false;
                 else if (label == appliccation) appliccationHovered = false;
                 else if (label == settings) settingsHovered = false;
                 else if (label == myAccount) myAccountHovered = false;
@@ -167,12 +156,12 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         featurePanel = new javax.swing.JPanel();
         logo = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        dashboard = new javax.swing.JLabel();
-        vacancy = new javax.swing.JLabel();
-        appliccation = new javax.swing.JLabel();
-        settings = new javax.swing.JLabel();
-        myAccount = new javax.swing.JLabel();
-        signOut = new javax.swing.JLabel();
+        dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg", null);
+        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", null);
+        appliccation = createStyledLabel("Applications", "/Image/logo/application.png", null);
+        settings = createStyledLabel("Settings", "/Image/logo/setting.png", null);
+        myAccount = createStyledLabel("My Account", "/Image/logo/account.png", this::showMyAccountPanel);
+        signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png", null);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAutoRequestFocus(false);
@@ -187,7 +176,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         });
         getContentPane().add(Searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 280, 30));
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/search.jpg"))); // NOI18N
+        try {
+            jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/search.jpg")));
+        } catch (Exception e) {
+            System.out.println("Error loading search icon: " + e.getMessage());
+        }
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -195,7 +188,11 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         });
         getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 30, 30));
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/filter.png"))); // NOI18N
+        try {
+            jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/filter.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading filter icon: " + e.getMessage());
+        }
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
 
         username.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
@@ -203,10 +200,15 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         username.setText("Ram Kumar");
         getContentPane().add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 20, -1, 30));
 
+        email.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         email.setText("@ramkumar");
         getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 50, -1, -1));
 
-        profileIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/ram.png"))); // NOI18N
+        try {
+            profileIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/ram.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading profile icon: " + e.getMessage());
+        }
         getContentPane().add(profileIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 40, 60));
 
         content.setBackground(new java.awt.Color(245, 245, 245));
@@ -235,14 +237,18 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         learnMore.setBackground(new java.awt.Color(0, 4, 80));
         learnMore.setForeground(new java.awt.Color(255, 255, 255));
         learnMore.setText("Learn More");
-        learnMore.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 14), new java.awt.Color(255, 255, 255))); // NOI18N
+        learnMore.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255))); // NOI18N
         learnMore.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 learnMoreActionPerformed(evt);
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/3man.png"))); // NOI18N
+        try {
+            jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/3man.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading 3man icon: " + e.getMessage());
+        }
         jLabel1.setText("jLabel1");
 
         javax.swing.GroupLayout messagePanelLayout = new javax.swing.GroupLayout(messagePanel);
@@ -255,8 +261,8 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                     .addComponent(right, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(find, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(messagePanelLayout.createSequentialGroup()
-                        .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 165, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -296,13 +302,17 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
                 .addComponent(messagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        getContentPane().add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 70, 700, 400));
+        getContentPane().add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 70, 700, 440)); // Increased height to 440
 
         featurePanel.setBackground(new java.awt.Color(255, 255, 255));
 
         logo.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
+        try {
+            jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png")));
+        } catch (Exception e) {
+            System.out.println("Error loading logo icon: " + e.getMessage());
+        }
 
         javax.swing.GroupLayout logoLayout = new javax.swing.GroupLayout(logo);
         logo.setLayout(logoLayout);
@@ -316,88 +326,50 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         logoLayout.setVerticalGroup(
             logoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, logoLayout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
+                .addContainerGap(10, Short.MAX_VALUE)
                 .addComponent(jLabel4)
-                .addGap(14, 14, 14))
+                .addGap(10, 10, 10))
         );
-
-        dashboard.setBackground(new java.awt.Color(0, 51, 153));
-        dashboard.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        dashboard.setForeground(new java.awt.Color(102, 102, 102));
-        dashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/dashboard.jpg"))); // NOI18N
-        dashboard.setText("Dashboard");
-
-        vacancy.setBackground(new java.awt.Color(0, 51, 153));
-        vacancy.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        vacancy.setForeground(new java.awt.Color(102, 102, 102));
-        vacancy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/vacancy.png"))); // NOI18N
-        vacancy.setText("Vacancy");
-
-        appliccation.setBackground(new java.awt.Color(0, 51, 153));
-        appliccation.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        appliccation.setForeground(new java.awt.Color(102, 102, 102));
-        appliccation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/application.png"))); // NOI18N
-        appliccation.setText("Applications");
-
-        settings.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        settings.setForeground(new java.awt.Color(102, 102, 102));
-        settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/setting.png"))); // NOI18N
-        settings.setText("Settings");
-
-        myAccount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        myAccount.setForeground(new java.awt.Color(102, 102, 102));
-        myAccount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/account.png"))); // NOI18N
-        myAccount.setText("My Account");
-        myAccount.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                myAccountMouseClicked(evt);
-            }
-        });
-
-        signOut.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        signOut.setForeground(new java.awt.Color(102, 102, 102));
-        signOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/signout.png"))); // NOI18N
-        signOut.setText("Sign Out");
 
         javax.swing.GroupLayout featurePanelLayout = new javax.swing.GroupLayout(featurePanel);
         featurePanel.setLayout(featurePanelLayout);
         featurePanelLayout.setHorizontalGroup(
             featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(featurePanelLayout.createSequentialGroup()
-                .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addGap(15, 15, 15)
+                .addGroup(featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(signOut)
+                    .addComponent(settings)
+                    .addComponent(myAccount)
+                    .addComponent(appliccation)
+                    .addComponent(vacancy)
+                    .addComponent(dashboard))
+                .addContainerGap(15, Short.MAX_VALUE))
             .addGroup(featurePanelLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addGroup(featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(appliccation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(vacancy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(dashboard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(settings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(signOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(myAccount, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         featurePanelLayout.setVerticalGroup(
             featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(featurePanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(5, Short.MAX_VALUE)
                 .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addComponent(dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(vacancy, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(appliccation, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(settings, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(85, 85, 85)
-                .addComponent(myAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(signOut, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addGap(5,5,5)
+                .addComponent(dashboard)
+                .addGap(20,20,20)
+                .addComponent(vacancy)
+                .addGap(20,20,20) // Adjusted gap to account for removed items
+                .addComponent(appliccation)
+                .addGap(20,20,20)
+                .addComponent(settings)
+                .addGap(40, 40, 40)
+                .addComponent(myAccount)
+                .addGap(10, 10, 10)
+                .addComponent(signOut)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
-        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 470));
+        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 510)); // Increased height to 510
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -453,8 +425,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         });
     }
 
-    // This is the content when My Account is pressed 
-    
     private void showMyAccountPanel() {
         // Main panel for the "My Account" section
         JPanel mainPanel = new JPanel();
@@ -516,9 +486,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel usernameIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(
-                "C:\\Users\\LENOVO\\Documents\\NetBeansProjects\\Pahilo-Paila\\src\\Image\\profile-user .png"
-            );
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             usernameIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             usernameIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5)); // Padding
@@ -557,9 +525,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel passwordIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(
-                "C:\\Users\\LENOVO\\Documents\\NetBeansProjects\\Pahilo-Paila\\src\\Image\\locked-computer.png"
-            );
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             passwordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             passwordIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -597,9 +563,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel newPasswordIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(
-                "C:\\Users\\LENOVO\\Documents\\NetBeansProjects\\Pahilo-Paila\\src\\Image\\locked-computer.png"
-            );
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             newPasswordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             newPasswordIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
