@@ -35,7 +35,7 @@ public class Dashboard_RecruitersController {
             }
         });
 
-        view.application.addMouseListener(new java.awt.event.MouseAdapter() {
+        view.appliccation.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 showApplicationsPanel();

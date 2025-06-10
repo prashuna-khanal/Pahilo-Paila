@@ -3,10 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-<<<<<<< HEAD
             <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/view/Dashboard_Recruiters.java</file>
-            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/view/Dashboard_JobSeeker.java</file>
-=======
+
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/Controller/Dashboard_RecruitersController.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/view/Dashboard_JobSeekers.java</file>
+
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/view/Dashboard_JobSeeker_Applications.java</file>
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/view/Registration.java</file>
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/view/Dashboard_JobSeekers.java</file>
@@ -17,7 +18,7 @@
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/Controller/ButtonController.java</file>
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/Controller/forgetpass.java</file>
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/database/dbconnection.java</file>
->>>>>>> ae749b410ef96127efd39a6caea59bda8a4ea4d4
+
         </group>
     </open-files>
 </project-private>
