@@ -1,12 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
 package pahilopaila.view;
 import javax.swing.*;
-import javax.swing.JLabel;
 
+import org.w3c.dom.events.MouseEvent;
+
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -14,15 +14,132 @@ import javax.swing.JLabel;
  */
 public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
+    // State variables for label hover and pressed states
+    private boolean dashboardPressed = false, dashboardHovered = false;
+    private boolean vacancyPressed = false, vacancyHovered = false;
+    private boolean CVPressed = false, CVHovered = false;
+    private boolean settingsPressed = false, settingsHovered = false;
+    private boolean myAccountPressed = false, myAccountHovered = false;
+    private boolean signOutPressed = false, signOutHovered = false;
+
     public JLabel vacancylbl;
 
-    /** Creates new form Dashboard_JobSeekers */
+    /**
+     * Creates new form Dashboard_JobSeekers
+     */
     public Dashboard_JobSeekers() {
         initComponents();
         setResizable(false);
     }
 
-    /** This method is called from within the constructor to
+    // Helper method to create styled JLabel with rounded corners and effects
+    private JLabel createStyledLabel(String text, String iconPath, Runnable onClick) {
+        JLabel label = new JLabel(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
+                    this == CV && CVPressed || this == settings && settingsPressed ||
+                    this == myAccount && myAccountPressed || this == signOut && signOutPressed) {
+                    g2d.setColor(new Color(200, 200, 200));
+                } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
+                           this == CV && CVHovered || this == settings && settingsHovered ||
+                           this == myAccount && myAccountHovered || this == signOut && signOutHovered) {
+                    g2d.setColor(new Color(230, 230, 230));
+                } else {
+                    g2d.setColor(new Color(255, 255, 255));
+                }
+                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+                super.paintComponent(g);
+            }
+        };
+        label.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        label.setForeground(new Color(102, 102, 102)); // Match original foreground color
+        try {
+            label.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconPath)));
+            label.setVerticalTextPosition(JLabel.CENTER);
+            label.setHorizontalTextPosition(JLabel.RIGHT);
+            label.setIconTextGap(10);
+        } catch (Exception e) {
+            System.out.println("Error loading icon for " + text + ": " + e.getMessage());
+        }
+        label.setOpaque(false);
+        label.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        label.addMouseListener(new MouseAdapter() {
+            private Timer pressTimer;
+
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (label == dashboard) dashboardPressed = true;
+                else if (label == vacancy) vacancyPressed = true;
+                else if (label == CV) CVPressed = true;
+                else if (label == settings) settingsPressed = true;
+                else if (label == myAccount) myAccountPressed = true;
+                else if (label == signOut) signOutPressed = true;
+                System.out.println(text + " pressed");
+                label.repaint();
+                if (pressTimer != null) {
+                    pressTimer.cancel();
+                }
+                pressTimer = new Timer();
+                pressTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (label == dashboard) dashboardPressed = false;
+                        else if (label == vacancy) vacancyPressed = false;
+                        else if (label == CV) CVPressed = false;
+                        else if (label == settings) settingsPressed = false;
+                        else if (label == myAccount) myAccountPressed = false;
+                        else if (label == signOut) signOutPressed = false;
+                        label.repaint();
+                    }
+                }, 200);
+            }
+
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                System.out.println(text + " released");
+            }
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (label == dashboard) dashboardHovered = true;
+                else if (label == vacancy) vacancyHovered = true;
+                else if (label == CV) CVHovered = true;
+                else if (label == settings) settingsHovered = true;
+                else if (label == myAccount) myAccountHovered = true;
+                else if (label == signOut) signOutHovered = true;
+                System.out.println(text + " hovered");
+                label.repaint();
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (label == dashboard) dashboardHovered = false;
+                else if (label == vacancy) vacancyHovered = false;
+                else if (label == CV) CVHovered = false;
+                else if (label == settings) settingsHovered = false;
+                else if (label == myAccount) myAccountHovered = false;
+                else if (label == signOut) signOutHovered = false;
+                System.out.println(text + " hover exited");
+                label.repaint();
+            }
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                System.out.println(text + " clicked");
+                if (onClick != null) {
+                    onClick.run();
+                }
+            }
+        });
+        return label;
+    }
+
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
@@ -39,12 +156,12 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         featurePanel = new javax.swing.JPanel();
         logo = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        dashboard = new javax.swing.JLabel();
-        vacancy = new javax.swing.JLabel();
-        CV = new javax.swing.JLabel();
-        settings = new javax.swing.JLabel();
-        myAccount = new javax.swing.JLabel();
-        signOut = new javax.swing.JLabel();
+        dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg", null);
+        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", null);
+        CV = createStyledLabel("CV Upload", "/Image/logo/application.png", null);
+        settings = createStyledLabel("Settings", "/Image/logo/setting.png", null);
+        myAccount = createStyledLabel("My Account", "/Image/logo/account.png", null);
+        signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png", null);
         profileIcon1 = new javax.swing.JLabel();
         content = new javax.swing.JPanel();
         messagePanel = new javax.swing.JPanel();
@@ -136,44 +253,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 .addGap(14, 14, 14))
         );
 
-        dashboard.setBackground(new java.awt.Color(0, 51, 153));
-        dashboard.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        dashboard.setForeground(new java.awt.Color(102, 102, 102));
-        dashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/dashboard.jpg"))); // NOI18N
-        dashboard.setText("Dashboard");
-
-        vacancy.setBackground(new java.awt.Color(0, 51, 153));
-        vacancy.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        vacancy.setForeground(new java.awt.Color(102, 102, 102));
-        vacancy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/vacancy.png"))); // NOI18N
-        vacancy.setText("Vacancy");
-
-        CV.setBackground(new java.awt.Color(0, 51, 153));
-        CV.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        CV.setForeground(new java.awt.Color(102, 102, 102));
-        CV.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/application.png"))); // NOI18N
-        CV.setText("CV Upload");
-
-        settings.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        settings.setForeground(new java.awt.Color(102, 102, 102));
-        settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/setting.png"))); // NOI18N
-        settings.setText("Settings");
-
-        myAccount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        myAccount.setForeground(new java.awt.Color(102, 102, 102));
-        myAccount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/account.png"))); // NOI18N
-        myAccount.setText("My Account");
-        myAccount.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                myAccountMouseClicked(evt);
-            }
-        });
-
-        signOut.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        signOut.setForeground(new java.awt.Color(102, 102, 102));
-        signOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/signout.png"))); // NOI18N
-        signOut.setText("Sign Out");
-
         javax.swing.GroupLayout featurePanelLayout = new javax.swing.GroupLayout(featurePanel);
         featurePanel.setLayout(featurePanelLayout);
         featurePanelLayout.setHorizontalGroup(
@@ -189,7 +268,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                     .addComponent(dashboard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(settings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(signOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(myAccount, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(myAccount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         featurePanelLayout.setVerticalGroup(
@@ -456,9 +535,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE)
                 .addGap(15, 15, 15))
         );
 
@@ -573,7 +652,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE)
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
@@ -631,7 +710,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
 
     private void SearchfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchfieldActionPerformed
         // TODO add your handling code here:
-   
     }//GEN-LAST:event_SearchfieldActionPerformed
 
     private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed
@@ -651,7 +729,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        //<editor-fold desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
@@ -679,7 +757,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 new Dashboard_JobSeekers().setVisible(true);
             }
         });
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -734,5 +811,4 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
     private javax.swing.JLabel username;
     public javax.swing.JLabel vacancy;
     // End of variables declaration//GEN-END:variables
-   
 }
