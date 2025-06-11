@@ -3,9 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package pahilopaila;
-
-import pahilopaila.Controller.ApplicationJS;
-import pahilopaila.view.Dashboard_JobSeeker_Applications;
+import pahilopaila.Controller.registrationController;
+import pahilopaila.view.RegistrationEmployee;
 
 /**
  *
@@ -17,8 +16,8 @@ public class PahiloPaila {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        forgotpassview view = new forgotpassview();
-        ForgetPasswordController con1 = new  ForgetPasswordController(view);
+        RegistrationEmployee view = new RegistrationEmployee();
+        registrationController con1 = new  registrationController(view);
         con1.open();
        
     }
