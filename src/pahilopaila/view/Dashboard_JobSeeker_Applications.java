@@ -85,7 +85,7 @@ public class Dashboard_JobSeeker_Applications extends javax.swing.JFrame {
         application.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         application.setForeground(new java.awt.Color(102, 102, 102));
         application.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/application.png"))); // NOI18N
-        application.setText("Applications");
+        application.setText("CV Upload");
 
         settings.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         settings.setForeground(new java.awt.Color(102, 102, 102));
@@ -116,7 +116,7 @@ public class Dashboard_JobSeeker_Applications extends javax.swing.JFrame {
                     .addComponent(application)
                     .addComponent(settings)
                     .addComponent(myAccount))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         featurePanelLayout.setVerticalGroup(
             featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

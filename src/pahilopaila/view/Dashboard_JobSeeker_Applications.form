@@ -54,7 +54,7 @@
                       <Component id="settings" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="myAccount" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="26" max="32767" attributes="0"/>
+                  <EmptySpace pref="30" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -172,7 +172,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/Image/logo/application.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Applications"/>
+            <Property name="text" type="java.lang.String" value="CV Upload"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
