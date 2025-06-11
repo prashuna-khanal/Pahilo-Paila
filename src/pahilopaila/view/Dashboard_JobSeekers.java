@@ -102,7 +102,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         learnMore.setBackground(new java.awt.Color(0, 0, 102));
         learnMore.setForeground(new java.awt.Color(255, 255, 255));
         learnMore.setText("Learn More");
-        learnMore.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255))); // NOI18N
+        learnMore.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 14), new java.awt.Color(255, 255, 255))); // NOI18N
         learnMore.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 learnMoreActionPerformed(evt);
@@ -127,13 +127,13 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                         .addGap(35, 35, 35)
                         .addComponent(getStarted)
                         .addGap(26, 26, 26)
-                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(messagePanelLayout.createSequentialGroup()
                         .addGap(22, 22, 22)
                         .addGroup(messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))))
-                .addContainerGap(276, Short.MAX_VALUE))
+                .addContainerGap(273, Short.MAX_VALUE))
         );
         messagePanelLayout.setVerticalGroup(
             messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
