@@ -50,7 +50,7 @@
                       <Component id="signOut" min="-2" max="-2" attributes="0"/>
                       <Component id="vacancy" min="-2" pref="79" max="-2" attributes="0"/>
                       <Component id="dashboard" min="-2" max="-2" attributes="0"/>
-                      <Component id="CV_Upload" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="application" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="settings" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="myAccount" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -68,7 +68,7 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="vacancy" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="CV_Upload" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="application" min="-2" pref="20" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="settings" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
@@ -158,7 +158,7 @@
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JLabel" name="CV_Upload">
+        <Component class="javax.swing.JLabel" name="application">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="99" green="33" red="0" type="rgb"/>

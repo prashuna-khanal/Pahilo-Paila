@@ -10,10 +10,10 @@ package pahilopaila.view;
  *
  * @author LENOVO
  */
-public class Dashboard_JobSeeker_Settings extends javax.swing.JFrame {
+public class Dashboard_JobSeeker_CV_Upload extends javax.swing.JFrame {
 
     /** Creates new form Dashboard_JobSeekers */
-    public Dashboard_JobSeeker_Settings() {
+    public Dashboard_JobSeeker_CV_Upload() {
         initComponents();
     }
 
@@ -31,7 +31,7 @@ public class Dashboard_JobSeeker_Settings extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         dashboard = new javax.swing.JLabel();
         vacancy = new javax.swing.JLabel();
-        CV_Upload = new javax.swing.JLabel();
+        application = new javax.swing.JLabel();
         settings = new javax.swing.JLabel();
         myAccount = new javax.swing.JLabel();
         signOut = new javax.swing.JLabel();
@@ -81,11 +81,11 @@ public class Dashboard_JobSeeker_Settings extends javax.swing.JFrame {
         vacancy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/vacancy.png"))); // NOI18N
         vacancy.setText("Vacancy");
 
-        CV_Upload.setBackground(new java.awt.Color(0, 51, 153));
-        CV_Upload.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        CV_Upload.setForeground(new java.awt.Color(102, 102, 102));
-        CV_Upload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/application.png"))); // NOI18N
-        CV_Upload.setText("CV Upload");
+        application.setBackground(new java.awt.Color(0, 51, 153));
+        application.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        application.setForeground(new java.awt.Color(102, 102, 102));
+        application.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/application.png"))); // NOI18N
+        application.setText("CV Upload");
 
         settings.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         settings.setForeground(new java.awt.Color(102, 102, 102));
@@ -113,7 +113,7 @@ public class Dashboard_JobSeeker_Settings extends javax.swing.JFrame {
                     .addComponent(signOut)
                     .addComponent(vacancy, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(dashboard)
-                    .addComponent(CV_Upload)
+                    .addComponent(application)
                     .addComponent(settings)
                     .addComponent(myAccount))
                 .addContainerGap(30, Short.MAX_VALUE))
@@ -128,7 +128,7 @@ public class Dashboard_JobSeeker_Settings extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(vacancy)
                 .addGap(18, 18, 18)
-                .addComponent(CV_Upload, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(application, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(settings)
                 .addGap(93, 93, 93)
@@ -222,8 +222,8 @@ public class Dashboard_JobSeeker_Settings extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JLabel CV_Upload;
     private javax.swing.JTextField Searchfield;
+    public javax.swing.JLabel application;
     public javax.swing.JLabel dashboard;
     private javax.swing.JLabel email;
     private javax.swing.JPanel featurePanel;
