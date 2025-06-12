@@ -1,11 +1,16 @@
 package pahilopaila.Controller; // Matches pahilopaila/controller directory
 
 import pahilopaila.view.Dashboard_Recruiters;
+
+// Added for LayoutStyle.ComponentPlacement
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.LayoutStyle; // Added for LayoutStyle.ComponentPlacement
 
+import javax.swing.table.DefaultTableModel;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 /**
  * Controller for the Dashboard_Recruiters view, handling user interactions and navigation. Function Methods added to write codes.
  */
@@ -165,11 +170,72 @@ public class Dashboard_RecruitersController {
         System.out.println("Navigating to Vacancy");
         JPanel vacancyPanel = new JPanel();
         vacancyPanel.setBackground(new java.awt.Color(245, 245, 245));
-        vacancyPanel.setLayout(new java.awt.BorderLayout());
+        vacancyPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Title
         JLabel title = new JLabel("Manage Vacancies");
         title.setFont(new java.awt.Font("Segoe UI", 1, 18));
         title.setHorizontalAlignment(SwingConstants.CENTER);
-        vacancyPanel.add(title, java.awt.BorderLayout.NORTH);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        vacancyPanel.add(title, gbc);
+
+        // NEW: Add Vacancy Button
+        JButton addVacancyButton = new JButton("Add New Vacancy");
+        addVacancyButton.setForeground(new java.awt.Color(0, 0, 102));
+        addVacancyButton.addActionListener(e -> handleAddVacancy());
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        vacancyPanel.add(addVacancyButton, gbc);
+
+        // NEW: Search Field and Button
+        JTextField vacancySearchField = new JTextField(20);
+        JButton searchVacancyButton = new JButton("Search Vacancies");
+        searchVacancyButton.addActionListener(e -> handleVacancySearch(vacancySearchField.getText()));
+        JPanel searchPanel = new JPanel();
+        searchPanel.add(vacancySearchField);
+        searchPanel.add(searchVacancyButton);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        vacancyPanel.add(searchPanel, gbc);
+
+        // NEW: Vacancy Table
+        String[] columns = {"ID", "Title", "Department", "Status"};
+        DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
+        // Sample data (replace with actual data source in production)
+        Object[][] sampleData = {
+            {1, "Software Engineer", "Engineering", "Open"},
+            {2, "Project Manager", "Management", "Closed"},
+            {3, "Data Analyst", "Analytics", "Open"}
+        };
+        for (Object[] row : sampleData) {
+            tableModel.addRow(row);
+        }
+        JTable vacancyTable = new JTable(tableModel);
+        JScrollPane tableScrollPane = new JScrollPane(vacancyTable);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        vacancyPanel.add(tableScrollPane, gbc);
+
+        // NEW: Filter ComboBox
+        String[] filterOptions = {"All", "Open", "Closed"};
+        JComboBox<String> statusFilter = new JComboBox<>(filterOptions);
+        statusFilter.addActionListener(e -> handleVacancyFilter((String) statusFilter.getSelectedItem()));
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0.0;
+        vacancyPanel.add(statusFilter, gbc);
+
         updateContentPanel(vacancyPanel);
     }
 
@@ -222,6 +288,23 @@ public class Dashboard_RecruitersController {
     public void handleFilter() {
         System.out.println("Filter button clicked");
         JOptionPane.showMessageDialog(view, "Filter clicked! Implement filter options.");
+    }
+    // NEW: Handler for adding a new vacancy
+    public void handleAddVacancy() {
+        System.out.println("Add New Vacancy button clicked");
+        JOptionPane.showMessageDialog(view, "Add New Vacancy clicked! Implement form to add vacancy.");
+    }
+
+    // NEW: Handler for vacancy search
+    public void handleVacancySearch(String query) {
+        System.out.println("Vacancy search with query: " + query);
+        JOptionPane.showMessageDialog(view, "Searching vacancies for: " + query);
+    }
+
+    // NEW: Handler for vacancy filter
+    public void handleVacancyFilter(String status) {
+        System.out.println("Filtering vacancies by status: " + status);
+        JOptionPane.showMessageDialog(view, "Filtering by status: " + status);
     }
 
     // Internal utility method remains private
