@@ -3,21 +3,22 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package pahilopaila;
-import pahilopaila.Controller.registrationController;
-import pahilopaila.view.RegistrationEmployee;
+import pahilopaila.Controller.ForgetPasswordController;
+import pahilopaila.view.forgotpassview;
 
 /**
  *
  * @author LENOVO
  */
 public class PahiloPaila {
-
+    
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        RegistrationEmployee view = new RegistrationEmployee();
-        registrationController con1 = new  registrationController(view);
+        forgotpassview view = new forgotpassview();
+        ForgetPasswordController con1 = new  ForgetPasswordController(view);
         con1.open();
        
     }
