@@ -5,18 +5,29 @@
 package pahilopaila.view;
 
 import java.awt.Color;
+import java.awt.Graphics; // Import for Graphics
+import java.awt.Image;    // Import for Image
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JPanel;      // Ensure JPanel is imported
+import javax.swing.ImageIcon;   // Ensure ImageIcon is imported
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 /**
  *
  * @author Acer
  */
-public class Registration extends javax.swing.JFrame {
+public class LoginPageview extends javax.swing.JFrame {
 
     /**
      * Creates new form Registration
      */
-    public Registration() {
+    public LoginPageview() {
         initComponents();
+        setupPlaceholderLogic();
     }
 
     /**
@@ -28,169 +39,110 @@ public class Registration extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        welcome = new javax.swing.JLabel();
-        message = new javax.swing.JLabel();
-        companyName = new javax.swing.JTextField();
-        mail = new javax.swing.JTextField();
-        registerButton = new javax.swing.JButton();
-        forJobsSeekrs = new javax.swing.JLabel();
-        forEmployeers = new javax.swing.JLabel();
-        logo = new javax.swing.JLabel();
-        password = new javax.swing.JPasswordField();
-        confirmPassword = new javax.swing.JPasswordField();
-        icon1 = new javax.swing.JLabel();
-        icon2 = new javax.swing.JLabel();
-        icon3 = new javax.swing.JLabel();
-        background = new javax.swing.JLabel();
+        // Component declarations (no changes here, NetBeans generates these)
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        emailField = new javax.swing.JTextField();
+        loginButton = new javax.swing.JButton();
+        forgotPasswordLabel = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel(); // This is your logo, keep it
+        passwordField = new javax.swing.JPasswordField();
+        newToPahiloPailaLabel = new javax.swing.JLabel();
+        Email = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+
+        // Initialize jPanel1 as a custom JPanel that paints the background image
+        // This must come before other components are added to it.
+        jPanel1 = new javax.swing.JPanel() {
+            private Image backgroundImage;
+            { // Initializer block to load the image once when jPanel1 is created
+                try {
+                    // Load the image resource
+                    backgroundImage = new ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg")).getImage();
+                } catch (Exception e) {
+                    System.err.println("Error loading background image for jPanel1: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g); // Call super.paintComponent for default JPanel painting
+                if (backgroundImage != null) {
+                    // Draw the image scaled to the panel's current size
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // The JFrame's content pane still uses AbsoluteLayout to place jPanel1
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        welcome.setFont(new java.awt.Font("Segoe UI", 0, 21)); // NOI18N
-        welcome.setText("Welcome to PahiloPaila");
-        getContentPane().add(welcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
+        // Set the layout for jPanel1 itself, as all other components will be added to it
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        message.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        message.setText("Connect with qualified Candidates across Nepal.");
-        getContentPane().add(message, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 100, 310, -1));
+        // Add jPanel1 (your background panel) to the JFrame's content pane FIRST
+        // It covers the entire frame
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
 
-        companyName.setForeground(new java.awt.Color(125, 125, 186));
-        companyName.setText("Company Name");
-        companyName.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                companyNameFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                companyNameFocusLost(evt);
-            }
-        });
-        companyName.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                companyNameActionPerformed(evt);
-            }
-        });
-        getContentPane().add(companyName, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 150, 220, 30));
+        // NOW, add ALL other UI elements to jPanel1, NOT getContentPane()
+        // The AbsoluteConstraints remain the same as they are relative to jPanel1's top-left (0,0)
 
-        mail.setForeground(new java.awt.Color(125, 125, 186));
-        mail.setText("E-mail");
-        mail.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                mailFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                mailFocusLost(evt);
-            }
-        });
-        mail.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mailActionPerformed(evt);
-            }
-        });
-        getContentPane().add(mail, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 190, 220, 30));
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 21)); // NOI18N
+        jLabel1.setText("Welcome to PahiloPaila");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
 
-        registerButton.setBackground(new java.awt.Color(0, 0, 102));
-        registerButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        registerButton.setForeground(new java.awt.Color(255, 255, 255));
-        registerButton.setText("Register");
-        registerButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                registerButtonActionPerformed(evt);
-            }
-        });
-        getContentPane().add(registerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 320, 110, 30));
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel4.setText("Nepal's gateways to job. Step in. Stand out.");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 100, -1, -1));
 
-        forJobsSeekrs.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        forJobsSeekrs.setForeground(new java.awt.Color(0, 0, 102));
-        forJobsSeekrs.setText("For Job Seekers");
-        getContentPane().add(forJobsSeekrs, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 20, -1, -1));
+        emailField.setForeground(new java.awt.Color(153, 153, 153));
+        emailField.setText("E-mail");
+        jPanel1.add(emailField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 170, 220, -1));
 
-        forEmployeers.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        forEmployeers.setForeground(new java.awt.Color(0, 0, 102));
-        forEmployeers.setText("For Employeers");
-        getContentPane().add(forEmployeers, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 20, -1, -1));
+        loginButton.setBackground(new java.awt.Color(51, 51, 255));
+        loginButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        loginButton.setForeground(new java.awt.Color(255, 255, 255));
+        loginButton.setText("Login");
+        jPanel1.add(loginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 250, 100, 30));
 
-        logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
-        getContentPane().add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 50));
+        forgotPasswordLabel.setBackground(new java.awt.Color(0, 51, 255));
+        forgotPasswordLabel.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        forgotPasswordLabel.setText("Forgot password?");
+        jPanel1.add(forgotPasswordLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 280, 130, -1));
 
-        password.setText("jPasswordField2");
-        getContentPane().add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 270, 220, 30));
+        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
+        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 50));
 
-        confirmPassword.setText("jPasswordField2");
-        getContentPane().add(confirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 230, 220, 30));
+        jPanel1.add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 210, 220, -1));
 
-        icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"))); // NOI18N
-        getContentPane().add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, -1, -1));
+        newToPahiloPailaLabel.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        newToPahiloPailaLabel.setText("New to PahiloPaila? ");
+        jPanel1.add(newToPahiloPailaLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 10, 150, 20));
 
-        icon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/email_1.png"))); // NOI18N
-        getContentPane().add(icon2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 190, -1, -1));
+        Email.setText("Email:");
+        jPanel1.add(Email, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 170, -1, -1));
 
-        icon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"))); // NOI18N
-        getContentPane().add(icon3, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 230, -1, -1));
+        jLabel2.setText("Password:");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 210, -1, -1));
 
-        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
-        background.setText("jLabel1");
-        getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(-2, -4, 850, 460));
+        // Removed the previous jLabel13 that was acting as a background,
+        // as jPanel1 now handles the background image.
+        // jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        // getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mailFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailFocusGained
-        // TODO add your handling code here:
-        if(mail.getText().equals("E-mail"))
-        {
-            mail.setText("");
-            mail.setForeground(new Color(153,153,153));
-        }
-    }//GEN-LAST:event_mailFocusGained
-
-    private void mailFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailFocusLost
-        // TODO add your handling code here:
-        if(mail.getText().equals(""))
-        {
-            mail.setText("E-mail");
-            mail.setForeground(new Color(153,153,153));
-        }
-    }//GEN-LAST:event_mailFocusLost
-
-    private void mailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mailActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mailActionPerformed
-
-    private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_registerButtonActionPerformed
-
-    private void companyNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_companyNameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_companyNameActionPerformed
-
-    private void companyNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_companyNameFocusLost
-        // TODO add your handling code here:
-        if(companyName.getText().equals(""))
-        {
-            companyName.setText("Name");
-            companyName.setForeground(new Color(153,153,153));
-        }
-    }//GEN-LAST:event_companyNameFocusLost
-
-    private void companyNameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_companyNameFocusGained
-        // TODO add your handling code here:
-
-        if(companyName.getText().equals("Name"))
-        {
-            companyName.setText("");
-            companyName.setForeground(new Color(153,153,153));
-        }
-    }//GEN-LAST:event_companyNameFocusGained
-
     /**
-     * @param args the command line arguments
+     * @param args the command arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -200,38 +152,80 @@ public class Registration extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Registration.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginPageview.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Registration.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginPageview.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Registration.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginPageview.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Registration.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginPageview.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Registration().setVisible(true);
+                new LoginPageview().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel background;
-    private javax.swing.JTextField companyName;
-    private javax.swing.JPasswordField confirmPassword;
-    private javax.swing.JLabel forEmployeers;
-    private javax.swing.JLabel forJobsSeekrs;
-    private javax.swing.JLabel icon1;
-    private javax.swing.JLabel icon2;
-    private javax.swing.JLabel icon3;
-    private javax.swing.JLabel logo;
-    private javax.swing.JTextField mail;
-    private javax.swing.JLabel message;
-    private javax.swing.JPasswordField password;
-    private javax.swing.JButton registerButton;
-    private javax.swing.JLabel welcome;
+    private javax.swing.JLabel Email;
+    private javax.swing.JTextField emailField;
+    private javax.swing.JLabel forgotPasswordLabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel12;
+    // Removed jLabel13 as jPanel1 now handles the background
+    private javax.swing.JPanel jPanel1; // Ensure this is declared as JPanel
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JButton loginButton;
+    private javax.swing.JLabel newToPahiloPailaLabel;
+    private javax.swing.JPasswordField passwordField;
     // End of variables declaration//GEN-END:variables
+
+    // --- Public Getters for Controller to use ---
+    public String getEnteredEmail() {
+        return emailField.getText();
+    }
+
+    public char[] getEnteredPassword() {
+        return passwordField.getPassword();
+    }
+
+    public JButton getLoginButton() {
+        return loginButton;
+    }
+
+    public JLabel getNewToPahiloPailaLabel() {
+        return newToPahiloPailaLabel;
+    }
+
+    public JLabel getForgotPasswordLabel() {
+        return forgotPasswordLabel;
+    }
+
+    // --- Method to set up placeholder behavior ---
+    private void setupPlaceholderLogic() {
+        // Placeholder for emailField
+        emailField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (emailField.getText().equals("E-mail")) {
+                    emailField.setText("");
+                    emailField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (emailField.getText().isEmpty()) {
+                    emailField.setText("E-mail");
+                    emailField.setForeground(new Color(153, 153, 153));
+                }
+            }
+        });
+    }
 }

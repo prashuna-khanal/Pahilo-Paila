@@ -114,11 +114,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
 
         logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
         getContentPane().add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 50));
-
-        confirmPasswordField.setText("jPasswordField1");
         getContentPane().add(confirmPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 270, 220, 30));
-
-        passwordField.setText("jPasswordField1");
         getContentPane().add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 230, 220, 30));
 
         icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"))); // NOI18N

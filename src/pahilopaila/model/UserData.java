@@ -4,53 +4,54 @@
  */
 package pahilopaila.model;
 
-import java.sql.Timestamp; // Import for Timestamp
+import java.sql.Timestamp;
 
 /**
  *
  * @author Mibish
  */
 public class UserData {
-    private int id; // Changed to int to match database
+    private int id;
     private String name;
     private String email;
-    private String passwordHash; // Renamed to reflect hashed password
-    private String userRole; // New field for user role (Job Seeker, Employer)
-    private String otp; // Optional: For OTP code
-    private Timestamp otpGeneratedAt; // Optional: For OTP generation time
-    private Timestamp otpExpiresAt; // Optional: For OTP expiration time
+    private String password; 
+    private String userRole;
+    private String otp;
+    // private Timestamp otpGeneratedAt; // REMOVED: No corresponding column in DB
+    private Timestamp otpExpiresAt;
 
     // Constructor for new registrations (without ID, OTP)
-    public UserData(String name, String email, String passwordHash, String userRole) {
+    public UserData(String name, String email, String password, String userRole) {
         this.name = name;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.userRole = userRole;
     }
 
     // Constructor for retrieving from database (with ID)
-    public UserData(int id, String name, String email, String passwordHash, String userRole) {
+    public UserData(int id, String name, String email, String password, String userRole) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.userRole = userRole;
     }
     
     // Optional: Constructor including OTP fields for comprehensive object creation
-    public UserData(int id, String name, String email, String passwordHash, String userRole, String otp, Timestamp otpGeneratedAt, Timestamp otpExpiresAt) {
+    // Adjusted constructor to remove otpGeneratedAt
+    public UserData(int id, String name, String email, String password, String userRole, String otp, Timestamp otpExpiresAt) { 
         this.id = id;
         this.name = name;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.userRole = userRole;
         this.otp = otp;
-        this.otpGeneratedAt = otpGeneratedAt;
+        // this.otpGeneratedAt = otpGeneratedAt; // REMOVED
         this.otpExpiresAt = otpExpiresAt;
     }
 
     // Setters
-    public void setId(int id) { // Changed parameter type to int
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -62,29 +63,29 @@ public class UserData {
         this.email = email;
     }
 
-    public void setPasswordHash(String passwordHash) { // Renamed setter
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public void setUserRole(String userRole) { // Setter for userRole
+    public void setUserRole(String userRole) {
         this.userRole = userRole;
     }
     
-    public void setOtp(String otp) { // Setter for OTP
+    public void setOtp(String otp) {
         this.otp = otp;
     }
 
-    public void setOtpGeneratedAt(Timestamp otpGeneratedAt) { // Setter for OTP generated time
-        this.otpGeneratedAt = otpGeneratedAt;
-    }
+    // public void setOtpGeneratedAt(Timestamp otpGeneratedAt) { // REMOVED
+    //     this.otpGeneratedAt = otpGeneratedAt;
+    // }
 
-    public void setOtpExpiresAt(Timestamp otpExpiresAt) { // Setter for OTP expiration time
+    public void setOtpExpiresAt(Timestamp otpExpiresAt) {
         this.otpExpiresAt = otpExpiresAt;
     }
 
 
     // Getters
-    public int getId() { // Changed return type to int
+    public int getId() {
         return this.id;
     }
 
@@ -96,23 +97,23 @@ public class UserData {
         return this.email;
     }
 
-    public String getPasswordHash() { // Renamed getter
-        return this.passwordHash;
+    public String getPassword() {
+        return this.password;
     }
 
-    public String getUserRole() { // Getter for userRole
+    public String getUserRole() {
         return this.userRole;
     }
     
-    public String getOtp() { // Getter for OTP
+    public String getOtp() {
         return this.otp;
     }
 
-    public Timestamp getOtpGeneratedAt() { // Getter for OTP generated time
-        return this.otpGeneratedAt;
-    }
+    // public Timestamp getOtpGeneratedAt() { // REMOVED
+    //     return this.otpGeneratedAt;
+    // }
 
-    public Timestamp getOtpExpiresAt() { // Getter for OTP expiration time
+    public Timestamp getOtpExpiresAt() {
         return this.otpExpiresAt;
     }
 }
