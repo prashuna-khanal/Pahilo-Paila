@@ -1,21 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package pahilopaila.Controller;
 
-/**
- *
- * @author abi
- */
-
-
-
-
-
-
 import pahilopaila.view.forgotpassview; // Import your JForm View class
-
+import pahilopaila.view.LoginPageview; // Import LoginPageview
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -133,7 +119,7 @@ public class ForgetPasswordController implements ActionListener,controller {
 
         new Thread(() -> {
             boolean otpVerified = userVerificationController.verifyOTP(userEmailForReset, otpEntered);
-            
+
             javax.swing.SwingUtilities.invokeLater(() -> {
                 if (otpVerified) {
                     String hashedNewPassword = userVerificationController.hashPassword(newPassword);
@@ -146,6 +132,13 @@ public class ForgetPasswordController implements ActionListener,controller {
                         setOtpFieldsEnabled(false);
                         view.getTxtEmail().setEnabled(true);
                         view.getBtnSendOtp().setEnabled(true);
+
+                        // --- Navigate back to the login page ---
+                        close(); // Close the forgot password view
+                        LoginPageview loginView = new LoginPageview();
+                        LoginController loginController = new LoginController(loginView);
+                        loginController.open();
+                        // ----------------------------------------
                     } else {
                         displayMessage("Failed to update password. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                         view.getBtnResetPassword().setEnabled(true);

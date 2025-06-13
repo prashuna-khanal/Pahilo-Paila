@@ -9,22 +9,29 @@ package pahilopaila.model;
  * @author Mibish
  */
 public class LoginRequest {
-    private String name;
+    private String email; // Renamed 'name' to 'email' for clarity and consistency
     private String password;
-    public LoginRequest(String email, String password){
-        this.name=name;
-        this.password=password;
+
+    public LoginRequest(String email, String password) {
+        this.email = email; // Correctly assign the passed email to the 'email' field
+        this.password = password;
     }
-    public void setName(String email){
-        this.name=name;
+
+    // Setters
+    public void setEmail(String email) { // Renamed setter to match 'email' field
+        this.email = email;
     }
-    public void setPassword(String password){
-        this.password=password;
+
+    public void setPassword(String password) {
+        this.password = password;
     }
-    public String getName(){
-        return name;
+
+    // Getters
+    public String getEmail() { // Renamed getter to match 'email' field
+        return email;
     }
-    public String getPassword(){
+
+    public String getPassword() {
         return password;
     }
 }

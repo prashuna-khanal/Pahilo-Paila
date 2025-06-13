@@ -32,9 +32,7 @@ public class DashboardJController implements controller {
        this.Applic = rs.getView(0);
       
        this.Vacancy= rs.getView(1);
-     new ButtonController(view.dashlbl,view,view);
-     new ButtonController(view.applicationslbl,view,Applic);
-        new ButtonController(view.vacanylbl,view,Vacancy);
+  
        
        
     }
