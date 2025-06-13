@@ -1,4 +1,5 @@
-/build/
+build/
 # add vscode extensions
 .vscode/extensions/
 /nbproject/private/
+/dist/

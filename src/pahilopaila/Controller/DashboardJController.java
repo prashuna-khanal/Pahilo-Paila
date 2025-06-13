@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Pahileo.Controller;
+package pahilopaila.Controller;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,31 +15,34 @@ import pahilopaila.view.Dashboard_JobSeeker_Vacancy;
  *
  * @author abi
  */
-public class DashboardJController {
+public class DashboardJController implements controller {
     
-    private final JFrame view;
-    private final JFrame Applic;
-    private final JFrame Vacancy;
+   
+    final JFrame Applic;
+    final JFrame Vacancy;
+    private final Dashboard_JobSeekers view;
+    
     
     public DashboardJController(Dashboard_JobSeekers view){
-       CreateViews cv = new CreateViews(Dashboard_JobSeeker_Applications.class,Dashboard_JobSeeker_Vacancy.class);
        this.view = view;
-       this.Applic = cv.getView(0);
-       this.Vacancy= cv.getView(1);
-       ButtonController dash = new ButtonController(view.dashboard,view,view);
-       ButtonController applic = new ButtonController(view.appliccation,view,Applic);
-       ButtonController vaca = new ButtonController(view.vacancy,view,Vacancy);
+        
+      
+       CreateViews rs = new CreateViews(Dashboard_JobSeeker_Applications.class,Dashboard_JobSeeker_Vacancy.class);
+      
+       this.Applic = rs.getView(0);
+      
+       this.Vacancy= rs.getView(1);
+  
        
        
     }
     
+     
     public void open(){
     view.setVisible(true);
     }
     public void close(){
-    
     view.dispose();
-        
-   }
+    }
     
 }
