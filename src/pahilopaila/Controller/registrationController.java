@@ -1,30 +1,25 @@
 package pahilopaila.Controller;
 
 import pahilopaila.view.RegistrationEmployee;
+import pahilopaila.view.LoginPageview; // Import LoginPageview
 import pahilopaila.Dao.UserDao;
-import pahilopaila.model.UserData; // Or pahilopaila.model.UserData
+import pahilopaila.model.UserData;
 
-import javax.swing.*; // Import JOptionPane
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-// Removed: import java.awt.Color; // Not needed for JOptionPane colors
 import java.util.Arrays;
 
-/**
- *
- * @author abi
- */
 public class registrationController implements controller {
 
     private final RegistrationEmployee view;
     private final UserDao userDao;
 
-    // Constructor: Now only takes the view (no messageLabel or fields passed here)
     public registrationController(RegistrationEmployee view) {
         this.view = view;
-        this.userDao = new UserDao(); // Initialize your UserDao
-        
-         this.view.getRegisterEmployerButton().addActionListener(getRegisterEmployerActionListener());
+        this.userDao = new UserDao();
+
+        this.view.getRegisterEmployerButton().addActionListener(getRegisterEmployerActionListener());
         this.view.getRegisterJobSeekerButton().addActionListener(getRegisterJobSeekerActionListener());
     }
 
@@ -37,8 +32,6 @@ public class registrationController implements controller {
     public void close() {
         view.dispose();
     }
-
-    // --- Action Listeners for your Registration Buttons ---
 
     public ActionListener getRegisterEmployerActionListener() {
         return new ActionListener() {
@@ -58,7 +51,6 @@ public class registrationController implements controller {
         };
     }
 
-    // --- Core Registration Logic ---
     private void handleRegistration(String userRole) {
         String name = view.getEnteredName().trim();
         String email = view.getEnteredEmail().trim();
@@ -94,17 +86,22 @@ public class registrationController implements controller {
         }
 
         // --- PASSWORD HASHING (INSECURE: password.hashCode()) ---
-        // Converts the password's hash code to a String.
-        // **WARNING: This is NOT cryptographically secure and should only be used for temporary testing.**
         String hashedPassword = String.valueOf(password.hashCode());
 
-        // Create a User object (or UserData) with the HASHED password
+        // Create a UserData object with the HASHED password
         UserData newUser = new UserData(name, email, hashedPassword, userRole);
 
         if (userDao.register(newUser)) {
             JOptionPane.showMessageDialog(view, "Registration successful as " + userRole + "!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            // Optionally clear fields in the view after success (you'd need to add a method to RegistrationEmployee)
-            // view.clearRegistrationFields(); // Example
+            
+            // --- Navigate to Login Page after successful registration ---
+            close(); // Close the current registration view
+
+            LoginPageview loginView = new LoginPageview(); // Create a new instance of the login view
+            LoginController loginController = new LoginController(loginView); // Create a new login controller
+            loginController.open(); // Open the login page
+            // -----------------------------------------------------------
+
         } else {
             JOptionPane.showMessageDialog(view, "Registration failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
         }
