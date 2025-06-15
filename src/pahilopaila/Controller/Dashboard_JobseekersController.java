@@ -1,11 +1,13 @@
 package pahilopaila.Controller;
 
+import com.toedter.calendar.JDateChooser;
 import pahilopaila.view.Dashboard_JobSeekers;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.LayoutStyle;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
@@ -165,16 +167,254 @@ public class Dashboard_JobseekersController {
     }
 
     public void showCVUploadPanel() {
-        System.out.println("Navigating to CV Upload");
-        JPanel cvPanel = new JPanel();
-        cvPanel.setBackground(new java.awt.Color(245, 245, 245));
-        cvPanel.setLayout(new java.awt.BorderLayout());
-        JLabel title = new JLabel("Upload Your CV");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        cvPanel.add(title, java.awt.BorderLayout.NORTH);
-        updateContentPanel(cvPanel);
-    }
+    System.out.println("Navigating to CV Upload");
+    JPanel mainPanel = new JPanel();
+    mainPanel.setBackground(new Color(245, 245, 245));
+    mainPanel.setLayout(new BorderLayout(15, 15));
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+    // Header panel
+    JPanel headerPanel = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            GradientPaint gp = new GradientPaint(
+                0, 0, new Color(0, 4, 80),
+                0, getHeight(), new Color(0, 20, 120)
+            );
+            g2d.setPaint(gp);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+        }
+    };
+    headerPanel.setPreferredSize(new Dimension(680, 70));
+    headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 20));
+
+    JLabel headerLabel = new JLabel("CV Upload");
+    headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+    headerLabel.setForeground(Color.WHITE);
+    headerPanel.add(headerLabel);
+
+    // Form panel
+    JPanel formPanel = new JPanel();
+    formPanel.setBackground(new Color(252, 252, 252));
+    formPanel.setLayout(new GridBagLayout());
+    formPanel.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createMatteBorder(0, 0, 2, 2, new Color(180, 180, 180, 100)),
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(20, 20, 20, 20),
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true)
+        )
+    ));
+
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(10, 10, 10, 10);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.anchor = GridBagConstraints.WEST;
+
+    // First Name
+    JLabel firstNameLabel = new JLabel("First Name:");
+    firstNameLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    formPanel.add(firstNameLabel, gbc);
+
+    JTextField firstNameField = new JTextField(15);
+    firstNameField.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    firstNameField.setBackground(new Color(245, 245, 245));
+    firstNameField.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+        BorderFactory.createEmptyBorder(4, 8, 4, 8)
+    ));
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    formPanel.add(firstNameField, gbc);
+
+    // Last Name
+    JLabel lastNameLabel = new JLabel("Last Name:");
+    lastNameLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+    gbc.gridx = 2;
+    gbc.gridy = 0;
+    formPanel.add(lastNameLabel, gbc);
+
+    JTextField lastNameField = new JTextField(15);
+    lastNameField.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    lastNameField.setBackground(new Color(245, 245, 245));
+    lastNameField.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+        BorderFactory.createEmptyBorder(4, 8, 4, 8)
+    ));
+    gbc.gridx = 3;
+    gbc.gridy = 0;
+    formPanel.add(lastNameField, gbc);
+
+    // Date of Birth
+    JLabel dobLabel = new JLabel("Date of Birth:");
+    dobLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    formPanel.add(dobLabel, gbc);
+
+    JDateChooser dateChooser = new JDateChooser();
+    dateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    dateChooser.setBackground(new Color(245, 245, 245));
+    dateChooser.setPreferredSize(new Dimension(150, 25));
+    gbc.gridx = 1;
+    gbc.gridy = 1;
+    formPanel.add(dateChooser, gbc);
+
+    // Contact
+    JLabel contactLabel = new JLabel("Contact:");
+    contactLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+    gbc.gridx = 2;
+    gbc.gridy = 1;
+    formPanel.add(contactLabel, gbc);
+
+    JTextField contactField = new JTextField(15);
+    contactField.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    contactField.setBackground(new Color(245, 245, 245));
+    contactField.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+        BorderFactory.createEmptyBorder(4, 8, 4, 8)
+    ));
+    gbc.gridx = 3;
+    gbc.gridy = 1;
+    formPanel.add(contactField, gbc);
+
+    // Education
+    JLabel educationLabel = new JLabel("Education:");
+    educationLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+    gbc.gridx = 0;
+    gbc.gridy = 2;
+    formPanel.add(educationLabel, gbc);
+
+    JTextField educationField = new JTextField(15);
+    educationField.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    educationField.setBackground(new Color(245, 245, 245));
+    educationField.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+        BorderFactory.createEmptyBorder(4, 8, 4, 8)
+    ));
+    gbc.gridx = 1;
+    gbc.gridy = 2;
+    formPanel.add(educationField, gbc);
+
+    // Skills
+    JLabel skillsLabel = new JLabel("Skills:");
+    skillsLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+    gbc.gridx = 0;
+    gbc.gridy = 3;
+    formPanel.add(skillsLabel, gbc);
+
+    JTextField skillsField = new JTextField(15);
+    skillsField.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    skillsField.setBackground(new Color(245, 245, 245));
+    skillsField.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+        BorderFactory.createEmptyBorder(4, 8, 4, 8)
+    ));
+    gbc.gridx = 1;
+    gbc.gridy = 3;
+    formPanel.add(skillsField, gbc);
+
+    // Experience
+    JLabel experienceLabel = new JLabel("Experience:");
+    experienceLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+    gbc.gridx = 2;
+    gbc.gridy = 2;
+    formPanel.add(experienceLabel, gbc);
+
+    JTextArea experienceArea = new JTextArea(4, 15);
+    experienceArea.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    experienceArea.setBackground(new Color(245, 245, 245));
+    experienceArea.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+        BorderFactory.createEmptyBorder(4, 8, 4, 8)
+    ));
+    experienceArea.setLineWrap(true);
+    experienceArea.setWrapStyleWord(true);
+    JScrollPane experienceScroll = new JScrollPane(experienceArea);
+    experienceScroll.setPreferredSize(new Dimension(150, 80));
+    gbc.gridx = 3;
+    gbc.gridy = 2;
+    gbc.gridheight = 2;
+    formPanel.add(experienceScroll, gbc);
+
+    // Submit Button
+    JButton submitButton = new JButton("Submit") {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            if (getModel().isRollover()) {
+                g2d.setColor(new Color(0, 20, 120));
+            } else {
+                g2d.setColor(new Color(0, 4, 80));
+            }
+            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+            super.paintComponent(g);
+        }
+    };
+    submitButton.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+    submitButton.setForeground(Color.WHITE);
+    submitButton.setContentAreaFilled(false);
+    submitButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
+    submitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    submitButton.setFocusPainted(false);
+    gbc.gridx = 1;
+    gbc.gridy = 4;
+    gbc.gridwidth = 2;
+    gbc.gridheight = 1;
+    gbc.anchor = GridBagConstraints.CENTER;
+    formPanel.add(submitButton, gbc);
+
+    // Submit button action
+    submitButton.addActionListener(e -> {
+        String firstName = firstNameField.getText();
+        String lastName = lastNameField.getText();
+        Date dob = dateChooser.getDate();
+        String contact = contactField.getText();
+        String education = educationField.getText();
+        String skills = skillsField.getText();
+        String experience = experienceArea.getText();
+
+        // Basic validation
+        if (firstName.isEmpty() || lastName.isEmpty() || dob == null || contact.isEmpty() ||
+            education.isEmpty() || skills.isEmpty() || experience.isEmpty()) {
+            JOptionPane.showMessageDialog(view, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Format the date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dobString = sdf.format(dob);
+
+        // Display confirmation (replace with actual CV storage logic)
+        String cvDetails = String.format("CV Submitted!\nFirst Name: %s\nLast Name: %s\nDate of Birth: %s\nContact: %s\nEducation: %s\nSkills: %s\nExperience: %s",
+            firstName, lastName, dobString, contact, education, skills, experience);
+        JOptionPane.showMessageDialog(view, cvDetails);
+
+        // Optionally, reset fields
+        firstNameField.setText("");
+        lastNameField.setText("");
+        dateChooser.setDate(null);
+        contactField.setText("");
+        educationField.setText("");
+        skillsField.setText("");
+        experienceArea.setText("");
+    });
+
+    // Center the form
+    JPanel centerWrapper = new JPanel();
+    centerWrapper.setBackground(new Color(245, 245, 245));
+    centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+    centerWrapper.add(formPanel);
+
+    mainPanel.add(headerPanel, BorderLayout.NORTH);
+    mainPanel.add(centerWrapper, BorderLayout.CENTER);
+    updateContentPanel(mainPanel);
+}
 
     public void showSettingsPanel() {
         System.out.println("Navigating to Settings");
