@@ -237,14 +237,7 @@ public class UserVerificationController {
         return false;
     }
 
-    /**
-     * Updates the user's password in the database.
-     * This method is called after successful OTP verification or current password verification.
-     *
-     * @param email The user's email.
-     * @param newHashedPassword The new hashed password.
-     * @return true if the password was updated, false otherwise.
-     */
+    
     public boolean updatePassword(String email, String newHashedPassword) {
         Connection conn = null;
         PreparedStatement pstmt = null;
