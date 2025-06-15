@@ -70,7 +70,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
         featurePanel = new javax.swing.JPanel();
         logo = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -483,9 +482,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         jLabel18.setText("@ramkumar");
         getContentPane().add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 50, -1, -1));
 
-        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logo/ram.png"))); // NOI18N
-        getContentPane().add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 40, 60));
-
         featurePanel.setBackground(new java.awt.Color(255, 255, 255));
 
         logo.setBackground(new java.awt.Color(255, 255, 255));
@@ -672,7 +668,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
