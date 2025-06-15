@@ -39,128 +39,101 @@ public class LoginPageview extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        // Component declarations (no changes here, NetBeans generates these)
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         emailField = new javax.swing.JTextField();
         loginButton = new javax.swing.JButton();
         forgotPasswordLabel = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel(); // This is your logo, keep it
         passwordField = new javax.swing.JPasswordField();
         newToPahiloPailaLabel = new javax.swing.JLabel();
         Email = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        forJobSeekers = new javax.swing.JLabel();
-        forEmployeers1 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
+
+        // Initialize jPanel1 as a custom JPanel that paints the background image
+        // This must come before other components are added to it.
+        jPanel1 = new javax.swing.JPanel() {
+            private Image backgroundImage;
+            { // Initializer block to load the image once when jPanel1 is created
+                try {
+                    // Load the image resource
+                    backgroundImage = new ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg")).getImage();
+                } catch (Exception e) {
+                    System.err.println("Error loading background image for jPanel1: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g); // Call super.paintComponent for default JPanel painting
+                if (backgroundImage != null) {
+                    // Draw the image scaled to the panel's current size
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // The JFrame's content pane still uses AbsoluteLayout to place jPanel1
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        // Set the layout for jPanel1 itself, as all other components will be added to it
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        // Add jPanel1 (your background panel) to the JFrame's content pane FIRST
+        // It covers the entire frame
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
+
+        // NOW, add ALL other UI elements to jPanel1, NOT getContentPane()
+        // The AbsoluteConstraints remain the same as they are relative to jPanel1's top-left (0,0)
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 21)); // NOI18N
         jLabel1.setText("Welcome to PahiloPaila");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, -1, -1));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Nepal's gateways to job. Step in. Stand out.");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 130, -1, -1));
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 100, -1, -1));
 
         emailField.setForeground(new java.awt.Color(153, 153, 153));
         emailField.setText("E-mail");
-        emailField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                emailFieldFocusLost(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                emailFieldFocusLost(evt);
-            }
-            private void emailFieldFocusLost(FocusEvent evt) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'emailFieldFocusLost'");
-            }
-        });
-        emailField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionPerformed(evt);
-            }
-        });
-        getContentPane().add(emailField, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 170, 230, 30));
+        jPanel1.add(emailField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 170, 220, -1));
 
-        loginButton.setBackground(new java.awt.Color(0, 0, 102));
+        loginButton.setBackground(new java.awt.Color(51, 51, 255));
         loginButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
         loginButton.setForeground(new java.awt.Color(255, 255, 255));
         loginButton.setText("Login");
-        loginButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionPerformed(evt);
-            }
-        });
-        getContentPane().add(loginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 270, 100, 30));
+        jPanel1.add(loginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 250, 100, 30));
 
-        forgotPasswordLabel.setBackground(new java.awt.Color(0, 0, 102));
-        forgotPasswordLabel.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        forgotPasswordLabel.setForeground(new java.awt.Color(0, 0, 102));
+        forgotPasswordLabel.setBackground(new java.awt.Color(0, 51, 255));
+        forgotPasswordLabel.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         forgotPasswordLabel.setText("Forgot password?");
-        getContentPane().add(forgotPasswordLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 220, 130, -1));
+        jPanel1.add(forgotPasswordLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 280, 130, -1));
 
         jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
-        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 90, 50));
-        getContentPane().add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 220, 230, 30));
+        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 50));
 
-        newToPahiloPailaLabel.setBackground(new java.awt.Color(0, 0, 102));
-        newToPahiloPailaLabel.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        newToPahiloPailaLabel.setForeground(new java.awt.Color(0, 0, 102));
-        newToPahiloPailaLabel.setText("Create Account");
-        getContentPane().add(newToPahiloPailaLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 320, 150, 20));
+        jPanel1.add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 210, 220, -1));
 
-        Email.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"))); // NOI18N
-        getContentPane().add(Email, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 170, -1, -1));
+        newToPahiloPailaLabel.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        newToPahiloPailaLabel.setText("New to PahiloPaila? ");
+        jPanel1.add(newToPahiloPailaLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 10, 150, 20));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"))); // NOI18N
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 220, -1, -1));
+        Email.setText("Email:");
+        jPanel1.add(Email, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 170, -1, -1));
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("New to PahiloPaila?");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 320, 140, -1));
+        jLabel2.setText("Password:");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 210, -1, -1));
 
-        forJobSeekers.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        forJobSeekers.setForeground(new java.awt.Color(0, 0, 102));
-        forJobSeekers.setText("For Job Seekers");
-        forJobSeekers.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                forJobSeekersMouseClicked(evt);
-            }
-        });
-        getContentPane().add(forJobSeekers, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, -1, -1));
-
-        forEmployeers1.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        forEmployeers1.setForeground(new java.awt.Color(0, 0, 102));
-        forEmployeers1.setText("For Employeers");
-        forEmployeers1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                forEmployeers1MouseClicked(evt);
-            }
-        });
-        getContentPane().add(forEmployeers1, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 20, -1, -1));
-
-        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
-        getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
+        // Removed the previous jLabel13 that was acting as a background,
+        // as jPanel1 now handles the background image.
+        // jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        // getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void forJobSeekersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_forJobSeekersMouseClicked
-        // TODO add your handling code here:
-        jLabel4.setText("Nepal's gateways to job. Step in. Stand out.");
-        emailField.setText("E-mail");
-        
-    }//GEN-LAST:event_forJobSeekersMouseClicked
-
-    private void forEmployeers1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_forEmployeers1MouseClicked
-        // TODO add your handling code here:
-        jLabel4.setText("Connect with qualified Candidates across Nepal.");
-        emailField.setText("Recruiter's mail");
-        
-    }//GEN-LAST:event_forEmployeers1MouseClicked
 
     /**
      * @param args the command arguments
@@ -201,13 +174,11 @@ public class LoginPageview extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Email;
     private javax.swing.JTextField emailField;
-    private javax.swing.JLabel forEmployeers1;
-    private javax.swing.JLabel forJobSeekers;
     private javax.swing.JLabel forgotPasswordLabel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
+    // Removed jLabel13 as jPanel1 now handles the background
+    private javax.swing.JPanel jPanel1; // Ensure this is declared as JPanel
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JButton loginButton;

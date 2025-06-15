@@ -456,7 +456,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
 
         JLabel usernameIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"));
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
            
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             usernameIcon.setIcon(new javax.swing.ImageIcon(scaledImage));

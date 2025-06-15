@@ -49,7 +49,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         registerJobSeekerButton.setBackground(new java.awt.Color(0, 0, 102));
-        registerJobSeekerButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        registerJobSeekerButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
         registerJobSeekerButton.setForeground(new java.awt.Color(255, 255, 255));
         registerJobSeekerButton.setText("Register as Job Seeker");
         registerJobSeekerButton.addActionListener(new java.awt.event.ActionListener() {
@@ -57,17 +57,17 @@ public class RegistrationEmployee extends javax.swing.JFrame {
                 registerJobSeekerButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(registerJobSeekerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 310, 180, 40));
+        getContentPane().add(registerJobSeekerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 330, 210, 30));
 
         welcome.setFont(new java.awt.Font("Segoe UI", 0, 21)); // NOI18N
         welcome.setText("Welcome to PahiloPaila");
-        getContentPane().add(welcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 60, -1, -1));
+        getContentPane().add(welcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
 
         message.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         message.setText("Nepal's gateways to job. Step in. Stand out.");
-        getContentPane().add(message, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 100, -1, -1));
+        getContentPane().add(message, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 100, -1, -1));
 
-        nameField.setForeground(new java.awt.Color(204, 204, 204));
+        nameField.setForeground(new java.awt.Color(125, 125, 186));
         nameField.setText("Name/Company Name");
         nameField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -82,10 +82,10 @@ public class RegistrationEmployee extends javax.swing.JFrame {
                 nameFieldActionPerformed(evt);
             }
         });
-        getContentPane().add(nameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 140, 220, 30));
+        getContentPane().add(nameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 150, 220, 30));
 
         registerEmployerButton.setBackground(new java.awt.Color(0, 0, 102));
-        registerEmployerButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        registerEmployerButton.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
         registerEmployerButton.setForeground(new java.awt.Color(255, 255, 255));
         registerEmployerButton.setText("Register as Employer");
         registerEmployerButton.addActionListener(new java.awt.event.ActionListener() {
@@ -93,9 +93,9 @@ public class RegistrationEmployee extends javax.swing.JFrame {
                 registerEmployerButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(registerEmployerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 310, 170, 40));
+        getContentPane().add(registerEmployerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, 210, 30));
 
-        emailField.setForeground(new java.awt.Color(204, 204, 204));
+        emailField.setForeground(new java.awt.Color(125, 125, 186));
         emailField.setText("E-mail");
         emailField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -110,21 +110,21 @@ public class RegistrationEmployee extends javax.swing.JFrame {
                 emailFieldActionPerformed(evt);
             }
         });
-        getContentPane().add(emailField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 180, 220, 30));
+        getContentPane().add(emailField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 190, 220, 30));
 
         logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
-        getContentPane().add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 90, 50));
-        getContentPane().add(confirmPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 260, 220, 30));
-        getContentPane().add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 220, 220, 30));
+        getContentPane().add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 50));
+        getContentPane().add(confirmPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 270, 220, 30));
+        getContentPane().add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 230, 220, 30));
 
         icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"))); // NOI18N
-        getContentPane().add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 140, -1, -1));
+        getContentPane().add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 150, -1, -1));
 
         icon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/email_1.png"))); // NOI18N
-        getContentPane().add(icon2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 180, -1, -1));
+        getContentPane().add(icon2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 190, -1, -1));
 
         icon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"))); // NOI18N
-        getContentPane().add(icon3, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 220, -1, -1));
+        getContentPane().add(icon3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, -1, -1));
 
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
         background.setText("button");
