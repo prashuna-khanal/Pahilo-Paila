@@ -243,7 +243,7 @@ public class Dashboard_JobseekersController {
 
         JLabel usernameIcon = new JLabel();
         try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user .png"));
             java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
             usernameIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
             usernameIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
