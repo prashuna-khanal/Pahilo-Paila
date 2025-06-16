@@ -599,7 +599,6 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
             // Add validation and update logic here
             JOptionPane.showMessageDialog(this, "User info updated!\nUsername: " + username);
         });
-        
 
         centerWrapper.add(formPanel);
         mainPanel.add(headerPanel, java.awt.BorderLayout.NORTH);
