@@ -1,5 +1,12 @@
 package pahilopaila.Controller; // Matches pahilopaila/controller directory
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagLayout;
 import pahilopaila.view.Dashboard_Recruiters;
 
 // Added for LayoutStyle.ComponentPlacement
@@ -8,11 +15,11 @@ import java.awt.* ;
 import java.text.SimpleDateFormat;
 import com.toedter.calendar.JDateChooser;
 import java.awt.event.ActionEvent;
+import javax.swing.LayoutStyle; // Added for LayoutStyle.ComponentPlacement
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 import com.toedter.calendar.JDateChooser;
 import java.text.ParseException;
-
 
 
 /**
@@ -507,14 +514,59 @@ private JDateChooser createDateChooser() {
 
     public void showSettingsPanel() {
         System.out.println("Navigating to Settings");
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setBackground(new java.awt.Color(245, 245, 245));
-        settingsPanel.setLayout(new java.awt.BorderLayout());
-        JLabel title = new JLabel("Settings");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        settingsPanel.add(title, java.awt.BorderLayout.NORTH);
-        updateContentPanel(settingsPanel);
+        
+        // Main container panel (white background like My Account)
+    JPanel settingsPanel = new JPanel();
+    settingsPanel.setBackground(Color.WHITE);
+    settingsPanel.setLayout(new BorderLayout());
+
+    // Dark blue title bar
+    JPanel titlePanel = new JPanel();
+    titlePanel.setBackground(new Color(0, 32, 96));  // Dark blue
+    titlePanel.setPreferredSize(new java.awt.Dimension(680,70 ));
+    
+    JLabel titleLabel = new JLabel("Settings");
+    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+    titleLabel.setForeground(Color.WHITE);
+    titlePanel.add(titleLabel);
+
+    // Content box (like the white form in My Account tab)
+    JPanel contentBox = new JPanel();
+    contentBox.setBackground(Color.WHITE);
+    contentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
+    contentBox.setPreferredSize(new Dimension(400, 100));
+    contentBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    // Add a checkbox
+    JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
+    darkModeCheck.setBackground(Color.WHITE);
+    darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap checkbox inside a panel for alignment
+    JPanel checkboxPanel = new JPanel();
+    checkboxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    checkboxPanel.setBackground(Color.WHITE);
+    checkboxPanel.add(darkModeCheck);
+
+    contentBox.add(Box.createVerticalStrut(20));  // Spacing
+    contentBox.add(checkboxPanel);
+    contentBox.add(Box.createVerticalStrut(20));
+
+    // Center wrapper for content box
+    JPanel centerPanel = new JPanel();
+    centerPanel.setBackground(Color.WHITE);
+    centerPanel.setLayout(new GridBagLayout());
+    centerPanel.add(contentBox);
+
+    // Add title and content to main settings panel
+    settingsPanel.add(titlePanel, BorderLayout.NORTH);
+    settingsPanel.add(centerPanel, BorderLayout.CENTER);
+
+    updateContentPanel(settingsPanel);
+
+        
     }
 
     public void signOut() {
