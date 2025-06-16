@@ -10,10 +10,10 @@ package pahilopaila.view;
  *
  * @author LENOVO
  */
-public class Dashboard_JobSeeker_CV_Upload extends javax.swing.JFrame {
+public class Dashboard_JobSeeker_settings extends javax.swing.JFrame {
 
     /** Creates new form Dashboard_JobSeekers */
-    public Dashboard_JobSeeker_CV_Upload() {
+    public Dashboard_JobSeeker_settings() {
         initComponents();
     }
 

@@ -81,7 +81,7 @@ public class UserVerificationController {
                 return false;
             }
 
-            String sql = "UPDATE users SET otp = ?, otp_expiry = ? WHERE email = ?";
+            String sql = "UPDATE users SET otp = ?, otp_expires_at = ? WHERE email = ?";
             pstmt = conn.prepareStatement(sql);
 
             pstmt.setString(1, otp);
@@ -122,14 +122,14 @@ public class UserVerificationController {
                 return false;
             }
 
-            String sql = "SELECT otp, otp_expiry FROM users WHERE email = ?";
+            String sql = "SELECT otp, otp_expires_at FROM users WHERE email = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
                 String storedOtp = rs.getString("otp");
-                Timestamp storedExpiryTs = rs.getTimestamp("otp_expiry");
+                Timestamp storedExpiryTs = rs.getTimestamp("otp_expires_at");
 
                 if (storedExpiryTs == null || storedOtp == null) {
                     System.out.println("OTP or expiry not set for user: " + email);
@@ -177,7 +177,7 @@ public class UserVerificationController {
                 return;
             }
 
-            String sql = "UPDATE users SET otp = NULL, otp_expiry = NULL WHERE email = ?";
+            String sql = "UPDATE users SET otp = NULL, otp_expires_at = NULL WHERE email = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
             pstmt.executeUpdate();
@@ -255,7 +255,7 @@ public class UserVerificationController {
                 return false;
             }
 
-            String sql = "UPDATE users SET password = ?, otp = NULL, otp_expiry = NULL WHERE email = ?"; // Clear OTP after pass update
+            String sql = "UPDATE users SET password = ?, otp = NULL, otp_expires_at = NULL WHERE email = ?"; // Clear OTP after pass update
             pstmt = conn.prepareStatement(sql);
 
             pstmt.setString(1, newHashedPassword);
@@ -276,15 +276,9 @@ public class UserVerificationController {
         }
     }
 
-    /**
-     * Hashes a password using a simple method (for demonstration).
-     * In a real application, use strong hashing libraries like BCrypt.
-     * @param password The plain text password.
-     * @return A simple hash of the password.
-     */
+    
     public String hashPassword(String password) {
-        // **IMPORTANT: For production, use a strong, industry-standard hashing library like BCrypt or Argon2.**
-        // This is a very basic, insecure hash for demonstration purposes ONLY.
+       
         return String.valueOf(password.hashCode());
     }
 }

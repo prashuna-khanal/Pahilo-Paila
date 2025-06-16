@@ -27,6 +27,7 @@ public class forgotpassview extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        btnResetPassword = new javax.swing.JButton();
         txtEmail = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         btnSendOtp = new javax.swing.JButton();
@@ -36,36 +37,39 @@ public class forgotpassview extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         txtConfirmNewPassword = new javax.swing.JPasswordField();
-        btnResetPassword = new javax.swing.JButton();
-        jLabel6 = new javax.swing.JLabel();
         lblMessage = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
-        dashboard = new javax.swing.JLabel();
-        vacancy = new javax.swing.JLabel();
-        CV = new javax.swing.JLabel();
-        settings = new javax.swing.JLabel();
-        myAccount = new javax.swing.JLabel();
-        signOut = new javax.swing.JLabel();
-        profileIcon1 = new javax.swing.JLabel();
-        username = new javax.swing.JLabel();
-        email = new javax.swing.JLabel();
+
+        jLabel6 = new javax.swing.JLabel();
+
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 255));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("Email ");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 120, -1, -1));
+
+        jLabel1.setForeground(new java.awt.Color(0, 0, 102));
+        jLabel1.setText("email :");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 70, -1, -1));
+
+        btnResetPassword.setBackground(new java.awt.Color(0, 0, 102));
+        btnResetPassword.setForeground(new java.awt.Color(255, 255, 255));
+        btnResetPassword.setText("Reset Password");
+        btnResetPassword.setEnabled(false);
+        getContentPane().add(btnResetPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 280, -1, -1));
+
 
         txtEmail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtEmailActionPerformed(evt);
             }
         });
-        getContentPane().add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 120, 125, -1));
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(552, 180, -1, -1));
 
+        getContentPane().add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 70, 180, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(398, 180, -1, -1));
+
+
+        btnSendOtp.setBackground(new java.awt.Color(0, 0, 102));
+        btnSendOtp.setForeground(new java.awt.Color(255, 255, 255));
         btnSendOtp.setText("Send OTP");
         btnSendOtp.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnSendOtp.addActionListener(new java.awt.event.ActionListener() {
@@ -73,18 +77,16 @@ public class forgotpassview extends javax.swing.JFrame {
                 btnSendOtpActionPerformed(evt);
             }
         });
-        getContentPane().add(btnSendOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 120, 90, 20));
 
-        jLabel3.setText("OTP Code");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 160, -1, -1));
+        getContentPane().add(btnSendOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 100, -1, -1));
+
+        jLabel3.setForeground(new java.awt.Color(0, 0, 102));
+        jLabel3.setText("OTP Code:");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, -1, -1));
 
         txtOtp.setEnabled(false);
-        txtOtp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtOtpActionPerformed(evt);
-            }
-        });
-        getContentPane().add(txtOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 160, 125, -1));
+        getContentPane().add(txtOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 140, 180, -1));
+
 
         txtNewPassword.setEnabled(false);
         txtNewPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -92,13 +94,17 @@ public class forgotpassview extends javax.swing.JFrame {
                 txtNewPasswordActionPerformed(evt);
             }
         });
-        getContentPane().add(txtNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 240, 125, -1));
 
-        jLabel4.setText("New Password");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 240, -1, -1));
+        getContentPane().add(txtNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 190, 180, -1));
 
-        jLabel5.setText("Confirm New Password");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 280, -1, -1));
+        jLabel4.setForeground(new java.awt.Color(0, 0, 51));
+        jLabel4.setText("New Password:");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 190, -1, -1));
+
+        jLabel5.setForeground(new java.awt.Color(0, 0, 102));
+        jLabel5.setText("Confirm new Password:");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 230, -1, -1));
+
 
         txtConfirmNewPassword.setEnabled(false);
         txtConfirmNewPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -106,100 +112,14 @@ public class forgotpassview extends javax.swing.JFrame {
                 txtConfirmNewPasswordActionPerformed(evt);
             }
         });
-        getContentPane().add(txtConfirmNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 280, 125, -1));
 
-        btnResetPassword.setBackground(new java.awt.Color(51, 102, 255));
-        btnResetPassword.setForeground(new java.awt.Color(0, 204, 255));
-        btnResetPassword.setText("Reset Password");
-        btnResetPassword.setEnabled(false);
-        btnResetPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnResetPasswordActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btnResetPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 330, -1, -1));
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(386, 469, -1, -1));
-        getContentPane().add(lblMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(154, 291, 189, 172));
+        getContentPane().add(txtConfirmNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 230, 180, -1));
+        getContentPane().add(lblMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 290, 251, 90));
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setForeground(new java.awt.Color(51, 255, 255));
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
+        jLabel6.setText("jLabel6");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 690, 430));
 
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"))); // NOI18N
-        jLabel7.setText("jLabel7");
-
-        dashboard.setBackground(new java.awt.Color(0, 51, 153));
-        dashboard.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        dashboard.setForeground(new java.awt.Color(102, 102, 102));
-        dashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/dashboard.jpg"))); // NOI18N
-        dashboard.setText("Dashboard");
-
-        vacancy.setBackground(new java.awt.Color(0, 51, 153));
-        vacancy.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        vacancy.setForeground(new java.awt.Color(102, 102, 102));
-        vacancy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/vacancy.png"))); // NOI18N
-        vacancy.setText("Vacancy");
-
-        CV.setBackground(new java.awt.Color(0, 51, 153));
-        CV.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        CV.setForeground(new java.awt.Color(102, 102, 102));
-        CV.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/application.png"))); // NOI18N
-        CV.setText("CV Upload");
-
-        settings.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        settings.setForeground(new java.awt.Color(102, 102, 102));
-        settings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/setting.png"))); // NOI18N
-        settings.setText("Settings");
-
-        myAccount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        myAccount.setForeground(new java.awt.Color(102, 102, 102));
-        myAccount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/account.png"))); // NOI18N
-        myAccount.setText("My Account");
-        myAccount.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                myAccountMouseClicked(evt);
-            }
-        });
-
-        signOut.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        signOut.setForeground(new java.awt.Color(102, 102, 102));
-        signOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/signout.png"))); // NOI18N
-        signOut.setText("Sign Out");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(signOut)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(vacancy)
-                    .addComponent(dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(CV)
-                    .addComponent(settings)
-                    .addComponent(myAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(54, 54, 54)
-                .addComponent(dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(vacancy, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(CV, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(settings, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
-                .addComponent(myAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(signOut, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(55, 55, 55))
-        );
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 475));
 

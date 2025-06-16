@@ -2,6 +2,7 @@ package pahilopaila.view;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import javax.swing.*;
 import javax.swing.*;
 import java.util.Timer;
@@ -407,6 +408,7 @@ public class Dashboard_Recruiters extends javax.swing.JFrame {
         mainPanel.setBackground(new Color(245, 245, 245));
         mainPanel.setLayout(new java.awt.BorderLayout(15, 15));
         mainPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        mainPanel.setPreferredSize(new Dimension(660, 500)); // Ensure sufficient height
 
         JPanel headerPanel = new JPanel() {
             @Override
