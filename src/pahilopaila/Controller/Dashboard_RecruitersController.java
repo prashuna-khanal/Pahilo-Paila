@@ -209,7 +209,9 @@ public class Dashboard_RecruitersController {
         panel.setBackground(new Color(245, 245, 245));
         panel.add(new JLabel("Settings Panel"));
         updateContentPanel(panel);
+
     }
+}
 
     public void showMyAccountPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
