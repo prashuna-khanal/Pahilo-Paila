@@ -2,6 +2,8 @@ package pahilopaila.Controller;
 
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.CVDao;
+import pahilopaila.Dao.VacancyDao;
+import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_JobSeekers;
 import pahilopaila.view.LoginPageview;
 import javax.swing.*;
@@ -11,6 +13,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
@@ -18,6 +22,7 @@ import java.sql.SQLException;
 public class Dashboard_JobseekersController {
     private final Dashboard_JobSeekers view;
     private final CVDao cvDao;
+    private final VacancyDao vacancyDao;
     private int userId; // Store userId
 
     // Constructor to accept the view and userId
@@ -25,7 +30,9 @@ public class Dashboard_JobseekersController {
         this.view = view;
         this.userId = userId;
         this.cvDao = new CVDao();
+        this.vacancyDao = new VacancyDao();
         initializeListeners();
+        showDashboardPanel();
     }
 
     // Initialize listeners for UI components
@@ -99,13 +106,60 @@ public class Dashboard_JobseekersController {
         view.content.repaint();
     }
 
+    // Create a vacancy card for display
+    private JPanel createVacancyCard(Vacancy vacancy) {
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setBackground(new Color(0, 4, 80));
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        card.setPreferredSize(new Dimension(200, 200));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // Job Title
+        JLabel titleLabel = new JLabel(vacancy.getJobTitle());
+        titleLabel.setFont(new Font("Yu Gothic UI Semibold", Font.BOLD, 18));
+        titleLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        card.add(titleLabel, gbc);
+
+        // Job Type
+        JLabel typeLabel = new JLabel(vacancy.getJobType());
+        typeLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        typeLabel.setForeground(Color.WHITE);
+        gbc.gridy = 1;
+        card.add(typeLabel, gbc);
+
+        // Experience Level
+        JLabel experienceLabel = new JLabel(vacancy.getExperienceLevel());
+        experienceLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        experienceLabel.setForeground(Color.WHITE);
+        gbc.gridy = 2;
+        card.add(experienceLabel, gbc);
+
+        // Days Left
+        JLabel daysLeftLabel = new JLabel(vacancy.getDaysLeft() + " Days Left");
+        daysLeftLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        daysLeftLabel.setForeground(Color.WHITE);
+        gbc.gridy = 3;
+        card.add(daysLeftLabel, gbc);
+
+        return card;
+    }
+
     // Navigation methods
     public void showDashboardPanel() {
         System.out.println("Navigating to Dashboard");
-        JPanel contentPanel = new JPanel();
+        JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
         contentPanel.setBackground(new java.awt.Color(245, 245, 245));
-        contentPanel.setLayout(new java.awt.BorderLayout());
 
+        // Message Panel
         JPanel messagePanel = new JPanel();
         messagePanel.setBackground(new java.awt.Color(0, 4, 80));
         messagePanel.setLayout(new javax.swing.GroupLayout(messagePanel));
@@ -161,20 +215,92 @@ public class Dashboard_JobseekersController {
                     .addContainerGap(12, Short.MAX_VALUE))
         );
 
-        contentPanel.add(messagePanel, java.awt.BorderLayout.CENTER);
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
+
+        // Featured Jobs Section
+        JPanel featuredPanel = new JPanel(new BorderLayout());
+        featuredPanel.setBackground(new Color(245, 245, 245));
+
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        headerPanel.setBackground(new Color(245, 245, 245));
+        JLabel featuredLabel = new JLabel("Featured Jobs");
+        featuredLabel.setFont(new Font("Microsoft Himalaya", Font.BOLD, 36));
+        headerPanel.add(featuredLabel);
+
+        JButton seeAllButton = new JButton("See all");
+        seeAllButton.setBackground(new Color(0, 4, 80));
+        seeAllButton.setForeground(Color.WHITE);
+        seeAllButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
+        seeAllButton.addActionListener(this::handleSeeAll);
+        headerPanel.add(Box.createHorizontalGlue());
+        headerPanel.add(seeAllButton);
+        featuredPanel.add(headerPanel, BorderLayout.NORTH);
+
+        // Vacancies Panel
+        JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+        vacanciesPanel.setBackground(new Color(245, 245, 245));
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+
+        // Fetch vacancies (limit to 3 for Featured Jobs)
+        List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
+        if (allVacancies.isEmpty()) {
+            JLabel noVacanciesLabel = new JLabel("No vacancies available.");
+            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            vacanciesPanel.add(noVacanciesLabel);
+        } else {
+            // Select up to 3 random vacancies
+            Random rand = new Random();
+            int count = Math.min(3, allVacancies.size());
+            for (int i = 0; i < count; i++) {
+                int index = rand.nextInt(allVacancies.size());
+                Vacancy vacancy = allVacancies.remove(index); // Remove to avoid duplicates
+                JPanel vacancyCard = createVacancyCard(vacancy);
+                vacanciesPanel.add(vacancyCard);
+            }
+        }
+
+        featuredPanel.add(scrollPane, BorderLayout.CENTER);
+        contentPanel.add(featuredPanel, BorderLayout.CENTER);
+
         updateContentPanel(contentPanel);
     }
 
     public void showVacancyPanel() {
         System.out.println("Navigating to Vacancy");
-        JPanel vacancyPanel = new JPanel();
-        vacancyPanel.setBackground(new java.awt.Color(245, 245, 245));
-        vacancyPanel.setLayout(new java.awt.BorderLayout());
-        JLabel title = new JLabel("Browse Vacancies");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        vacancyPanel.add(title, java.awt.BorderLayout.NORTH);
-        updateContentPanel(vacancyPanel);
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        // Header
+        JLabel headerLabel = new JLabel("Browse Vacancies");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        headerLabel.setForeground(new Color(0, 4, 80));
+        mainPanel.add(headerLabel, BorderLayout.NORTH);
+
+        // Vacancies Panel
+        JPanel vacanciesPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // 3 columns
+        vacanciesPanel.setBackground(new Color(245, 245, 245));
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+
+        // Fetch all vacancies
+        List<Vacancy> vacancies = vacancyDao.getAllVacancies();
+        if (vacancies.isEmpty()) {
+            JLabel noVacanciesLabel = new JLabel("No vacancies available.");
+            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            vacanciesPanel.add(noVacanciesLabel);
+        } else {
+            for (Vacancy vacancy : vacancies) {
+                JPanel vacancyCard = createVacancyCard(vacancy);
+                vacanciesPanel.add(vacancyCard);
+            }
+        }
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        updateContentPanel(mainPanel);
     }
 
     public void showCVUploadPanel() {
@@ -794,8 +920,7 @@ public class Dashboard_JobseekersController {
         view.dispose();
         LoginPageview loginView = new LoginPageview();
         loginView.setVisible(true);
-        // Assuming LoginController exists
-        // new LoginController(loginView);
+        new LoginController(loginView);
     }
 
     // Set user information

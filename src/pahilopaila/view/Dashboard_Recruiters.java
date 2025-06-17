@@ -4,16 +4,16 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
+import pahilopaila.Controller.Dashboard_RecruitersController;
+
 import java.util.Timer;
 import java.util.TimerTask;
-import pahilopaila.Controller.Dashboard_RecruitersController;
 
 /**
  * Dashboard view for recruiters.
  */
 public class Dashboard_Recruiters extends JFrame {
 
-    private Dashboard_RecruitersController controller;
     private boolean dashboardPressed = false, dashboardHovered = false;
     private boolean vacancyPressed = false, vacancyHovered = false;
     private boolean applicationPressed = false, applicationHovered = false;
@@ -47,7 +47,6 @@ public class Dashboard_Recruiters extends JFrame {
 
     public Dashboard_Recruiters() {
         initComponents();
-        controller = new Dashboard_RecruitersController(this);
     }
 
     private JLabel createStyledLabel(String text, String iconPath, Runnable onClick) {
@@ -165,19 +164,20 @@ public class Dashboard_Recruiters extends JFrame {
         logo = new JPanel();
         jLabel4 = new JLabel();
 
-        dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg", () -> controller.showDashboardPanel());
-        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", () -> controller.showVacancyPanel());
-        application = createStyledLabel("Application", "/Image/logo/application.png", () -> controller.showApplicationsPanel());
-        settings = createStyledLabel("Settings", "/Image/logo/settings.png", () -> controller.showSettingsPanel());
-        myAccount = createStyledLabel("My Account", "/Image/logo/account.png", () -> controller.showMyAccountPanel());
-        signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png", () -> controller.logout());
+        dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg", null);
+        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", null);
+        application = createStyledLabel("Application", "/Image/logo/application.png", null);
+        settings = createStyledLabel("Settings", "/Image/logo/setting.png", null);
+        myAccount = createStyledLabel("My Account", "/Image/logo/account.png", null);
+        signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png", null);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setBackground(Color.WHITE);
+        setPreferredSize(new Dimension(900, 600));
+        setMinimumSize(new Dimension(800, 500));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Searchfield.setHorizontalAlignment(JTextField.LEFT);
-        Searchfield.addActionListener(evt -> controller.searchFieldActionPerformed(evt));
         getContentPane().add(Searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 280, 30));
 
         try {
@@ -185,7 +185,6 @@ public class Dashboard_Recruiters extends JFrame {
         } catch (Exception e) {
             System.out.println("Error loading search icon: " + e.getMessage());
         }
-        jButton1.addActionListener(evt -> controller.searchButtonActionPerformed(evt));
         getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 30, 30));
 
         try {
@@ -193,7 +192,6 @@ public class Dashboard_Recruiters extends JFrame {
         } catch (Exception e) {
             System.out.println("Error loading filter icon: " + e.getMessage());
         }
-        jButton2.addActionListener(evt -> controller.filterButtonActionPerformed(evt));
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
 
         username.setFont(new Font("Segoe UI Semibold", Font.BOLD, 18));
@@ -226,19 +224,17 @@ public class Dashboard_Recruiters extends JFrame {
 
         getStarted.setForeground(new Color(0, 0, 102));
         getStarted.setText("Get Started");
-        getStarted.addActionListener(evt -> controller.getStartedActionPerformed(evt));
         learnMore.setBackground(new Color(0, 4, 80));
         learnMore.setForeground(Color.WHITE);
         learnMore.setText("Learn More");
         learnMore.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.WHITE), // Use a white line border
-            "", // Empty title
+            BorderFactory.createLineBorder(Color.WHITE),
+            "",
             TitledBorder.DEFAULT_JUSTIFICATION,
             TitledBorder.DEFAULT_POSITION,
             new Font("Segoe UI", Font.PLAIN, 12),
             Color.WHITE
         ));
-        learnMore.addActionListener(evt -> controller.learnMoreActionPerformed(evt));
 
         try {
             jLabel1.setIcon(new ImageIcon(getClass().getResource("/Image/logo/3man.png")));
@@ -375,7 +371,12 @@ public class Dashboard_Recruiters extends JFrame {
         return content;
     }
 
-    public Dashboard_RecruitersController getController() {
-        return controller;
+    public static void main(String args[]) {
+        SwingUtilities.invokeLater(() -> {
+            Dashboard_Recruiters view = new Dashboard_Recruiters();
+            Dashboard_RecruitersController controller = new Dashboard_RecruitersController(view, 1);
+            controller.setUserInfo("Test User", "@testuser");
+            controller.open();
+        });
     }
 }

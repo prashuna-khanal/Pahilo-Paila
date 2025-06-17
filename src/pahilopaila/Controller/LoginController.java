@@ -64,14 +64,15 @@ public class LoginController {
                     System.out.println("Opening Employer dashboard for user ID: " + loggedInUser.getId());
                     Dashboard_Recruiters dashboardView = new Dashboard_Recruiters();
                     Dashboard_RecruitersController dashboardController = new Dashboard_RecruitersController(dashboardView, loggedInUser.getId());
-                    dashboardView.setUserInfo(loggedInUser.getUsername(), loggedInUser.getEmail());
+                    dashboardController.setUserInfo(loggedInUser.getName(), loggedInUser.getUsername()); // Fixed
                     dashboardView.setVisible(true);
-                } else {
+                }else {
                     System.out.println("Unknown role: " + loggedInUser.getRoles());
                     JOptionPane.showMessageDialog(null, "Unknown user role: " + loggedInUser.getRoles(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception ex) {
                 System.err.println("Error opening dashboard: " + ex.getMessage());
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Failed to open dashboard. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
