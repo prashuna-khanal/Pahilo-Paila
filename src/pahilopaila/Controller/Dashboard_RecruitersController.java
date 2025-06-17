@@ -493,6 +493,7 @@ public class Dashboard_RecruitersController {
         panel.add(label);
         panel.setPreferredSize(new Dimension(680, 320));
         updateContentPanel(panel);
+
     }
 
     public void showMyAccountPanel() {
