@@ -507,6 +507,61 @@ private JDateChooser createDateChooser() {
 
     public void showSettingsPanel() {
         System.out.println("Navigating to Settings");
+        
+        // Main container panel (white background like My Account)
+    JPanel settingsPanel = new JPanel();
+        settingsPanel.setBackground(new Color(245, 245, 245));
+        settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
+        settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+    // Dark blue title bar
+    JPanel titlePanel = new JPanel();
+    titlePanel.setBackground(new Color(0, 20, 90));  // Dark blue
+    titlePanel.setPreferredSize(new java.awt.Dimension(680,70 ));
+    titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
+    
+    JLabel titleLabel = new JLabel("Settings");
+    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+    titleLabel.setForeground(Color.WHITE);
+    titlePanel.add(titleLabel);
+
+    // Content box (like the white form in My Account tab)
+    JPanel contentBox = new JPanel();
+    contentBox.setBackground(Color.WHITE);
+    contentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
+    contentBox.setPreferredSize(new Dimension(400, 100));
+    contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    // Add a checkbox
+    JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
+    darkModeCheck.setBackground(Color.WHITE);
+    darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap checkbox inside a panel for alignment
+    JPanel checkboxPanel = new JPanel();
+    checkboxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    checkboxPanel.setBackground(Color.WHITE);
+    checkboxPanel.add(darkModeCheck);
+
+    contentBox.add(Box.createVerticalStrut(20));  // Spacing
+    contentBox.add(checkboxPanel);
+    contentBox.add(Box.createVerticalStrut(20));
+
+    // Center wrapper for content box
+    JPanel centerPanel = new JPanel();
+    centerPanel.setBackground(Color.WHITE);
+    centerPanel.setLayout(new GridBagLayout());
+    centerPanel.add(contentBox);
+
+    // Add title and content to main settings panel
+    settingsPanel.add(titlePanel, BorderLayout.NORTH);
+    settingsPanel.add(centerPanel, BorderLayout.CENTER);
+
+    updateContentPanel(settingsPanel);
+
+        
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(new java.awt.Color(245, 245, 245));
         settingsPanel.setLayout(new java.awt.BorderLayout());
@@ -515,6 +570,7 @@ private JDateChooser createDateChooser() {
         title.setHorizontalAlignment(SwingConstants.CENTER);
         settingsPanel.add(title, java.awt.BorderLayout.NORTH);
         updateContentPanel(settingsPanel);
+
     }
 
     public void signOut() {
