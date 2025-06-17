@@ -1,12 +1,5 @@
 package pahilopaila.Controller; // Matches pahilopaila/controller directory
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagLayout;
 import pahilopaila.view.Dashboard_Recruiters;
 
 // Added for LayoutStyle.ComponentPlacement
@@ -15,11 +8,11 @@ import java.awt.* ;
 import java.text.SimpleDateFormat;
 import com.toedter.calendar.JDateChooser;
 import java.awt.event.ActionEvent;
-import javax.swing.LayoutStyle; // Added for LayoutStyle.ComponentPlacement
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 import com.toedter.calendar.JDateChooser;
 import java.text.ParseException;
+
 
 
 /**
@@ -569,6 +562,15 @@ private JDateChooser createDateChooser() {
     updateContentPanel(settingsPanel);
 
         
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setBackground(new java.awt.Color(245, 245, 245));
+        settingsPanel.setLayout(new java.awt.BorderLayout());
+        JLabel title = new JLabel("Settings");
+        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        settingsPanel.add(title, java.awt.BorderLayout.NORTH);
+        updateContentPanel(settingsPanel);
+
     }
 
     public void signOut() {
