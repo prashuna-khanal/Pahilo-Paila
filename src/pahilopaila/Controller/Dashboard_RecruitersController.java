@@ -517,16 +517,18 @@ private JDateChooser createDateChooser() {
         
         // Main container panel (white background like My Account)
     JPanel settingsPanel = new JPanel();
-    settingsPanel.setBackground(Color.WHITE);
-    settingsPanel.setLayout(new BorderLayout());
+        settingsPanel.setBackground(new Color(245, 245, 245));
+        settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
+        settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
     // Dark blue title bar
     JPanel titlePanel = new JPanel();
-    titlePanel.setBackground(new Color(0, 32, 96));  // Dark blue
+    titlePanel.setBackground(new Color(0, 20, 90));  // Dark blue
     titlePanel.setPreferredSize(new java.awt.Dimension(680,70 ));
+    titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
     
     JLabel titleLabel = new JLabel("Settings");
-    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
     titleLabel.setForeground(Color.WHITE);
     titlePanel.add(titleLabel);
 
@@ -536,7 +538,7 @@ private JDateChooser createDateChooser() {
     contentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
     contentBox.setPreferredSize(new Dimension(400, 100));
-    contentBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+    contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 
     // Add a checkbox
     JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
