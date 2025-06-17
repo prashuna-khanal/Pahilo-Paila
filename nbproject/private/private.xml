@@ -7,6 +7,11 @@
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/Controller/ForgetPasswordController.java</file>
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/Controller/SMTPSMailSender.java</file>
             <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/Controller/UserVerificationController.java</file>
+            <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/database/MySqlConnection.java</file>
+            <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/Controller/Dashboard_JobseekersController.java</file>
+            <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/view/Dashboard_JobSeekers.java</file>
+            <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/view/forgotpassview.java</file>
+            <file>file:/Users/abi/Desktop/project(led2)/Pahilo-Paila/src/pahilopaila/view/LoginPageview.java</file>
         </group>
     </open-files>
 </project-private>

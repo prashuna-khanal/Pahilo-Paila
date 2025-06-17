@@ -58,7 +58,7 @@ public class LoginController implements controller {
             public void mouseClicked(MouseEvent e) {
                 close();
                 RegistrationEmployee registrationView = new RegistrationEmployee();
-                // Assuming 'registrationController' is correctly capitalized
+               
                 registrationController Regcon = new registrationController(registrationView);
                 Regcon.open();
             }

@@ -14,7 +14,7 @@ public class MySqlConnection implements dbconnection{
     @Override
     public Connection openConnection() {
         String username="root";
-        String password="12345678";
+        String password="sabi@195";
         String database="marks";
         Connection conn = null; // Initialize conn to null
         try{

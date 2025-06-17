@@ -38,37 +38,35 @@ public class forgotpassview extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         txtConfirmNewPassword = new javax.swing.JPasswordField();
         lblMessage = new javax.swing.JLabel();
-
         jLabel6 = new javax.swing.JLabel();
-
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 255));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
 
         jLabel1.setForeground(new java.awt.Color(0, 0, 102));
         jLabel1.setText("email :");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 70, -1, -1));
 
         btnResetPassword.setBackground(new java.awt.Color(0, 0, 102));
-        btnResetPassword.setForeground(new java.awt.Color(255, 255, 255));
         btnResetPassword.setText("Reset Password");
         btnResetPassword.setEnabled(false);
+        btnResetPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetPasswordActionPerformed(evt);
+            }
+        });
         getContentPane().add(btnResetPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 280, -1, -1));
-
 
         txtEmail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtEmailActionPerformed(evt);
             }
         });
-
         getContentPane().add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 70, 180, -1));
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(398, 180, -1, -1));
 
-
-        btnSendOtp.setBackground(new java.awt.Color(0, 0, 102));
+        btnSendOtp.setBackground(new java.awt.Color(0, 0, 0));
         btnSendOtp.setForeground(new java.awt.Color(255, 255, 255));
         btnSendOtp.setText("Send OTP");
         btnSendOtp.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -77,16 +75,14 @@ public class forgotpassview extends javax.swing.JFrame {
                 btnSendOtpActionPerformed(evt);
             }
         });
-
         getContentPane().add(btnSendOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 100, -1, -1));
 
         jLabel3.setForeground(new java.awt.Color(0, 0, 102));
         jLabel3.setText("OTP Code:");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, -1, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 140, -1, -1));
 
         txtOtp.setEnabled(false);
         getContentPane().add(txtOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 140, 180, -1));
-
 
         txtNewPassword.setEnabled(false);
         txtNewPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -94,17 +90,15 @@ public class forgotpassview extends javax.swing.JFrame {
                 txtNewPasswordActionPerformed(evt);
             }
         });
-
         getContentPane().add(txtNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 190, 180, -1));
 
         jLabel4.setForeground(new java.awt.Color(0, 0, 51));
         jLabel4.setText("New Password:");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 190, -1, -1));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 190, -1, -1));
 
         jLabel5.setForeground(new java.awt.Color(0, 0, 102));
         jLabel5.setText("Confirm new Password:");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 230, -1, -1));
-
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 240, -1, -1));
 
         txtConfirmNewPassword.setEnabled(false);
         txtConfirmNewPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -112,27 +106,12 @@ public class forgotpassview extends javax.swing.JFrame {
                 txtConfirmNewPasswordActionPerformed(evt);
             }
         });
-
         getContentPane().add(txtConfirmNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 230, 180, -1));
         getContentPane().add(lblMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 290, 251, 90));
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
         jLabel6.setText("jLabel6");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 690, 430));
-
-
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 475));
-
-        profileIcon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/ram.png"))); // NOI18N
-        getContentPane().add(profileIcon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 10, 30, 60));
-
-        username.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
-        username.setForeground(new java.awt.Color(0, 0, 102));
-        username.setText("Ram Kumar");
-        getContentPane().add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 20, -1, 30));
-
-        email.setText("@ramkumar");
-        getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 50, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -201,30 +180,19 @@ public class forgotpassview extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel CV;
     private javax.swing.JButton btnResetPassword;
     private javax.swing.JButton btnSendOtp;
-    private javax.swing.JLabel dashboard;
-    private javax.swing.JLabel email;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblMessage;
-    private javax.swing.JLabel myAccount;
-    private javax.swing.JLabel profileIcon1;
-    private javax.swing.JLabel settings;
-    private javax.swing.JLabel signOut;
     private javax.swing.JPasswordField txtConfirmNewPassword;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JPasswordField txtNewPassword;
     private javax.swing.JTextField txtOtp;
-    private javax.swing.JLabel username;
-    private javax.swing.JLabel vacancy;
     // End of variables declaration//GEN-END:variables
 public javax.swing.JTextField getTxtEmail() {
         return txtEmail;
