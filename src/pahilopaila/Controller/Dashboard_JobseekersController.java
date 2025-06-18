@@ -156,176 +156,184 @@ public class Dashboard_JobseekersController {
 
     // Navigation methods
     public void showDashboardPanel() {
-        System.out.println("Navigating to Dashboard");
-        JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
-        contentPanel.setBackground(new java.awt.Color(245, 245, 245));
+    System.out.println("Navigating to Dashboard");
+    JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
+    contentPanel.setBackground(new java.awt.Color(245, 245, 245));
 
-        // Message Panel
-        JPanel messagePanel = new JPanel();
-        messagePanel.setBackground(new java.awt.Color(0, 4, 80));
-        messagePanel.setLayout(new javax.swing.GroupLayout(messagePanel));
+    // Message Panel
+    JPanel messagePanel = new JPanel();
+    messagePanel.setBackground(new java.awt.Color(0, 4, 80));
+    messagePanel.setLayout(new javax.swing.GroupLayout(messagePanel));
 
-        JLabel discover = new JLabel("Discover Opportunities That");
-        discover.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
-        discover.setForeground(new java.awt.Color(255, 255, 255));
+    JLabel discover = new JLabel("Discover Opportunities That");
+    discover.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
+    discover.setForeground(new java.awt.Color(255, 255, 255));
 
-        JLabel match = new JLabel("Match Your Skill");
-        match.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
-        match.setForeground(new java.awt.Color(255, 255, 255));
+    JLabel match = new JLabel("Match Your Skill");
+    match.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
+    match.setForeground(new java.awt.Color(255, 255, 255));
 
-        JButton getStarted = new JButton("Get Started");
-        getStarted.setForeground(new java.awt.Color(0, 0, 102));
-        getStarted.addActionListener(this::handleGetStarted);
+    JButton getStarted = new JButton("Get Started");
+    getStarted.setForeground(new java.awt.Color(0, 0, 102));
+    getStarted.addActionListener(this::handleGetStarted);
 
-        JButton learnMore = new JButton("Learn More");
-        learnMore.setForeground(new java.awt.Color(255, 255, 255));
-        learnMore.setBackground(new java.awt.Color(0, 4, 80));
-        learnMore.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "",
-            javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
-            javax.swing.border.TitledBorder.DEFAULT_POSITION,
-            new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255)));
-        learnMore.addActionListener(this::handleLearnMore);
+    JButton learnMore = new JButton("Learn More");
+    learnMore.setForeground(new java.awt.Color(255, 255, 255));
+    learnMore.setBackground(new java.awt.Color(0, 4, 80));
+    learnMore.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "",
+        javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+        javax.swing.border.TitledBorder.DEFAULT_POSITION,
+        new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255)));
+    learnMore.addActionListener(this::handleLearnMore);
 
-        // Layout for messagePanel
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(messagePanel);
-        messagePanel.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(39, 39, 39)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(discover, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(match, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addContainerGap(276, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(discover)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(match)
-                    .addGap(18, 18, 18)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(getStarted)
-                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(12, Short.MAX_VALUE))
-        );
+    // Layout for messagePanel
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(messagePanel);
+    messagePanel.setLayout(layout);
+    layout.setHorizontalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(discover, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(match, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(276, Short.MAX_VALUE))
+    );
+    layout.setVerticalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(discover)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(match)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(getStarted)
+                    .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(12, Short.MAX_VALUE))
+    );
 
-        contentPanel.add(messagePanel, BorderLayout.NORTH);
+    contentPanel.add(messagePanel, BorderLayout.NORTH);
 
-        // Featured Jobs Section
-        JPanel featuredPanel = new JPanel(new BorderLayout());
-        featuredPanel.setBackground(new Color(245, 245, 245));
+    // Featured Jobs Section
+    JPanel featuredPanel = new JPanel(new BorderLayout());
+    featuredPanel.setBackground(new Color(245, 245, 245));
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        headerPanel.setBackground(new Color(245, 245, 245));
-        JLabel featuredLabel = new JLabel("Featured Jobs");
-        featuredLabel.setFont(new Font("Microsoft Himalaya", Font.BOLD, 36));
-        headerPanel.add(featuredLabel);
+    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    headerPanel.setBackground(new Color(245, 245, 245));
+    JLabel featuredLabel = new JLabel("Featured Jobs");
+    featuredLabel.setFont(new Font("Microsoft Himalaya", Font.BOLD, 36));
+    headerPanel.add(featuredLabel);
 
-        JButton seeAllButton = new JButton("See all");
-        seeAllButton.setBackground(new Color(0, 4, 80));
-        seeAllButton.setForeground(Color.WHITE);
-        seeAllButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
-        seeAllButton.addActionListener(this::handleSeeAll);
-        headerPanel.add(Box.createHorizontalGlue());
-        headerPanel.add(seeAllButton);
-        featuredPanel.add(headerPanel, BorderLayout.NORTH);
+    JButton seeAllButton = new JButton("See all");
+    seeAllButton.setBackground(new Color(0, 4, 80));
+    seeAllButton.setForeground(Color.WHITE);
+    seeAllButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
+    seeAllButton.addActionListener(this::handleSeeAll);
+    headerPanel.add(Box.createHorizontalGlue());
+    headerPanel.add(seeAllButton);
+    featuredPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Vacancies Panel
-        JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
-        vacanciesPanel.setBackground(new Color(245, 245, 245));
-        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
-        scrollPane.setBorder(null);
+    // Vacancies Panel
+    JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+    vacanciesPanel.setBackground(new Color(245, 245, 245));
+    JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+    scrollPane.setBorder(null);
 
-        // Fetch vacancies (limit to 3 for Featured Jobs)
-        List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
-        if (allVacancies.isEmpty()) {
-            JLabel noVacanciesLabel = new JLabel("No vacancies available.");
-            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            vacanciesPanel.add(noVacanciesLabel);
-        } else {
-            // Select up to 3 random vacancies
-            Random rand = new Random();
-            int count = Math.min(3, allVacancies.size());
-            for (int i = 0; i < count; i++) {
-                int index = rand.nextInt(allVacancies.size());
-                Vacancy vacancy = allVacancies.remove(index); // Remove to avoid duplicates
-                JPanel vacancyCard = createVacancyCard(vacancy);
-                vacanciesPanel.add(vacancyCard);
-            }
+    // Fetch vacancies (limit to 3 for Featured Jobs)
+    List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
+    if (allVacancies.isEmpty()) {
+        JLabel noVacanciesLabel = new JLabel("No vacancies available.");
+        noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        vacanciesPanel.add(noVacanciesLabel);
+    } else {
+        Random rand = new Random();
+        int count = Math.min(3, allVacancies.size());
+        for (int i = 0; i < count; i++) {
+            int index = rand.nextInt(allVacancies.size());
+            Vacancy vacancy = allVacancies.remove(index);
+            JPanel vacancyCard = createVacancyCard(vacancy);
+            vacanciesPanel.add(vacancyCard);
         }
-
-        featuredPanel.add(scrollPane, BorderLayout.CENTER);
-         // [CHANGED] Rating Panel with Star Icons
-        JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
-        ratingPanel.setBackground(new Color(245, 245, 245));
-        ratingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JLabel ratingLabel = new JLabel("Rate Our App:");
-        ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        ratingPanel.add(ratingLabel);
-
-        ButtonGroup ratingGroup = new ButtonGroup();
-        JRadioButton[] stars = new JRadioButton[5];
-        ImageIcon starIcon = new ImageIcon(getClass().getResource("/Image/star.png")); // Ensure star.png exists
-        if (starIcon.getImage() == null) {
-            starIcon = new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB)); // Fallback
-        }
-        Image scaledStar = starIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-        for (int i = 0; i < 5; i++) {
-            stars[i] = new JRadioButton();
-            stars[i].setIcon(new ImageIcon(scaledStar));
-            stars[i].setSelectedIcon(new ImageIcon(scaledStar)); // Same icon for selected state
-            stars[i].setRolloverIcon(new ImageIcon(scaledStar)); // Optional: Hover effect
-            stars[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-            stars[i].setBackground(new Color(245, 245, 245));
-            ratingGroup.add(stars[i]);
-            ratingPanel.add(stars[i]);
-        }
-
-        JButton submitRating = new JButton("Submit Rating");
-        submitRating.setBackground(new Color(0, 4, 80));
-        submitRating.setForeground(Color.WHITE);
-        submitRating.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
-        submitRating.setFocusPainted(false);
-        submitRating.addActionListener(e -> {
-            int rating = 0;
-            for (int i = 0; i < 5; i++) {
-                if (stars[i].isSelected()) {
-                    rating = i + 1;
-                    break;
-                }
-            }
-            if (rating > 0) {
-                String currentDateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
-                JOptionPane.showMessageDialog(view, "Thank you for rating us " + rating + " stars!\nSubmitted at " + currentDateTime, "Rating Submitted", JOptionPane.INFORMATION_MESSAGE);
-                // [CHANGED] Placeholder for saving rating to database
-                boolean success = saveRatingToDatabase(userId, rating);
-                if (!success) {
-                    JOptionPane.showMessageDialog(view, "Failed to save rating. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(view, "Please select a rating.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        ratingPanel.add(submitRating);
-
-        // [CHANGED] Combine featured and rating panels with better layout
-        JPanel centerPanel = new JPanel(new BorderLayout(15, 15));
-        centerPanel.setBackground(new Color(245, 245, 245));
-        centerPanel.add(featuredPanel, BorderLayout.CENTER);
-        centerPanel.add(ratingPanel, BorderLayout.SOUTH);
-
-        contentPanel.add(centerPanel, BorderLayout.CENTER);
-
-        updateContentPanel(contentPanel);
     }
+
+    featuredPanel.add(scrollPane, BorderLayout.CENTER);
+
+    // Rating Panel with Star Icons
+    JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+    ratingPanel.setBackground(new Color(245, 245, 245));
+    ratingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    JLabel ratingLabel = new JLabel("Rate Our App:");
+    ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+    ratingPanel.add(ratingLabel);
+
+    ButtonGroup ratingGroup = new ButtonGroup();
+    JRadioButton[] stars = new JRadioButton[5];
+    java.net.URL resourceUrl = getClass().getResource("/image/star.png");
+    System.out.println("Resource URL (getClass): " + resourceUrl);
+    if (resourceUrl == null) {
+        System.out.println("Resource not found with getClass. Checking ClassLoader...");
+        resourceUrl = ClassLoader.getSystemResource("image/star.png");
+        System.out.println("Resource URL (ClassLoader): " + resourceUrl);
+        if (resourceUrl == null) {
+            System.out.println("Resource not found in classpath. Verify build/classes/image/star.png exists.");
+            System.out.println("Current working directory: " + new java.io.File(".").getAbsolutePath());
+        }
+    }
+    ImageIcon starIcon = (resourceUrl != null) ? new ImageIcon(resourceUrl) : new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB));
+    System.out.println("Using image from: " + (resourceUrl != null ? resourceUrl.getPath() : "Fallback BufferedImage"));
+    Image scaledStar = starIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+    for (int i = 0; i < 5; i++) {
+        stars[i] = new JRadioButton();
+        stars[i].setIcon(new ImageIcon(scaledStar));
+        stars[i].setSelectedIcon(new ImageIcon(scaledStar));
+        stars[i].setRolloverIcon(new ImageIcon(scaledStar));
+        stars[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+        stars[i].setBackground(new Color(245, 245, 245));
+        ratingGroup.add(stars[i]);
+        ratingPanel.add(stars[i]);
+    }
+
+    JButton submitRating = new JButton("Submit Rating");
+    submitRating.setBackground(new Color(0, 4, 80));
+    submitRating.setForeground(Color.WHITE);
+    submitRating.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+    submitRating.setFocusPainted(false);
+    submitRating.addActionListener(e -> {
+        int rating = 0;
+        for (int i = 0; i < 5; i++) {
+            if (stars[i].isSelected()) {
+                rating = i + 1;
+                break;
+            }
+        }
+        if (rating > 0) {
+            String currentDateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+            JOptionPane.showMessageDialog(view, "Thank you for rating us " + rating + " stars!\nSubmitted at " + currentDateTime, "Rating Submitted", JOptionPane.INFORMATION_MESSAGE);
+            boolean success = saveRatingToDatabase(userId, rating);
+            if (!success) {
+                JOptionPane.showMessageDialog(view, "Failed to save rating. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(view, "Please select a rating.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
+    ratingPanel.add(submitRating);
+
+    // Combine featured and rating panels
+    JPanel centerPanel = new JPanel(new BorderLayout(15, 15));
+    centerPanel.setBackground(new Color(245, 245, 245));
+    centerPanel.add(featuredPanel, BorderLayout.CENTER);
+    centerPanel.add(ratingPanel, BorderLayout.SOUTH);
+
+    contentPanel.add(centerPanel, BorderLayout.CENTER);
+
+    updateContentPanel(contentPanel);
+}
 
     // [CHANGED] Method to save rating to database (placeholder)
     private boolean saveRatingToDatabase(int userId, int rating) {
