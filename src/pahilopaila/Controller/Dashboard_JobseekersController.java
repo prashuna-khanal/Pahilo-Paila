@@ -2,6 +2,7 @@ package pahilopaila.Controller;
 
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.CVDao;
+import pahilopaila.Dao.RatingDao;
 import pahilopaila.Dao.VacancyDao;
 import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_JobSeekers;
@@ -13,6 +14,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.awt.image.BufferedImage;
@@ -155,7 +159,7 @@ public class Dashboard_JobseekersController {
     }
 
     // Navigation methods
-    public void showDashboardPanel() {
+   public void showDashboardPanel() {
     System.out.println("Navigating to Dashboard");
     JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
     contentPanel.setBackground(new java.awt.Color(245, 245, 245));
@@ -263,7 +267,7 @@ public class Dashboard_JobseekersController {
 
     featuredPanel.add(scrollPane, BorderLayout.CENTER);
 
-    // Rating Panel with Star Icons
+    // Rating Panel with Graphical Stars
     JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
     ratingPanel.setBackground(new Color(245, 245, 245));
     ratingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -273,25 +277,12 @@ public class Dashboard_JobseekersController {
 
     ButtonGroup ratingGroup = new ButtonGroup();
     JRadioButton[] stars = new JRadioButton[5];
-    java.net.URL resourceUrl = getClass().getResource("/image/star.png");
-    System.out.println("Resource URL (getClass): " + resourceUrl);
-    if (resourceUrl == null) {
-        System.out.println("Resource not found with getClass. Checking ClassLoader...");
-        resourceUrl = ClassLoader.getSystemResource("image/star.png");
-        System.out.println("Resource URL (ClassLoader): " + resourceUrl);
-        if (resourceUrl == null) {
-            System.out.println("Resource not found in classpath. Verify build/classes/image/star.png exists.");
-            System.out.println("Current working directory: " + new java.io.File(".").getAbsolutePath());
-        }
-    }
-    ImageIcon starIcon = (resourceUrl != null) ? new ImageIcon(resourceUrl) : new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB));
-    System.out.println("Using image from: " + (resourceUrl != null ? resourceUrl.getPath() : "Fallback BufferedImage"));
-    Image scaledStar = starIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+    StarIcon starIcon = new StarIcon(20, 20); // Custom star icon
     for (int i = 0; i < 5; i++) {
         stars[i] = new JRadioButton();
-        stars[i].setIcon(new ImageIcon(scaledStar));
-        stars[i].setSelectedIcon(new ImageIcon(scaledStar));
-        stars[i].setRolloverIcon(new ImageIcon(scaledStar));
+        stars[i].setIcon(starIcon);
+        stars[i].setSelectedIcon(starIcon); // Same icon for selected state
+        stars[i].setRolloverIcon(starIcon); // Optional: Hover effect
         stars[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         stars[i].setBackground(new Color(245, 245, 245));
         ratingGroup.add(stars[i]);
@@ -312,7 +303,8 @@ public class Dashboard_JobseekersController {
             }
         }
         if (rating > 0) {
-            String currentDateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+            ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
+            String currentDateTime = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
             JOptionPane.showMessageDialog(view, "Thank you for rating us " + rating + " stars!\nSubmitted at " + currentDateTime, "Rating Submitted", JOptionPane.INFORMATION_MESSAGE);
             boolean success = saveRatingToDatabase(userId, rating);
             if (!success) {
@@ -335,20 +327,50 @@ public class Dashboard_JobseekersController {
     updateContentPanel(contentPanel);
 }
 
-    // [CHANGED] Method to save rating to database (placeholder)
-    private boolean saveRatingToDatabase(int userId, int rating) {
-        // Placeholder implementation - Replace with actual database logic
-        try {
-            // Example: Assume cvDao has a method to save rating
-            // return cvDao.saveRating(userId, rating);
-            System.out.println("Saving rating " + rating + " for userId " + userId);
-            return true; // Simulate success
-        } catch (Exception e) {
-            System.err.println("Error saving rating: " + e.getMessage());
-            return false;
+// Custom StarIcon class
+class StarIcon implements Icon {
+    private final int width;
+    private final int height;
+
+    public StarIcon(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public void paintIcon(Component c, Graphics g, int x, int y) {
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(Color.YELLOW); // Star color
+
+        int[] xPoints = new int[10];
+        int[] yPoints = new int[10];
+        double outerRadius = width / 2.0;
+        double innerRadius = outerRadius / 2.0;
+        int centerX = x + width / 2;
+        int centerY = y + height / 2;
+
+        for (int i = 0; i < 10; i++) {
+            double angle = Math.toRadians(36 * i + 18); // 36 degrees per point, offset by 18
+            double radius = (i % 2 == 0) ? outerRadius : innerRadius;
+            xPoints[i] = (int) (centerX + radius * Math.cos(angle));
+            yPoints[i] = (int) (centerY - radius * Math.sin(angle));
         }
 
+        g2d.fillPolygon(xPoints, yPoints, 10);
+        g2d.dispose();
     }
+
+    @Override
+    public int getIconWidth() {
+        return width;
+    }
+
+    @Override
+    public int getIconHeight() {
+        return height;
+    }
+}
 
     public void showVacancyPanel() {
         System.out.println("Navigating to Vacancy");
@@ -1040,4 +1062,25 @@ public class Dashboard_JobseekersController {
         System.out.println("Filter button clicked");
         JOptionPane.showMessageDialog(view, "Filter options coming soon!");
     }
+    private boolean saveRatingToDatabase(int userId, int rating) {
+    // Check if the rating is valid (must be between 1 and 5)
+    if (rating < 1 || rating > 5) {
+        System.err.println("Invalid rating value: " + rating + ". Must be between 1 and 5.");
+        return false;
+    }
+
+    // Create a new RatingDao instance and try to save the rating
+    RatingDao ratingDao = new RatingDao();
+    boolean success = ratingDao.saveRating(userId, rating);
+
+    // Log the result
+    if (success) {
+        System.out.println("Rating " + rating + " saved successfully for userId: " + userId);
+    } else {
+        System.err.println("Failed to save rating for userId: " + userId);
+    }
+
+    // Return the result of the save operation
+    return success;
+}
 }
