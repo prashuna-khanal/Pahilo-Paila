@@ -3,10 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/view/UserInterface.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/Dao/CVDao.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/Controller/LoginController.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/view/Dashboard_JobSeekers.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/Dao/VacancyDao.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/model/Vacancy.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/model/Cv.java</file>
+            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/Controller/Dashboard_JobseekersController.java</file>
             <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/Controller/Dashboard_RecruitersController.java</file>
-            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/view/Dashboard_Recruiters.java</file>
-            <file>file:/C:/Users/LENOVO/Documents/NetBeansProjects/Pahilo-Paila/src/pahilopaila/view/RegistrationEmployee.java</file>
         </group>
     </open-files>
 </project-private>

@@ -1,324 +1,675 @@
-package pahilopaila.Controller; // Matches pahilopaila/controller directory
+package pahilopaila.Controller;
 
+import pahilopaila.Dao.VacancyDao;
+import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_Recruiters;
-
-// Added for LayoutStyle.ComponentPlacement
+import pahilopaila.view.LoginPageview;
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.border.TitledBorder;
 
-import javax.swing.table.DefaultTableModel;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-/**
- * Controller for the Dashboard_Recruiters view, handling user interactions and navigation. Function Methods added to write codes.
- */
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 public class Dashboard_RecruitersController {
     private final Dashboard_Recruiters view;
+    private final VacancyDao vacancyDao;
+    private final int recruiterId;
+    private boolean isVacancyPosted = false;
 
-    // Constructor to accept the view
-    public Dashboard_RecruitersController(Dashboard_Recruiters view) {
+    public Dashboard_RecruitersController(Dashboard_Recruiters view, int recruiterId) {
         this.view = view;
+        this.recruiterId = recruiterId;
+        this.vacancyDao = new VacancyDao();
         initializeListeners();
+        showDashboardPanel();
     }
 
-    // Initialize listeners for UI components (private as it's an internal setup method)
     private void initializeListeners() {
-        // Navigation menu listeners
-        view.dashboard.addMouseListener(new java.awt.event.MouseAdapter() {
+        view.Searchfield.addActionListener(this::searchFieldActionPerformed);
+        view.jButton1.addActionListener(this::searchButtonActionPerformed);
+        view.jButton2.addActionListener(this::filterButtonActionPerformed);
+        view.getStarted.addActionListener(this::getStartedActionPerformed);
+        view.learnMore.addActionListener(this::learnMoreActionPerformed);
+
+        view.dashboard.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 showDashboardPanel();
             }
         });
-
-        view.vacancy.addMouseListener(new java.awt.event.MouseAdapter() {
+        view.vacancy.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 showVacancyPanel();
             }
         });
-
-        view.appliccation.addMouseListener(new java.awt.event.MouseAdapter() {
+        view.application.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 showApplicationsPanel();
             }
         });
-
-        view.settings.addMouseListener(new java.awt.event.MouseAdapter() {
+        view.settings.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 showSettingsPanel();
             }
         });
-
-        view.myAccount.addMouseListener(new java.awt.event.MouseAdapter() {
+        view.myAccount.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                view.showMyAccountPanel();
+            public void mouseClicked(MouseEvent evt) {
+                showMyAccountPanel();
             }
         });
-
-        view.signOut.addMouseListener(new java.awt.event.MouseAdapter() {
+        view.signOut.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                signOut();
+            public void mouseClicked(MouseEvent evt) {
+                logout();
             }
-        });
-
-        // Button listeners
-        view.getStarted.addActionListener((ActionEvent e) -> {
-            handleGetStarted();
-        });
-
-        view.learnMore.addActionListener((ActionEvent e) -> {
-            handleLearnMore();
-        });
-
-        view.jButton1.addActionListener((ActionEvent e) -> {
-            handleSearch();
-        });
-
-        view.jButton2.addActionListener((ActionEvent e) -> {
-            handleFilter();
         });
     }
 
-    // Navigation methods made public for potential external access
-    public void showDashboardPanel() {
-        System.out.println("Navigating to Dashboard");
-        JPanel contentPanel = new JPanel();
-        contentPanel.setBackground(new java.awt.Color(245, 245, 245));
-        contentPanel.setLayout(new java.awt.BorderLayout());
-
-        JPanel messagePanel = new JPanel();
-        messagePanel.setBackground(new java.awt.Color(0, 4, 80));
-        messagePanel.setLayout(new javax.swing.GroupLayout(messagePanel));
-
-        JLabel find = new JLabel("Find the right people");
-        find.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
-        find.setForeground(new java.awt.Color(255, 255, 255));
-
-        JLabel right = new JLabel("for the right Job");
-        right.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
-        right.setForeground(new java.awt.Color(255, 255, 255));
-
-        JButton getStarted = new JButton("Get Started");
-        getStarted.setForeground(new java.awt.Color(0, 0, 102));
-        getStarted.addActionListener(e -> handleGetStarted());
-
-        JButton learnMore = new JButton("Learn More");
-        learnMore.setForeground(new java.awt.Color(255, 255, 255));
-        learnMore.setBackground(new java.awt.Color(0, 4, 80));
-        learnMore.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "",
-            javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
-            javax.swing.border.TitledBorder.DEFAULT_POSITION,
-            new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255)));
-        learnMore.addActionListener(e -> handleLearnMore());
-
-        JLabel imageLabel = new JLabel();
-        try {
-            imageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/3man.png")));
-        } catch (Exception e) {
-            System.out.println("Error loading 3man icon: " + e.getMessage());
-        }
-
-        // Layout for messagePanel
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(messagePanel);
-        messagePanel.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(39, 39, 39)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(find, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(right, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 165, Short.MAX_VALUE)
-                    .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(22, 22, 22))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(find)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(right)
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(learnMore, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(25, 25, 25)
-                            .addComponent(imageLabel)))
-                    .addContainerGap(12, Short.MAX_VALUE))
-        );
-
-        contentPanel.add(messagePanel, java.awt.BorderLayout.CENTER);
-        updateContentPanel(contentPanel);
+    private void updateContentPanel(JPanel panel) {
+        view.getContentPanel().removeAll();
+        view.getContentPanel().setLayout(new BorderLayout());
+        view.getContentPanel().add(panel, BorderLayout.CENTER);
+        view.getContentPanel().revalidate();
+        view.getContentPanel().repaint();
     }
 
-    public void showVacancyPanel() {
-        System.out.println("Navigating to Vacancy");
-        JPanel vacancyPanel = new JPanel();
-        vacancyPanel.setBackground(new java.awt.Color(245, 245, 245));
-        vacancyPanel.setLayout(new GridBagLayout());
+    private JPanel createVacancyCard(Vacancy vacancy) {
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setBackground(new Color(0, 10, 100));
+        card.setPreferredSize(new Dimension(220, 190));
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(10, 10, 6, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        // Title
-        JLabel title = new JLabel("Manage Vacancies");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("<html>" + vacancy.getJobTitle().replaceAll("\n", "<br>") + "</html>");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        vacancyPanel.add(title, gbc);
+        card.add(titleLabel, gbc);
 
-        // NEW: Add Vacancy Button
-        JButton addVacancyButton = new JButton("Add New Vacancy");
-        addVacancyButton.setForeground(new java.awt.Color(0, 0, 102));
-        addVacancyButton.addActionListener(e -> handleAddVacancy());
+        JButton daysLeftButton = new JButton(vacancy.getDaysLeft() + " days left");
+        styleButton(daysLeftButton);
         gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        vacancyPanel.add(addVacancyButton, gbc);
+        gbc.gridwidth = 2;
+        card.add(daysLeftButton, gbc);
 
-        // NEW: Search Field and Button
-        JTextField vacancySearchField = new JTextField(20);
-        JButton searchVacancyButton = new JButton("Search Vacancies");
-        searchVacancyButton.addActionListener(e -> handleVacancySearch(vacancySearchField.getText()));
-        JPanel searchPanel = new JPanel();
-        searchPanel.add(vacancySearchField);
-        searchPanel.add(searchVacancyButton);
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        vacancyPanel.add(searchPanel, gbc);
+        JButton jobTypeButton = new JButton(vacancy.getJobType());
+        styleButton(jobTypeButton);
+        gbc.gridy = 2;
+        card.add(jobTypeButton, gbc);
 
-        // NEW: Vacancy Table
-        String[] columns = {"ID", "Title", "Department", "Status"};
-        DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
-        // Sample data (replace with actual data source in production)
-        Object[][] sampleData = {
-            {1, "Software Engineer", "Engineering", "Open"},
-            {2, "Project Manager", "Management", "Closed"},
-            {3, "Data Analyst", "Analytics", "Open"}
-        };
-        for (Object[] row : sampleData) {
-            tableModel.addRow(row);
+        JButton experienceButton = new JButton(vacancy.getExperienceLevel());
+        styleButton(experienceButton);
+        gbc.gridy = 3;
+        card.add(experienceButton, gbc);
+
+        return card;
+    }
+
+    private void styleButton(JButton button) {
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        button.setForeground(new Color(0, 10, 100));
+        button.setBackground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        button.setPreferredSize(new Dimension(140, 30));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    public void showDashboardPanel() {
+        JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
+        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        JPanel messagePanel = new JPanel();
+        messagePanel.setBackground(new Color(0, 4, 80));
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        messagePanel.setPreferredSize(new Dimension(680, 140));
+
+        JLabel find = new JLabel("Find the right people");
+        find.setFont(new Font("Segoe UI Symbol", Font.BOLD, 22));
+        find.setForeground(Color.WHITE);
+        find.setAlignmentX(Component.LEFT_ALIGNMENT);
+        messagePanel.add(find);
+
+        messagePanel.add(Box.createVerticalStrut(6));
+
+        JLabel right = new JLabel("for the right Job");
+        right.setFont(new Font("Segoe UI Symbol", Font.BOLD, 22));
+        right.setForeground(Color.WHITE);
+        right.setAlignmentX(Component.LEFT_ALIGNMENT);
+        messagePanel.add(right);
+
+        messagePanel.add(Box.createVerticalStrut(12));
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        buttonPanel.setBackground(new Color(0, 4, 80));
+        JButton getStarted = new JButton("Get Started");
+        getStarted.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        getStarted.setForeground(new Color(0, 0, 102));
+        getStarted.setPreferredSize(new Dimension(120, 30));
+        getStarted.addActionListener(this::getStartedActionPerformed);
+        buttonPanel.add(getStarted);
+
+        JButton learnMore = new JButton("Learn More");
+        learnMore.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        learnMore.setForeground(Color.WHITE);
+        learnMore.setBackground(new Color(0, 4, 80));
+        learnMore.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 2),
+            "",
+            TitledBorder.DEFAULT_JUSTIFICATION,
+            TitledBorder.DEFAULT_POSITION,
+            new Font("Segoe UI", Font.PLAIN, 11),
+            Color.WHITE
+        ));
+        learnMore.setPreferredSize(new Dimension(120, 30));
+        learnMore.addActionListener(this::learnMoreActionPerformed);
+        buttonPanel.add(learnMore);
+
+        buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        messagePanel.add(buttonPanel);
+
+        JPanel vacanciesPanel = new JPanel(new GridBagLayout());
+        vacanciesPanel.setBackground(new Color(245, 245, 245));
+        vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        GridBagConstraints cardGbc = new GridBagConstraints();
+        cardGbc.insets = new Insets(8, 8, 8, 8);
+        cardGbc.fill = GridBagConstraints.NONE;
+        cardGbc.anchor = GridBagConstraints.NORTHWEST;
+
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
+        if (vacancies.isEmpty()) {
+            JLabel noVacanciesLabel = new JLabel("No vacancies posted yet.");
+            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            cardGbc.gridx = 0;
+            cardGbc.gridy = 0;
+            vacanciesPanel.add(noVacanciesLabel, cardGbc);
+        } else {
+            int gridx = 0;
+            int gridy = 0;
+            for (Vacancy vacancy : vacancies) {
+                JPanel vacancyCard = createVacancyCard(vacancy);
+                cardGbc.gridx = gridx;
+                cardGbc.gridy = gridy;
+                vacanciesPanel.add(vacancyCard, cardGbc);
+                gridx++;
+                if (gridx > 2) {
+                    gridx = 0;
+                    gridy++;
+                }
+            }
         }
-        JTable vacancyTable = new JTable(tableModel);
-        JScrollPane tableScrollPane = new JScrollPane(vacancyTable);
+
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+        contentPanel.setBackground(new Color(245, 245, 245));
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
+
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+
+        updateContentPanel(mainPanel);
+    }
+
+    public void showVacancyPanel() {
+        JPanel mainPanel = new JPanel(new BorderLayout(12, 12)); // Increased from 8
+        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12)); // Increased from 8
+
+        JPanel headerPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GradientPaint gp = new GradientPaint(0, 0, new Color(0, 4, 80), 0, getHeight(), new Color(0, 20, 120));
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        headerPanel.setPreferredSize(new Dimension(680, 60));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 12));
+
+        JLabel headerLabel = new JLabel("Post New Vacancy");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        headerLabel.setForeground(Color.WHITE);
+        headerPanel.add(headerLabel);
+
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(new Color(252, 252, 252));
+        formPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                "Vacancy Details",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.TOP,
+                new Font("Segoe UI", Font.BOLD, 14)
+            ),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+        formPanel.setPreferredSize(new Dimension(660, 360)); // Increased from 320
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 20, 12, 20); // Increased from 8,12
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JPanel jobTitleRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        jobTitleRow.setBackground(new Color(252, 252, 252));
+        JLabel jobTitleIcon = new JLabel();
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/Image/logo/job.png"));
+            Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            jobTitleIcon.setIcon(new ImageIcon(scaledImage));
+        } catch (Exception e) {
+            System.out.println("Error loading job title icon: " + e.getMessage());
+        }
+        jobTitleRow.add(jobTitleIcon);
+        JLabel jobTitleLabel = new JLabel("Job Title:");
+        jobTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        jobTitleLabel.setForeground(new Color(0, 0, 102));
+        jobTitleRow.add(jobTitleLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(jobTitleRow, gbc);
+
+        JTextField jobTitleField = new JTextField(25); // Increased from 22
+        jobTitleField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        jobTitleField.setBackground(new Color(245, 245, 245));
+        jobTitleField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12) // Increased padding
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        formPanel.add(jobTitleField, gbc);
+
+        JLabel jobTypeLabel = new JLabel("Job Type:");
+        jobTypeLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        jobTypeLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(jobTypeLabel, gbc);
+
+        JComboBox<String> jobTypeCombo = new JComboBox<>(new String[]{"Full time", "Part time", "Contract"});
+        jobTypeCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        jobTypeCombo.setBackground(new Color(245, 245, 245));
+        jobTypeCombo.setPreferredSize(new Dimension(280, 35)); // Increased from 260x30
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        formPanel.add(jobTypeCombo, gbc);
+
+        JLabel experienceLabel = new JLabel("Experience Level:");
+        experienceLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        experienceLabel.setForeground(new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        vacancyPanel.add(tableScrollPane, gbc);
+        formPanel.add(experienceLabel, gbc);
 
-        // NEW: Filter ComboBox
-        String[] filterOptions = {"All", "Open", "Closed"};
-        JComboBox<String> statusFilter = new JComboBox<>(filterOptions);
-        statusFilter.addActionListener(e -> handleVacancyFilter((String) statusFilter.getSelectedItem()));
+        JComboBox<String> experienceCombo = new JComboBox<>(new String[]{"Junior-Level", "Mid-Level", "Senior-Level"});
+        experienceCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        experienceCombo.setBackground(new Color(245, 245, 245));
+        experienceCombo.setPreferredSize(new Dimension(280, 35)); // Increased from 180x30
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        formPanel.add(experienceCombo, gbc);
+        experienceCombo.revalidate();
+        experienceCombo.repaint();
+
+        JLabel deadlineLabel = new JLabel("Deadline Date:");
+        deadlineLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        deadlineLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
         gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weighty = 0.0;
-        vacancyPanel.add(statusFilter, gbc);
+        formPanel.add(deadlineLabel, gbc);
 
-        updateContentPanel(vacancyPanel);
+        JDateChooser deadlineDateChooser = new JDateChooser();
+        deadlineDateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        deadlineDateChooser.setBackground(new Color(245, 245, 245));
+        deadlineDateChooser.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12) // Increased padding
+        ));
+        deadlineDateChooser.setDateFormatString("yyyy-MM-dd");
+        deadlineDateChooser.setPreferredSize(new Dimension(280, 35)); // Increased from 260x30
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        formPanel.add(deadlineDateChooser, gbc);
+
+        JLabel descriptionLabel = new JLabel("Description:");
+        descriptionLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        descriptionLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        formPanel.add(descriptionLabel, gbc);
+
+        JTextArea descriptionArea = new JTextArea(6, 25); // Increased from 4,22
+        descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        descriptionArea.setBackground(new Color(245, 245, 245));
+        descriptionArea.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12) // Increased padding
+        ));
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
+        descriptionScroll.setPreferredSize(new Dimension(300, 120)); // Increased from 260x80
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        formPanel.add(descriptionScroll, gbc);
+
+        JLabel statusLabel = new JLabel("");
+        statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        gbc.gridx = 1;
+        gbc.gridy = 5;
+        formPanel.add(statusLabel, gbc);
+
+        JButton postButton = new JButton("Post Vacancy") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (getModel().isRollover()) {
+                    g2d.setColor(new Color(0, 20, 120));
+                } else {
+                    g2d.setColor(new Color(0, 4, 80));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Increased rounding
+                super.paintComponent(g);
+            }
+        };
+        postButton.setFont(new Font("Segoe UI", Font.BOLD, 14)); // Increased from 12
+        postButton.setForeground(Color.WHITE);
+        postButton.setContentAreaFilled(false);
+        postButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Increased padding
+        postButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        postButton.setFocusPainted(false);
+        postButton.setPreferredSize(new Dimension(200, 50)); // Increased from 160x40
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.CENTER;
+        formPanel.add(postButton, gbc);
+
+        postButton.addActionListener(e -> {
+            String jobTitle = jobTitleField.getText().trim();
+            String jobType = (String) jobTypeCombo.getSelectedItem();
+            String experienceLevel = (String) experienceCombo.getSelectedItem();
+            Date deadlineDate = deadlineDateChooser.getDate();
+            String description = descriptionArea.getText().trim();
+
+            if (jobTitle.isEmpty() || jobType == null || experienceLevel == null || deadlineDate == null) {
+                statusLabel.setText("Please fill in all required fields.");
+                statusLabel.setForeground(Color.RED);
+                return;
+            }
+
+            LocalDate currentDate = LocalDate.now();
+            LocalDate selectedDate = deadlineDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            long daysLeft = ChronoUnit.DAYS.between(currentDate, selectedDate);
+            if (daysLeft <= 0) {
+                statusLabel.setText("Deadline must be a future date.");
+                statusLabel.setForeground(Color.RED);
+                return;
+            }
+
+            Vacancy vacancy = new Vacancy();
+            vacancy.setRecruiterId(recruiterId);
+            vacancy.setJobTitle(jobTitle);
+            vacancy.setJobType(jobType);
+            vacancy.setExperienceLevel(experienceLevel);
+            vacancy.setDaysLeft((int) daysLeft);
+            vacancy.setDescription(description);
+
+            boolean success = vacancyDao.saveVacancy(vacancy);
+            if (success) {
+                isVacancyPosted = true;
+                statusLabel.setText("Vacancy posted successfully!");
+                statusLabel.setForeground(Color.GREEN);
+                jobTitleField.setText("");
+                jobTypeCombo.setSelectedIndex(0);
+                experienceCombo.setSelectedIndex(0);
+                deadlineDateChooser.setDate(null);
+                descriptionArea.setText("");
+                showDashboardPanel();
+            } else {
+                statusLabel.setText("Failed to post vacancy.");
+                statusLabel.setForeground(Color.RED);
+            }
+        });
+
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(formPanel, BorderLayout.CENTER);
+
+        updateContentPanel(mainPanel);
     }
 
     public void showApplicationsPanel() {
-        System.out.println("Navigating to Applications");
-        JPanel applicationsPanel = new JPanel();
-        applicationsPanel.setBackground(new java.awt.Color(245, 245, 245));
-        applicationsPanel.setLayout(new java.awt.BorderLayout());
-        JLabel title = new JLabel("View Applications");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        applicationsPanel.add(title, java.awt.BorderLayout.NORTH);
-        updateContentPanel(applicationsPanel);
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        JLabel label = new JLabel("Applications Panel");
+        label.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(label);
+        panel.setPreferredSize(new Dimension(680, 320));
+        updateContentPanel(panel);
     }
 
     public void showSettingsPanel() {
-        System.out.println("Navigating to Settings");
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setBackground(new java.awt.Color(245, 245, 245));
-        settingsPanel.setLayout(new java.awt.BorderLayout());
-        JLabel title = new JLabel("Settings");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        settingsPanel.add(title, java.awt.BorderLayout.NORTH);
-        updateContentPanel(settingsPanel);
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        JLabel label = new JLabel("Settings Panel");
+        label.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(label);
+        panel.setPreferredSize(new Dimension(680, 320));
+        updateContentPanel(panel);
+
     }
 
-    public void signOut() {
-        System.out.println("Signing out...");
+    public void showMyAccountPanel() {
+        JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
+        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        JPanel headerPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GradientPaint gp = new GradientPaint(0, 0, new Color(0, 4, 80), 0, getHeight(), new Color(0, 20, 120));
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        headerPanel.setPreferredSize(new Dimension(680, 60));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 12));
+
+        JLabel headerLabel = new JLabel("My Account");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        headerLabel.setForeground(Color.WHITE);
+        headerPanel.add(headerLabel);
+
+        JPanel centerWrapper = new JPanel();
+        centerWrapper.setBackground(new Color(245, 245, 245));
+        centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(new Color(252, 252, 252));
+        formPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+        formPanel.setPreferredSize(new Dimension(660, 320));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 12, 12, 12);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        usernameLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(usernameLabel, gbc);
+
+        JTextField usernameField = new JTextField(18);
+        usernameField.setText(view.username.getText());
+        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        usernameField.setBackground(new Color(245, 245, 245));
+        usernameField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        formPanel.add(usernameField, gbc);
+
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        passwordLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(passwordLabel, gbc);
+
+        JPasswordField passwordField = new JPasswordField(18);
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        passwordField.setBackground(new Color(245, 245, 245));
+        passwordField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        formPanel.add(passwordField, gbc);
+
+        JLabel newPasswordLabel = new JLabel("New Password:");
+        newPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        newPasswordLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(newPasswordLabel, gbc);
+
+        JPasswordField newPasswordField = new JPasswordField(18);
+        newPasswordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        newPasswordField.setBackground(new Color(245, 245, 245));
+        newPasswordField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        formPanel.add(newPasswordField, gbc);
+
+        JButton updateButton = new JButton("Update") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (getModel().isRollover()) {
+                    g2d.setColor(new Color(0, 20, 120));
+                } else {
+                    g2d.setColor(new Color(0, 4, 80));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                super.paintComponent(g);
+            }
+        };
+        updateButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        updateButton.setForeground(Color.WHITE);
+        updateButton.setContentAreaFilled(false);
+        updateButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        updateButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        updateButton.setFocusPainted(false);
+        updateButton.setPreferredSize(new Dimension(160, 40));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.CENTER;
+        formPanel.add(updateButton, gbc);
+
+        updateButton.addActionListener(e -> {
+            String usernameText = usernameField.getText().trim();
+            String passwordText = new String(passwordField.getPassword());
+            String newPasswordText = new String(newPasswordField.getPassword());
+            if (usernameText.isEmpty() || passwordText.isEmpty() || newPasswordText.isEmpty()) {
+                JOptionPane.showMessageDialog(view, "Please fill all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            JOptionPane.showMessageDialog(view, "User info updated successfully!\nUsername: " + usernameText);
+            view.username.setText(usernameText);
+        });
+
+        centerWrapper.add(formPanel);
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(centerWrapper, BorderLayout.CENTER);
+
+        updateContentPanel(mainPanel);
+    }
+
+    public void logout() {
         view.dispose();
+        LoginPageview loginView = new LoginPageview();
+        LoginController loginController = new LoginController(loginView);
+        loginController.open();
     }
 
-    // Action handlers made public for potential external triggering
-    public void handleGetStarted() {
-        System.out.println("Get Started button clicked");
-        JOptionPane.showMessageDialog(view, "Get Started clicked! Implement further actions.");
+    public void searchFieldActionPerformed(ActionEvent e) {
+        System.out.println("Search: " + view.Searchfield.getText());
     }
 
-    public void handleLearnMore() {
-        System.out.println("Learn More button clicked");
-        JOptionPane.showMessageDialog(view, "Learn More clicked! Implement further actions.");
+    public void searchButtonActionPerformed(ActionEvent e) {
+        System.out.println("Search button clicked");
     }
 
-    public void handleSearch() {
-        String searchText = view.Searchfield.getText();
-        System.out.println("Search button clicked with query: " + searchText);
-        JOptionPane.showMessageDialog(view, "Search query: " + searchText);
-    }
-
-    public void handleFilter() {
+    public void filterButtonActionPerformed(ActionEvent e) {
         System.out.println("Filter button clicked");
-        JOptionPane.showMessageDialog(view, "Filter clicked! Implement filter options.");
-    }
-    // NEW: Handler for adding a new vacancy
-    public void handleAddVacancy() {
-        System.out.println("Add New Vacancy button clicked");
-        JOptionPane.showMessageDialog(view, "Add New Vacancy clicked! Implement form to add vacancy.");
     }
 
-    // NEW: Handler for vacancy search
-    public void handleVacancySearch(String query) {
-        System.out.println("Vacancy search with query: " + query);
-        JOptionPane.showMessageDialog(view, "Searching vacancies for: " + query);
+    public void getStartedActionPerformed(ActionEvent e) {
+        System.out.println("Get Started clicked");
     }
 
-    // NEW: Handler for vacancy filter
-    public void handleVacancyFilter(String status) {
-        System.out.println("Filtering vacancies by status: " + status);
-        JOptionPane.showMessageDialog(view, "Filtering by status: " + status);
+    public void learnMoreActionPerformed(ActionEvent e) {
+        System.out.println("Learn More clicked");
     }
 
-    // Internal utility method remains private
-    private void updateContentPanel(JPanel newPanel) {
-        view.content.removeAll();
-        view.content.setLayout(new java.awt.BorderLayout());
-        view.content.add(newPanel, java.awt.BorderLayout.CENTER);
-        view.content.revalidate();
-        view.content.repaint();
+    public void open() {
+        view.setVisible(true);
     }
 
-    // Public method to update user information
     public void setUserInfo(String username, String email) {
-        view.username.setText(username);
-        view.email.setText(email);
+        view.setUserInfo(username, email);
     }
 }
