@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
+import java.awt.image.BufferedImage;
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
