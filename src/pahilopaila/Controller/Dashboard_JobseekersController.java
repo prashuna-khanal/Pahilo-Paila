@@ -262,9 +262,83 @@ public class Dashboard_JobseekersController {
         }
 
         featuredPanel.add(scrollPane, BorderLayout.CENTER);
-        contentPanel.add(featuredPanel, BorderLayout.CENTER);
+         // [CHANGED] Rating Panel with Star Icons
+        JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        ratingPanel.setBackground(new Color(245, 245, 245));
+        ratingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JLabel ratingLabel = new JLabel("Rate Our App:");
+        ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        ratingPanel.add(ratingLabel);
+
+        ButtonGroup ratingGroup = new ButtonGroup();
+        JRadioButton[] stars = new JRadioButton[5];
+        ImageIcon starIcon = new ImageIcon(getClass().getResource("/Image/star.png")); // Ensure star.png exists
+        if (starIcon.getImage() == null) {
+            starIcon = new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB)); // Fallback
+        }
+        Image scaledStar = starIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        for (int i = 0; i < 5; i++) {
+            stars[i] = new JRadioButton();
+            stars[i].setIcon(new ImageIcon(scaledStar));
+            stars[i].setSelectedIcon(new ImageIcon(scaledStar)); // Same icon for selected state
+            stars[i].setRolloverIcon(new ImageIcon(scaledStar)); // Optional: Hover effect
+            stars[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+            stars[i].setBackground(new Color(245, 245, 245));
+            ratingGroup.add(stars[i]);
+            ratingPanel.add(stars[i]);
+        }
+
+        JButton submitRating = new JButton("Submit Rating");
+        submitRating.setBackground(new Color(0, 4, 80));
+        submitRating.setForeground(Color.WHITE);
+        submitRating.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+        submitRating.setFocusPainted(false);
+        submitRating.addActionListener(e -> {
+            int rating = 0;
+            for (int i = 0; i < 5; i++) {
+                if (stars[i].isSelected()) {
+                    rating = i + 1;
+                    break;
+                }
+            }
+            if (rating > 0) {
+                String currentDateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+                JOptionPane.showMessageDialog(view, "Thank you for rating us " + rating + " stars!\nSubmitted at " + currentDateTime, "Rating Submitted", JOptionPane.INFORMATION_MESSAGE);
+                // [CHANGED] Placeholder for saving rating to database
+                boolean success = saveRatingToDatabase(userId, rating);
+                if (!success) {
+                    JOptionPane.showMessageDialog(view, "Failed to save rating. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(view, "Please select a rating.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        ratingPanel.add(submitRating);
+
+        // [CHANGED] Combine featured and rating panels with better layout
+        JPanel centerPanel = new JPanel(new BorderLayout(15, 15));
+        centerPanel.setBackground(new Color(245, 245, 245));
+        centerPanel.add(featuredPanel, BorderLayout.CENTER);
+        centerPanel.add(ratingPanel, BorderLayout.SOUTH);
+
+        contentPanel.add(centerPanel, BorderLayout.CENTER);
 
         updateContentPanel(contentPanel);
+    }
+
+    // [CHANGED] Method to save rating to database (placeholder)
+    private boolean saveRatingToDatabase(int userId, int rating) {
+        // Placeholder implementation - Replace with actual database logic
+        try {
+            // Example: Assume cvDao has a method to save rating
+            // return cvDao.saveRating(userId, rating);
+            System.out.println("Saving rating " + rating + " for userId " + userId);
+            return true; // Simulate success
+        } catch (Exception e) {
+            System.err.println("Error saving rating: " + e.getMessage());
+            return false;
+        }
+
     }
 
     public void showVacancyPanel() {
@@ -300,6 +374,7 @@ public class Dashboard_JobseekersController {
         }
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
+
         updateContentPanel(mainPanel);
     }
 
