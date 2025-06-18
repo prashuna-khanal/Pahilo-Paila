@@ -2,6 +2,7 @@ package pahilopaila.Controller;
 
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.CVDao;
+import pahilopaila.Dao.RatingDao;
 import pahilopaila.Dao.VacancyDao;
 import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_JobSeekers;
@@ -13,8 +14,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
+import java.awt.image.BufferedImage;
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
@@ -154,7 +159,7 @@ public class Dashboard_JobseekersController {
     }
 
     // Navigation methods
-    public void showDashboardPanel() {
+  public void showDashboardPanel() {
         System.out.println("Navigating to Dashboard");
         JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
         contentPanel.setBackground(new java.awt.Color(245, 245, 245));
@@ -250,19 +255,173 @@ public class Dashboard_JobseekersController {
             noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
             vacanciesPanel.add(noVacanciesLabel);
         } else {
-            // Select up to 3 random vacancies
             Random rand = new Random();
             int count = Math.min(3, allVacancies.size());
             for (int i = 0; i < count; i++) {
                 int index = rand.nextInt(allVacancies.size());
-                Vacancy vacancy = allVacancies.remove(index); // Remove to avoid duplicates
+                Vacancy vacancy = allVacancies.remove(index);
                 JPanel vacancyCard = createVacancyCard(vacancy);
                 vacanciesPanel.add(vacancyCard);
             }
         }
 
         featuredPanel.add(scrollPane, BorderLayout.CENTER);
-        contentPanel.add(featuredPanel, BorderLayout.CENTER);
+
+        // CHANGED: Updated rating panel to fix hover effect starting from 1st star
+        // Rating Panel with Graphical Stars
+        JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        ratingPanel.setBackground(new Color(245, 245, 245));
+        ratingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JLabel ratingLabel = new JLabel("Rate Our App:");
+        ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        ratingPanel.add(ratingLabel);
+
+        ButtonGroup ratingGroup = new ButtonGroup();
+        JRadioButton[] stars = new JRadioButton[5];
+        // CHANGED: Track the currently hovered star index
+        final int[] currentHoverIndex = {-1}; // -1 means no hover
+
+        // CHANGED: Updated StarIcon class to handle selection and hover correctly
+        class StarIcon implements Icon {
+            private final int width;
+            private final int height;
+            private final Color normalColor;
+            private final Color highlightColor;
+            private final int starIndex;
+            private final JRadioButton[] stars;
+
+            public StarIcon(int width, int height, int starIndex, JRadioButton[] stars) {
+                this.width = width;
+                this.height = height;
+                this.normalColor = Color.YELLOW;
+                this.highlightColor = new Color(255, 215, 0);
+                this.starIndex = starIndex;
+                this.stars = stars;
+            }
+
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // CHANGED: Highlight if this star is within the selected or hovered range
+                boolean shouldHighlight = false;
+                // Check for selection
+                for (int i = 0; i < stars.length; i++) {
+                    if (stars[i].isSelected() && starIndex <= i) {
+                        shouldHighlight = true;
+                        break;
+                    }
+                }
+                // Check for hover
+                if (currentHoverIndex[0] >= 0 && starIndex <= currentHoverIndex[0]) {
+                    shouldHighlight = true;
+                }
+
+                g2d.setColor(shouldHighlight ? highlightColor : normalColor);
+
+                int[] xPoints = new int[10];
+                int[] yPoints = new int[10];
+                double outerRadius = width / 2.0;
+                double innerRadius = outerRadius / 2.0;
+                int centerX = x + width / 2;
+                int centerY = y + height / 2;
+
+                for (int i = 0; i < 10; i++) {
+                    double angle = Math.toRadians(36 * i + 18);
+                    double radius = (i % 2 == 0) ? outerRadius : innerRadius;
+                    xPoints[i] = (int) (centerX + radius * Math.cos(angle));
+                    yPoints[i] = (int) (centerY - radius * Math.sin(angle));
+                }
+
+                g2d.fillPolygon(xPoints, yPoints, 10);
+                g2d.dispose();
+            }
+
+            @Override
+            public int getIconWidth() {
+                return width;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return height;
+            }
+        }
+
+        // CHANGED: Updated star creation loop to handle hover from 1st star
+        for (int i = 0; i < 5; i++) {
+            stars[i] = new JRadioButton();
+            stars[i].setIcon(new StarIcon(20, 20, i, stars));
+            stars[i].setRolloverEnabled(true);
+            stars[i].setContentAreaFilled(false);
+            stars[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+            stars[i].setBackground(new Color(245, 245, 245));
+            ratingGroup.add(stars[i]);
+            ratingPanel.add(stars[i]);
+
+            // CHANGED: Updated mouse listener to highlight stars from 1st to hovered
+            final int starIndex = i;
+            stars[i].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    currentHoverIndex[0] = starIndex;
+                    for (int j = 0; j < stars.length; j++) {
+                        stars[j].repaint();
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    currentHoverIndex[0] = -1;
+                    for (int j = 0; j < stars.length; j++) {
+                        stars[j].repaint();
+                    }
+                }
+            });
+
+            // CHANGED: Ensure repaint on selection
+            stars[i].addActionListener(e -> {
+                for (JRadioButton star : stars) {
+                    star.repaint();
+                }
+            });
+        }
+
+        JButton submitRating = new JButton("Submit Rating");
+        submitRating.setBackground(new Color(0, 4, 80));
+        submitRating.setForeground(Color.WHITE);
+        submitRating.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+        submitRating.setFocusPainted(false);
+        submitRating.addActionListener(e -> {
+            int rating = 0;
+            for (int i = 0; i < 5; i++) {
+                if (stars[i].isSelected()) {
+                    rating = i + 1;
+                    break;
+                }
+            }
+            if (rating > 0) {
+                ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
+                String currentDateTime = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+                JOptionPane.showMessageDialog(view, "Thank you for rating us " + rating + " stars!\nSubmitted at " + currentDateTime, "Rating Submitted", JOptionPane.INFORMATION_MESSAGE);
+                boolean success = saveRatingToDatabase(userId, rating);
+                if (!success) {
+                    JOptionPane.showMessageDialog(view, "Failed to save rating. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(view, "Please select a rating.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        ratingPanel.add(submitRating);
+
+        // Combine featured and rating panels
+        JPanel centerPanel = new JPanel(new BorderLayout(15, 15));
+        centerPanel.setBackground(new Color(245, 245, 245));
+        centerPanel.add(featuredPanel, BorderLayout.CENTER);
+        centerPanel.add(ratingPanel, BorderLayout.SOUTH);
+
+        contentPanel.add(centerPanel, BorderLayout.CENTER);
 
         updateContentPanel(contentPanel);
     }
@@ -300,6 +459,7 @@ public class Dashboard_JobseekersController {
         }
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
+
         updateContentPanel(mainPanel);
     }
 
@@ -1246,4 +1406,25 @@ private void applyLightThemeToComponent(Container container, Color lightBg, Colo
         System.out.println("Filter button clicked");
         JOptionPane.showMessageDialog(view, "Filter options coming soon!");
     }
+    private boolean saveRatingToDatabase(int userId, int rating) {
+    // Check if the rating is valid (must be between 1 and 5)
+    if (rating < 1 || rating > 5) {
+        System.err.println("Invalid rating value: " + rating + ". Must be between 1 and 5.");
+        return false;
+    }
+
+    // Create a new RatingDao instance and try to save the rating
+    RatingDao ratingDao = new RatingDao();
+    boolean success = ratingDao.saveRating(userId, rating);
+
+    // Log the result
+    if (success) {
+        System.out.println("Rating " + rating + " saved successfully for userId: " + userId);
+    } else {
+        System.err.println("Failed to save rating for userId: " + userId);
+    }
+
+    // Return the result of the save operation
+    return success;
+}
 }
