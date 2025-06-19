@@ -2,7 +2,9 @@ package pahilopaila.Controller;
 
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.CVDao;
+import pahilopaila.Dao.UserDao;
 import pahilopaila.Dao.VacancyDao;
+import pahilopaila.model.UserData;
 import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_JobSeekers;
 import pahilopaila.view.LoginPageview;
@@ -11,6 +13,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,18 +27,20 @@ public class Dashboard_JobseekersController {
     private final Dashboard_JobSeekers view;
     private final CVDao cvDao;
     private final VacancyDao vacancyDao;
-    private int userId; // Store userId
+    private final UserDao userDao;
+    private int userId;
+    private String currentEmail; // Store current email for validation
 
-    // Constructor to accept the view and userId
+    // Constructor
     public Dashboard_JobseekersController(Dashboard_JobSeekers view, int userId) {
         this.view = view;
         this.userId = userId;
         this.cvDao = new CVDao();
         this.vacancyDao = new VacancyDao();
+        this.userDao = new UserDao();
         initializeListeners();
         showDashboardPanel();
     }
-
     // Initialize listeners for UI components
     private void initializeListeners() {
         // Sidebar navigation listeners
@@ -748,20 +754,21 @@ public class Dashboard_JobseekersController {
         updateContentPanel(settingsPanel);
     }
 
+    // My account Pnel to manually change and update the password 
     public void showMyAccountPanel() {
         System.out.println("Navigating to My Account");
-        JPanel mainPanel = new JPanel();
+        JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBackground(new Color(245, 245, 245));
-        mainPanel.setLayout(new java.awt.BorderLayout(15, 15));
-        mainPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
+        // Header Panel with Gradient
         JPanel headerPanel = new JPanel() {
             @Override
-            protected void paintComponent(java.awt.Graphics g) {
+            protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
-                g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                java.awt.GradientPaint gp = new java.awt.GradientPaint(
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GradientPaint gp = new GradientPaint(
                     0, 0, new Color(0, 4, 80),
                     0, getHeight(), new Color(0, 20, 120)
                 );
@@ -769,110 +776,122 @@ public class Dashboard_JobseekersController {
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        headerPanel.setPreferredSize(new java.awt.Dimension(680, 70));
-        headerPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
+        headerPanel.setPreferredSize(new Dimension(680, 60));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 12));
 
         JLabel headerLabel = new JLabel("My Account");
-        headerLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
 
+        // Center Wrapper for Form
         JPanel centerWrapper = new JPanel();
         centerWrapper.setBackground(new Color(245, 245, 245));
-        centerWrapper.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+        centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
-        JPanel formPanel = new JPanel();
+        // Form Panel
+        JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(252, 252, 252));
-        formPanel.setLayout(new java.awt.GridBagLayout());
-        formPanel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 2, new Color(180, 180, 180, 100)),
-            javax.swing.BorderFactory.createCompoundBorder(
-                javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20),
-                javax.swing.BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true)
-            )
+        formPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
+        formPanel.setPreferredSize(new Dimension(660, 360));
 
-        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
-        gbc.insets = new java.awt.Insets(15, 15, 15, 15);
-        gbc.fill = java.awt.GridBagConstraints.NONE;
-        gbc.anchor = java.awt.GridBagConstraints.CENTER;
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 12, 12, 12);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel usernameRow = new JPanel();
-        usernameRow.setBackground(new Color(252, 252, 252));
-        usernameRow.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 0));
-
-        JLabel usernameIcon = new JLabel();
-        try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/profile-user.png"));
-            java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
-            usernameIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
-            usernameIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
-        } catch (Exception e) {
-            System.out.println("Error loading username icon: " + e.getMessage());
-            usernameIcon.setText("U");
+        // Fetch user data from database
+        UserData user = userDao.getUserById(userId);
+        String usernameText = user != null ? user.getName() : view.username.getText();
+        String emailText = user != null ? user.getEmail() : view.email.getText();
+        // Ensure currentEmail is set correctly
+        if (user != null) {
+            currentEmail = user.getEmail();
         }
-        usernameRow.add(usernameIcon);
 
+        // Username
         JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         usernameLabel.setForeground(new Color(0, 0, 102));
-        usernameRow.add(usernameLabel);
-
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(usernameRow, gbc);
+        formPanel.add(usernameLabel, gbc);
 
-        JTextField usernameField = new JTextField(25);
-        usernameField.setText(view.username.getText());
-        usernameField.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
+        JTextField usernameField = new JTextField(18);
+        usernameField.setText(usernameText);
+        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         usernameField.setBackground(new Color(245, 245, 245));
-        usernameField.setPreferredSize(new java.awt.Dimension(usernameField.getPreferredSize().width, 25));
-        usernameField.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-            javax.swing.BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        usernameField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
         gbc.gridy = 0;
         formPanel.add(usernameField, gbc);
 
-        JPanel passwordRow = new JPanel();
-        passwordRow.setBackground(new Color(252, 252, 252));
-        passwordRow.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 0));
-
-        JLabel passwordIcon = new JLabel();
-        try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/Image/locked-computer.png"));
-            java.awt.Image scaledImage = icon.getImage().getScaledInstance(24, 24, java.awt.Image.SCALE_SMOOTH);
-            passwordIcon.setIcon(new javax.swing.ImageIcon(scaledImage));
-            passwordIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 5));
-        } catch (Exception e) {
-            System.out.println("Error loading password icon: " + e.getMessage());
-            passwordIcon.setText("P");
-        }
-        passwordRow.add(passwordIcon);
-
-        JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
-        passwordLabel.setForeground(new Color(0, 0, 102));
-        passwordRow.add(passwordLabel);
-
+        // Email
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        emailLabel.setForeground(new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 1;
-        formPanel.add(passwordRow, gbc);
+        formPanel.add(emailLabel, gbc);
 
-        JPasswordField passwordField = new JPasswordField(25);
-        passwordField.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
-        passwordField.setBackground(new Color(245, 245, 245));
-        passwordField.setPreferredSize(new java.awt.Dimension(passwordField.getPreferredSize().width, 25));
-        passwordField.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-            javax.swing.BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        JTextField emailField = new JTextField(18);
+        emailField.setText(emailText);
+        emailField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        emailField.setBackground(new Color(245, 245, 245));
+        emailField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
         gbc.gridy = 1;
+        formPanel.add(emailField, gbc);
+
+        // Password
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        passwordLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(passwordLabel, gbc);
+
+        JPasswordField passwordField = new JPasswordField(18);
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        passwordField.setBackground(new Color(245, 245, 245));
+        passwordField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
         formPanel.add(passwordField, gbc);
 
-        JButton saveButton = new JButton("Save Changes") {
+        // New Password
+        JLabel newPasswordLabel = new JLabel("New Password:");
+        newPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        newPasswordLabel.setForeground(new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(newPasswordLabel, gbc);
+
+        JPasswordField newPasswordField = new JPasswordField(18);
+        newPasswordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        newPasswordField.setBackground(new Color(245, 245, 245));
+        newPasswordField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        formPanel.add(newPasswordField, gbc);
+
+        // Update Button
+        JButton saveButton = new JButton("Update") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
@@ -882,31 +901,55 @@ public class Dashboard_JobseekersController {
                 } else {
                     g2d.setColor(new Color(0, 4, 80));
                 }
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 super.paintComponent(g);
             }
         };
-        saveButton.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+        saveButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         saveButton.setForeground(Color.WHITE);
         saveButton.setContentAreaFilled(false);
-        saveButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
+        saveButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         saveButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         saveButton.setFocusPainted(false);
+        saveButton.setPreferredSize(new Dimension(160, 40));
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(saveButton, gbc);
 
+        // Button Action
         saveButton.addActionListener(e -> {
-            String newUsername = usernameField.getText().trim();
-            String newPassword = new String(passwordField.getPassword()).trim();
-            if (newUsername.isEmpty()) {
-                JOptionPane.showMessageDialog(view, "Username cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            String updatedUsername = usernameField.getText().trim();
+            String updatedEmail = emailField.getText().trim();
+            String passwordText = new String(passwordField.getPassword()).trim();
+            String newPasswordText = new String(newPasswordField.getPassword()).trim();
+
+            // Validate inputs
+            if (updatedUsername.isEmpty() || updatedEmail.isEmpty() || passwordText.isEmpty() || newPasswordText.isEmpty()) {
+                JOptionPane.showMessageDialog(view, "Please fill all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            // Placeholder for updating username/password in the database
-            JOptionPane.showMessageDialog(view, "Account details updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            view.username.setText(newUsername);
+
+            // Validate email format
+            if (!updatedEmail.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                JOptionPane.showMessageDialog(view, "Invalid email format.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // Verify current password
+            if (!verifyCurrentPassword(passwordText)) {
+                JOptionPane.showMessageDialog(view, "Current password is incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Update user info in database
+            boolean success = updateUserInfo(updatedUsername, updatedEmail, newPasswordText);
+            if (success) {
+                JOptionPane.showMessageDialog(view, "User info updated successfully!\nUsername: " + updatedUsername, "Success", JOptionPane.INFORMATION_MESSAGE);
+                view.setUserInfo(updatedUsername, updatedEmail); // Update view
+                currentEmail = updatedEmail;
+            } else {
+                JOptionPane.showMessageDialog(view, "Failed to update user info. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         centerWrapper.add(formPanel);
@@ -915,6 +958,15 @@ public class Dashboard_JobseekersController {
         updateContentPanel(mainPanel);
     }
 
+    // Verify current password using UserDao
+    private boolean verifyCurrentPassword(String password) {
+        return userDao.verifyPassword(userId, password);
+    }
+
+    // Update user info using UserDao
+    private boolean updateUserInfo(String username, String email, String newPassword) {
+        return userDao.updateUser(userId, username, email, newPassword);
+    }
     public void signOut() {
         System.out.println("Signing out");
         view.dispose();
@@ -926,6 +978,7 @@ public class Dashboard_JobseekersController {
     // Set user information
     public void setUserInfo(String username, String email, int userId) {
         this.userId = userId;
+        this.currentEmail = email;
         view.username.setText(username);
         view.email.setText(email);
     }
