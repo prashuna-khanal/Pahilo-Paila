@@ -703,7 +703,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
     private void searchActionPerformed(java.awt.event.ActionEvent evt) {
         // Placeholder for search button action
     }
-    
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
