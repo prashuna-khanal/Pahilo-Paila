@@ -4,6 +4,7 @@ import com.toedter.calendar.JDateChooser;
 
 import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.CVDao;
+import pahilopaila.Dao.RatingDao;
 import pahilopaila.Dao.UserDao;
 import pahilopaila.Dao.VacancyDao;
 import pahilopaila.model.UserData;
@@ -20,6 +21,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 import java.text.SimpleDateFormat; // Add this import at the top if not present
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+
 import javax.swing.text.JTextComponent;
 
 /**
@@ -233,11 +237,6 @@ public class Dashboard_JobseekersController {
 
         return card;
     }
-public void showDashboardPanel() {
-    System.out.println("Navigating to Dashboard");
-        return card;
-    }
-
     // Navigation methods
     public void showDashboardPanel() {
         System.out.println("Navigating to Dashboard");
@@ -1252,17 +1251,6 @@ public void showDashboardPanel() {
             }
         }
     }
-    public void showSettingsPanel() {
-        System.out.println("Navigating to Settings");
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setBackground(new java.awt.Color(245, 245, 245));
-        settingsPanel.setLayout(new java.awt.BorderLayout());
-        JLabel title = new JLabel("Settings");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        settingsPanel.add(title, java.awt.BorderLayout.NORTH);
-        updateContentPanel(settingsPanel);
-    }
 
     // My account Panel to manually change and update the password 
     public void showMyAccountPanel() {
@@ -1541,5 +1529,4 @@ public void showDashboardPanel() {
         // Return the result of the save operation
         return success;
     }
-}
 }

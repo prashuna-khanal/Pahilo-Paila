@@ -698,34 +698,6 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
 
  return card;
 }
-
-    public void showSettingsPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(245, 245, 245));
-        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        JLabel label = new JLabel("Settings Panel");
-        label.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(label);
-        panel.setPreferredSize(new Dimension(680, 320));
-        updateContentPanel(panel);
-
-    }
-
-    
-     public void showMyAccountPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        JLabel label = new JLabel("Applications Panel");
-        label.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        label.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(label);
-        panel.setPreferredSize(new Dimension(680, 320));
-        updateContentPanel(panel);
-    }
-
     public void showSettingsPanel() {
         System.out.println("Navigating to Settings");
 
