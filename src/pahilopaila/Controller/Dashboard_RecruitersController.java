@@ -1,7 +1,10 @@
 package pahilopaila.Controller;
 
 import pahilopaila.Dao.VacancyDao;
+import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.UserDao;
+import pahilopaila.model.Application;
+import pahilopaila.model.Cv;
 import pahilopaila.model.UserData;
 import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_Recruiters;
@@ -44,8 +47,6 @@ public class Dashboard_RecruitersController {
 
     private void initializeListeners() {
         view.Searchfield.addActionListener(this::searchFieldActionPerformed);
-        view.jButton1.addActionListener(this::searchButtonActionPerformed);
-        view.jButton2.addActionListener(this::filterButtonActionPerformed);
         view.getStarted.addActionListener(this::getStartedActionPerformed);
         view.learnMore.addActionListener(this::learnMoreActionPerformed);
 
@@ -501,6 +502,218 @@ public class Dashboard_RecruitersController {
     }
 
     public void showApplicationsPanel() {
+ JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
+ mainPanel.setBackground(new Color(245, 245, 245));
+ mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+
+ // Header Panel
+ JPanel headerPanel = new JPanel() {
+ @Override
+ protected void paintComponent(Graphics g) {
+ super.paintComponent(g);
+ Graphics2D g2d = (Graphics2D) g;
+ g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+ GradientPaint gp = new GradientPaint(0, 0, new Color(0, 4, 80), 0, getHeight(), new Color(0, 20, 120));
+ g2d.setPaint(gp);
+ g2d.fillRect(0, 0, getWidth(), getHeight());
+ }
+ };
+ headerPanel.setPreferredSize(new Dimension(680, 60));
+ headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 12));
+
+ JLabel headerLabel = new JLabel("Applications");
+ headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+ headerLabel.setForeground(Color.WHITE);
+ headerPanel.add(headerLabel);
+
+ // Applications Panel
+ JPanel applicationsPanel = new JPanel(new GridBagLayout());
+ applicationsPanel.setBackground(new Color(245, 245, 245));
+ JScrollPane scrollPane = new JScrollPane(applicationsPanel);
+ scrollPane.setBorder(null);
+ scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+ scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+ GridBagConstraints gbc = new GridBagConstraints();
+ gbc.insets = new Insets(10, 10, 10, 10);
+ gbc.fill = GridBagConstraints.HORIZONTAL;
+ gbc.anchor = GridBagConstraints.NORTHWEST;
+
+ // Fetch applications
+ ApplicationDao applicationDao = new ApplicationDao();
+ List<Application> applications = applicationDao.getApplicationsByRecruiterId(recruiterId);
+ if (applications.isEmpty()) {
+ JLabel noApplicationsLabel = new JLabel("No applications received yet.");
+ noApplicationsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+ noApplicationsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+ gbc.gridx = 0;
+ gbc.gridy = 0;
+ applicationsPanel.add(noApplicationsLabel, gbc);
+ } else {
+ int gridy = 0;
+ for (Application app : applications) {
+ JPanel appCard = createApplicationCard(app, applicationDao);
+ gbc.gridx = 0;
+ gbc.gridy = gridy;
+ applicationsPanel.add(appCard, gbc);
+ gridy++;
+ }
+ }
+
+ mainPanel.add(headerPanel, BorderLayout.NORTH);
+ mainPanel.add(scrollPane, BorderLayout.CENTER);
+ updateContentPanel(mainPanel);
+}
+
+private JPanel createApplicationCard(Application app, ApplicationDao applicationDao) {
+ JPanel card = new JPanel(new GridBagLayout());
+ card.setBackground(new Color(252, 252, 252));
+ card.setBorder(BorderFactory.createCompoundBorder(
+ BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+ BorderFactory.createEmptyBorder(10, 10, 10, 10)
+ ));
+ card.setPreferredSize(new Dimension(600, 250));
+
+ GridBagConstraints gbc = new GridBagConstraints();
+ gbc.insets = new Insets(5, 5, 5, 5);
+ gbc.fill = GridBagConstraints.HORIZONTAL;
+ gbc.anchor = GridBagConstraints.WEST;
+
+ // Applicant Name
+ JLabel nameLabel = new JLabel("Applicant: " + app.getJobSeekerName());
+ nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+ nameLabel.setForeground(new Color(0, 4, 80));
+ gbc.gridx = 0;
+ gbc.gridy = 0;
+ gbc.gridwidth = 2;
+ card.add(nameLabel, gbc);
+
+ // Applicant Email
+ JLabel emailLabel = new JLabel("Email: " + app.getJobSeekerEmail());
+ emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+ gbc.gridy = 1;
+ card.add(emailLabel, gbc);
+
+ // CV Details
+ Cv cv = app.getCv();
+ JLabel cvDetailsLabel = new JLabel("<html><b>CV Details:</b><br>" +
+ "First Name: " + cv.getFirstName() + "<br>" +
+ "Last Name: " + cv.getLastName() + "<br>" +
+ "Date of Birth: " + cv.getDob() + "<br>" +
+ "Contact: " + cv.getContact() + "<br>" +
+ "Education: " + cv.getEducation() + "<br>" +
+ "Skills: " + cv.getSkills() + "<br>" +
+ "Experience: " + cv.getExperience() + "</html>");
+ cvDetailsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+ gbc.gridy = 2;
+ gbc.gridwidth = 2;
+ card.add(cvDetailsLabel, gbc);
+
+ // Status
+ JLabel statusLabel = new JLabel("Status: " + app.getStatus());
+ statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+ gbc.gridy = 3;
+ gbc.gridwidth = 2;
+ card.add(statusLabel, gbc);
+
+ // Buttons Panel
+ JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+ buttonPanel.setBackground(new Color(252, 252, 252));
+
+ JButton acceptButton = new JButton("Accept") {
+ @Override
+ protected void paintComponent(Graphics g) {
+ Graphics2D g2d = (Graphics2D) g;
+ g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+ if (getModel().isRollover()) {
+ g2d.setColor(new Color(0, 100, 0));
+ } else {
+ g2d.setColor(new Color(0, 128, 0));
+ }
+ g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+ super.paintComponent(g);
+ }
+ };
+ acceptButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+ acceptButton.setForeground(Color.WHITE);
+ acceptButton.setContentAreaFilled(false);
+ acceptButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+ acceptButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+ acceptButton.setFocusPainted(false);
+ acceptButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
+
+ JButton rejectButton = new JButton("Reject") {
+ @Override
+ protected void paintComponent(Graphics g) {
+ Graphics2D g2d = (Graphics2D) g;
+ g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+ if (getModel().isRollover()) {
+ g2d.setColor(new Color(139, 0, 0));
+ } else {
+ g2d.setColor(new Color(178, 34, 34));
+ }
+ g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+ super.paintComponent(g);
+ }
+ };
+ rejectButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+ rejectButton.setForeground(Color.WHITE);
+ rejectButton.setContentAreaFilled(false);
+ rejectButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+ rejectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+ rejectButton.setFocusPainted(false);
+ rejectButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
+
+ // Button Actions
+ acceptButton.addActionListener(e -> {
+ boolean success = applicationDao.updateApplicationStatus(app.getId(), "Accepted");
+ if (success) {
+ statusLabel.setText("Status: Accepted");
+ acceptButton.setEnabled(false);
+ rejectButton.setEnabled(false);
+ JOptionPane.showMessageDialog(view, "Application accepted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+ } else {
+ JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
+ }
+ });
+
+ rejectButton.addActionListener(e -> {
+ boolean success = applicationDao.updateApplicationStatus(app.getId(), "Rejected");
+ if (success) {
+ statusLabel.setText("Status: Rejected");
+ acceptButton.setEnabled(false);
+ rejectButton.setEnabled(false);
+ JOptionPane.showMessageDialog(view, "Application rejected successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+ } else {
+ JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
+ }
+ });
+
+ buttonPanel.add(acceptButton);
+ buttonPanel.add(rejectButton);
+ gbc.gridy = 4;
+ gbc.gridwidth = 2;
+ gbc.anchor = GridBagConstraints.EAST;
+ card.add(buttonPanel, gbc);
+
+ return card;
+}
+
+    public void showSettingsPanel() {
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        JLabel label = new JLabel("Settings Panel");
+        label.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(label);
+        panel.setPreferredSize(new Dimension(680, 320));
+        updateContentPanel(panel);
+
+    }
+
+    
+     public void showMyAccountPanel() {
         JPanel panel = new JPanel();
         panel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
         panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
