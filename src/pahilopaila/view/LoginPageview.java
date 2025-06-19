@@ -66,18 +66,7 @@ public class LoginPageview extends javax.swing.JFrame {
 
         emailField.setForeground(new java.awt.Color(153, 153, 153));
         emailField.setText("E-mail");
-        emailField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                emailFieldFocusLost(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                emailFieldFocusLost(evt);
-            }
-            private void emailFieldFocusLost(FocusEvent evt) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'emailFieldFocusLost'");
-            }
-        });
+       
         emailField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionPerformed(evt);
@@ -242,15 +231,16 @@ public class LoginPageview extends javax.swing.JFrame {
         emailField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (emailField.getText().equals("E-mail")) {
+                if (emailField.getText().equals("E-mail"))
+                 {
                     emailField.setText("");
-                    emailField.setForeground(Color.BLACK);
+                    emailField.setForeground(new Color(153,153,153));
                 }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (emailField.getText().isEmpty()) {
+                if (emailField.getText().equals("")) {
                     emailField.setText("E-mail");
                     emailField.setForeground(new Color(153, 153, 153));
                 }
