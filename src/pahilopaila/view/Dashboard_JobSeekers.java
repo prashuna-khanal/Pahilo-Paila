@@ -726,4 +726,9 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
             controller.setUserInfo("Ram Kumar", "@ramkumar", userId);
         });
     }
+
+    public void setUserInfo(String updatedUsername, String updatedEmail) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setUserInfo'");
+    }
 }
