@@ -51,7 +51,11 @@ public class Dashboard_JobSeekers extends JFrame {
     public Dashboard_JobSeekers() {
         initComponents();
         setResizable(false);
-        setSize(900, 700);
+
+        setSize(900, 600); // Fixed window size
+
+        setSize(900, 600);
+
         setLocationRelativeTo(null);
     }
 
