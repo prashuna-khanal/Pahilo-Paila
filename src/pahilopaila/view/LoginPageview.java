@@ -246,5 +246,22 @@ public class LoginPageview extends javax.swing.JFrame {
                 }
             }
         });
+         passwordField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (new String(passwordField.getPassword()).equals("Password")) {
+                    passwordField.setText("");
+                    passwordField.setForeground(new Color(153, 153, 153));
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (new String(passwordField.getPassword()).equals("")) {
+                    passwordField.setText("Password");
+                    passwordField.setForeground(new Color(153, 153, 153));
+                }
+            }
+        });
     }
 }
