@@ -2,7 +2,6 @@ package pahilopaila.Dao;
 
 import pahilopaila.database.MySqlConnection;
 import java.sql.*;
-import java.util.Date;
 
 public class CVDao {
     private final Connection connection;
@@ -12,7 +11,7 @@ public class CVDao {
         System.out.println("CVDao initialized");
     }
 
-    public boolean saveCV(int userId, String firstName, String lastName, Date dob, String contact,
+    public boolean saveCV(int userId, String firstName, String lastName, String dob, String contact,
                           String education, String skills, String experience) {
         String sql = "INSERT INTO cvs (user_id, first_name, last_name, dob, contact, education, skills, experience) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -21,7 +20,7 @@ public class CVDao {
             stmt.setInt(1, userId);
             stmt.setString(2, firstName);
             stmt.setString(3, lastName);
-            stmt.setDate(4, new java.sql.Date(dob.getTime()));
+            stmt.setString(4, dob);
             stmt.setString(5, contact);
             stmt.setString(6, education);
             stmt.setString(7, skills);
