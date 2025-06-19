@@ -717,190 +717,118 @@ public class Dashboard_JobseekersController {
         updateContentPanel(mainPanel);
     }
 
-    public void showCVDisplayPanel() {
-        System.out.println("Navigating to CV Display");
-        JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(245, 245, 245));
-        mainPanel.setLayout(new BorderLayout(15, 15));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+public void showCVDisplayPanel() {
+    System.out.println("Navigating to CV Display");
+    JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+    mainPanel.setBackground(new Color(240, 242, 245));
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Header panel
-        JPanel headerPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(
-                    0, 0, new Color(0, 4, 80),
-                    0, getHeight(), new Color(0, 20, 120)
-                );
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        headerPanel.setPreferredSize(new Dimension(680, 70));
-        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 20));
-
-        JLabel headerLabel = new JLabel("My CV");
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        headerLabel.setForeground(Color.WHITE);
-        headerPanel.add(headerLabel);
-
-        // Form panel to display CV data
-        JPanel formPanel = new JPanel();
-        formPanel.setBackground(new Color(252, 252, 252));
-        formPanel.setLayout(new GridBagLayout());
-        formPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 2, 2, new Color(180, 180, 180, 100)),
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(20, 20, 20, 20),
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true)
-            )
-        ));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-
-        // Retrieve CV data
-        ResultSet rs = cvDao.getCVByUserId(userId);
-        try {
-            if (rs != null && rs.next()) {
-                String firstName = rs.getString("first_name");
-                String lastName = rs.getString("last_name");
-                String dob = rs.getString("dob");
-                String contact = rs.getString("contact");
-                String education = rs.getString("education");
-                String skills = rs.getString("skills");
-                String experience = rs.getString("experience");
-
-                // First Name
-                JLabel firstNameLabel = new JLabel("First Name:");
-                firstNameLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                formPanel.add(firstNameLabel, gbc);
-
-                JLabel firstNameValue = new JLabel(firstName);
-                firstNameValue.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-                gbc.gridx = 1;
-                gbc.gridy = 0;
-                formPanel.add(firstNameValue, gbc);
-
-                // Last Name
-                JLabel lastNameLabel = new JLabel("Last Name:");
-                lastNameLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-                gbc.gridx = 2;
-                gbc.gridy = 0;
-                formPanel.add(lastNameLabel, gbc);
-
-                JLabel lastNameValue = new JLabel(lastName);
-                lastNameValue.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-                gbc.gridx = 3;
-                gbc.gridy = 0;
-                formPanel.add(lastNameValue, gbc);
-
-                // Date of Birth
-                JLabel dobLabel = new JLabel("Date of Birth:");
-                dobLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                formPanel.add(dobLabel, gbc);
-
-                JLabel dobValue = new JLabel(dob);
-                dobValue.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-                gbc.gridx = 1;
-                gbc.gridy = 1;
-                formPanel.add(dobValue, gbc);
-
-                // Contact
-                JLabel contactLabel = new JLabel("Contact:");
-                contactLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-                gbc.gridx = 2;
-                gbc.gridy = 1;
-                formPanel.add(contactLabel, gbc);
-
-                JLabel contactValue = new JLabel(contact);
-                contactValue.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-                gbc.gridx = 3;
-                gbc.gridy = 1;
-                formPanel.add(contactValue, gbc);
-
-                // Education
-                JLabel educationLabel = new JLabel("Education:");
-                educationLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-                gbc.gridx = 0;
-                gbc.gridy = 2;
-                formPanel.add(educationLabel, gbc);
-
-                JLabel educationValue = new JLabel(education);
-                educationValue.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-                gbc.gridx = 1;
-                gbc.gridy = 2;
-                formPanel.add(educationValue, gbc);
-
-                // Skills
-                JLabel skillsLabel = new JLabel("Skills:");
-                skillsLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-                gbc.gridx = 0;
-                gbc.gridy = 3;
-                formPanel.add(skillsLabel, gbc);
-
-                JLabel skillsValue = new JLabel(skills);
-                skillsValue.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-                gbc.gridx = 1;
-                gbc.gridy = 3;
-                formPanel.add(skillsValue, gbc);
-
-                // Experience
-                JLabel experienceLabel = new JLabel("Experience:");
-                experienceLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-                gbc.gridx = 2;
-                gbc.gridy = 2;
-                formPanel.add(experienceLabel, gbc);
-
-                JTextArea experienceArea = new JTextArea(experience, 4, 15);
-                experienceArea.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-                experienceArea.setBackground(new Color(245, 245, 245));
-                experienceArea.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-                    BorderFactory.createEmptyBorder(4, 8, 4, 8)
-                ));
-                experienceArea.setLineWrap(true);
-                experienceArea.setWrapStyleWord(true);
-                experienceArea.setEditable(false);
-                JScrollPane experienceScroll = new JScrollPane(experienceArea);
-                experienceScroll.setPreferredSize(new Dimension(150, 80));
-                gbc.gridx = 3;
-                gbc.gridy = 2;
-                gbc.gridheight = 2;
-                formPanel.add(experienceScroll, gbc);
-            } else {
-                JLabel noCVLabel = new JLabel("No CV found.");
-                noCVLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.gridwidth = 4;
-                formPanel.add(noCVLabel, gbc);
-            }
-            if (rs != null) rs.close();
-        } catch (SQLException e) {
-            System.err.println("Error retrieving CV: " + e.getMessage());
-            JOptionPane.showMessageDialog(view, "Error retrieving CV data.", "Error", JOptionPane.ERROR_MESSAGE);
+    // Header panel with gradient
+    JPanel headerPanel = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            GradientPaint gp = new GradientPaint(0, 0, new Color(25, 118, 210), 0, getHeight(), new Color(144, 202, 249));
+            g2d.setPaint(gp);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
         }
+    };
+    headerPanel.setPreferredSize(new Dimension(0, 60));
+    headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 15));
 
-        // Center the form
-        JPanel centerWrapper = new JPanel();
-        centerWrapper.setBackground(new Color(245, 245, 245));
-        centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        centerWrapper.add(formPanel);
+    JLabel headerLabel = new JLabel("My Resume");
+    headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+    headerLabel.setForeground(Color.WHITE);
+    headerPanel.add(headerLabel);
 
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
-        mainPanel.add(centerWrapper, BorderLayout.CENTER);
-        updateContentPanel(mainPanel);
+    // Form panel for CV data
+    JPanel formPanel = new JPanel(new GridBagLayout());
+    formPanel.setBackground(Color.WHITE);
+    formPanel.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+        BorderFactory.createEmptyBorder(20, 20, 20, 20)
+    ));
+
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(12, 12, 12, 12); // Increased insets to prevent overlap
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.anchor = GridBagConstraints.WEST;
+
+    // Retrieve CV data
+    try (ResultSet rs = cvDao.getCVByUserId(userId)) {
+        if (rs != null && rs.next()) {
+            // CV data
+            String[] labels = {"First Name", "Last Name", "Date of Birth", "Contact", "Education", "Skills", "Experience"};
+            String[] values = {
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("dob"),
+                rs.getString("contact"),
+                rs.getString("education"),
+                rs.getString("skills"),
+                rs.getString("experience")
+            };
+
+            // Add labels and values to form
+            int row = 0;
+            for (int i = 0; i < labels.length; i++) {
+                JLabel label = new JLabel(labels[i] + ":");
+                label.setFont(new Font("Segoe UI", Font.BOLD, 14)); // Increased font size
+                gbc.gridx = 0;
+                gbc.gridy = row;
+                gbc.gridwidth = 1;
+                formPanel.add(label, gbc);
+
+                if (i < 6) {
+                    JLabel valueLabel = new JLabel(values[i]);
+                    valueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Increased font size
+                    gbc.gridx = 1;
+                    gbc.gridy = row;
+                    gbc.gridwidth = 3; // Wider column to prevent overlap
+                    formPanel.add(valueLabel, gbc);
+                    row++;
+                } else {
+                    JTextArea experienceArea = new JTextArea(values[i], 5, 25); // Increased size
+                    experienceArea.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Increased font size
+                    experienceArea.setBackground(new Color(240, 242, 245));
+                    experienceArea.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true));
+                    experienceArea.setLineWrap(true);
+                    experienceArea.setWrapStyleWord(true);
+                    experienceArea.setEditable(false);
+                    JScrollPane scrollPane = new JScrollPane(experienceArea);
+                    scrollPane.setPreferredSize(new Dimension(300, 100)); // Larger scroll pane
+                    gbc.gridx = 1;
+                    gbc.gridy = row;
+                    gbc.gridwidth = 3;
+                    gbc.gridheight = 2;
+                    formPanel.add(scrollPane, gbc);
+                    row += 2;
+                }
+            }
+        } else {
+            JLabel noCVLabel = new JLabel("No resume found.");
+            noCVLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16)); // Increased font size
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 4;
+            formPanel.add(noCVLabel, gbc);
+        }
+    } catch (SQLException e) {
+        System.err.println("Error retrieving CV: " + e.getMessage());
+        JOptionPane.showMessageDialog(null, "Error retrieving resume data.", "Error", JOptionPane.ERROR_MESSAGE);
     }
+
+    // Center the form panel
+    JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    centerWrapper.setBackground(new Color(240, 242, 245));
+    centerWrapper.add(formPanel);
+
+    mainPanel.add(headerPanel, BorderLayout.NORTH);
+    mainPanel.add(centerWrapper, BorderLayout.CENTER);
+    updateContentPanel(mainPanel);
+}
 
 public void showSettingsPanel() {
     System.out.println("Navigating to Settings");
