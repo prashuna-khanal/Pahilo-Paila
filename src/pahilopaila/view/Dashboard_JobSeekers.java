@@ -8,7 +8,7 @@ import java.util.TimerTask;
 import pahilopaila.Controller.Dashboard_JobseekersController;
 
 /**
- * Job Seeker Dashboard UI for the Pahilo Paila application.
+ * Job Seeker Dashboard UI for the PahiloPaila application.
  */
 public class Dashboard_JobSeekers extends javax.swing.JFrame {
     // State variables for label hover and pressed states
