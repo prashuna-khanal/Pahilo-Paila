@@ -4,6 +4,8 @@
  */
 package pahilopaila.view;
 
+import java.awt.Color;
+
 /**
  *
  * @author abi
@@ -38,14 +40,11 @@ public class forgotpassview extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         txtConfirmNewPassword = new javax.swing.JPasswordField();
         lblMessage = new javax.swing.JLabel();
-
         jLabel6 = new javax.swing.JLabel();
-
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 255));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
 
         jLabel1.setForeground(new java.awt.Color(0, 0, 102));
         jLabel1.setText("email :");
@@ -57,16 +56,21 @@ public class forgotpassview extends javax.swing.JFrame {
         btnResetPassword.setEnabled(false);
         getContentPane().add(btnResetPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 280, -1, -1));
 
-
+        txtEmail.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtEmailFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtEmailFocusLost(evt);
+            }
+        });
         txtEmail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtEmailActionPerformed(evt);
             }
         });
-
         getContentPane().add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 70, 180, -1));
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(398, 180, -1, -1));
-
 
         btnSendOtp.setBackground(new java.awt.Color(0, 0, 102));
         btnSendOtp.setForeground(new java.awt.Color(255, 255, 255));
@@ -77,7 +81,6 @@ public class forgotpassview extends javax.swing.JFrame {
                 btnSendOtpActionPerformed(evt);
             }
         });
-
         getContentPane().add(btnSendOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 100, -1, -1));
 
         jLabel3.setForeground(new java.awt.Color(0, 0, 102));
@@ -85,8 +88,15 @@ public class forgotpassview extends javax.swing.JFrame {
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, -1, -1));
 
         txtOtp.setEnabled(false);
+        txtOtp.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtOtpFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtOtpFocusLost(evt);
+            }
+        });
         getContentPane().add(txtOtp, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 140, 180, -1));
-
 
         txtNewPassword.setEnabled(false);
         txtNewPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -94,7 +104,6 @@ public class forgotpassview extends javax.swing.JFrame {
                 txtNewPasswordActionPerformed(evt);
             }
         });
-
         getContentPane().add(txtNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 190, 180, -1));
 
         jLabel4.setForeground(new java.awt.Color(0, 0, 51));
@@ -105,34 +114,18 @@ public class forgotpassview extends javax.swing.JFrame {
         jLabel5.setText("Confirm new Password:");
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 230, -1, -1));
 
-
         txtConfirmNewPassword.setEnabled(false);
         txtConfirmNewPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtConfirmNewPasswordActionPerformed(evt);
             }
         });
-
         getContentPane().add(txtConfirmNewPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 230, 180, -1));
         getContentPane().add(lblMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 290, 251, 90));
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Adobe Express - file.jpg"))); // NOI18N
         jLabel6.setText("jLabel6");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 690, 430));
-
-
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 475));
-
-        profileIcon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logo/ram.png"))); // NOI18N
-        getContentPane().add(profileIcon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 10, 30, 60));
-
-        username.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
-        username.setForeground(new java.awt.Color(0, 0, 102));
-        username.setText("Ram Kumar");
-        getContentPane().add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 20, -1, 30));
-
-        email.setText("@ramkumar");
-        getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 50, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -164,6 +157,43 @@ public class forgotpassview extends javax.swing.JFrame {
     private void txtOtpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtOtpActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtOtpActionPerformed
+
+    private void txtEmailFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtEmailFocusGained
+        // TODO add your handling code here:
+        if(txtEmail.getText().equals("Email"))
+        {
+            txtEmail.setText("");
+            txtEmail.setForeground(new Color(153,153,153));
+        }    
+    }//GEN-LAST:event_txtEmailFocusGained
+
+    private void txtEmailFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtEmailFocusLost
+        // TODO add your handling code here:
+        if(txtEmail.getText().equals(""))
+        {
+            txtEmail.setText("Email");
+            txtEmail.setForeground(new Color(153,153,153));
+        }   
+        
+    }//GEN-LAST:event_txtEmailFocusLost
+
+    private void txtOtpFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtOtpFocusGained
+        // TODO add your handling code here:
+        if(txtOtp.getText().equals("Enter your code"))
+        {
+            txtOtp.setText("");
+            txtOtp.setForeground(new Color(153,153,153));
+        }  
+    }//GEN-LAST:event_txtOtpFocusGained
+
+    private void txtOtpFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtOtpFocusLost
+        // TODO add your handling code here:
+        if(txtOtp.getText().equals(""))
+        {
+            txtOtp.setText("Enter your code");
+            txtOtp.setForeground(new Color(153,153,153));
+        }  
+    }//GEN-LAST:event_txtOtpFocusLost
 
     /**
      * @param args the command line arguments
@@ -201,30 +231,19 @@ public class forgotpassview extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel CV;
     private javax.swing.JButton btnResetPassword;
     private javax.swing.JButton btnSendOtp;
-    private javax.swing.JLabel dashboard;
-    private javax.swing.JLabel email;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblMessage;
-    private javax.swing.JLabel myAccount;
-    private javax.swing.JLabel profileIcon1;
-    private javax.swing.JLabel settings;
-    private javax.swing.JLabel signOut;
     private javax.swing.JPasswordField txtConfirmNewPassword;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JPasswordField txtNewPassword;
     private javax.swing.JTextField txtOtp;
-    private javax.swing.JLabel username;
-    private javax.swing.JLabel vacancy;
     // End of variables declaration//GEN-END:variables
 public javax.swing.JTextField getTxtEmail() {
         return txtEmail;
