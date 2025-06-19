@@ -3,6 +3,7 @@ package pahilopaila.Controller;
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.CVDao;
 import pahilopaila.Dao.UserDao;
+import pahilopaila.Dao.RatingDao;
 import pahilopaila.Dao.VacancyDao;
 import pahilopaila.model.UserData;
 import pahilopaila.model.Vacancy;
@@ -17,8 +18,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
+import java.awt.image.BufferedImage;
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
@@ -160,7 +165,7 @@ public class Dashboard_JobseekersController {
     }
 
     // Navigation methods
-    public void showDashboardPanel() {
+  public void showDashboardPanel() {
         System.out.println("Navigating to Dashboard");
         JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
         contentPanel.setBackground(new java.awt.Color(245, 245, 245));
@@ -256,19 +261,173 @@ public class Dashboard_JobseekersController {
             noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
             vacanciesPanel.add(noVacanciesLabel);
         } else {
-            // Select up to 3 random vacancies
             Random rand = new Random();
             int count = Math.min(3, allVacancies.size());
             for (int i = 0; i < count; i++) {
                 int index = rand.nextInt(allVacancies.size());
-                Vacancy vacancy = allVacancies.remove(index); // Remove to avoid duplicates
+                Vacancy vacancy = allVacancies.remove(index);
                 JPanel vacancyCard = createVacancyCard(vacancy);
                 vacanciesPanel.add(vacancyCard);
             }
         }
 
         featuredPanel.add(scrollPane, BorderLayout.CENTER);
-        contentPanel.add(featuredPanel, BorderLayout.CENTER);
+
+        // CHANGED: Updated rating panel to fix hover effect starting from 1st star
+        // Rating Panel with Graphical Stars
+        JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        ratingPanel.setBackground(new Color(245, 245, 245));
+        ratingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JLabel ratingLabel = new JLabel("Rate Our App:");
+        ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        ratingPanel.add(ratingLabel);
+
+        ButtonGroup ratingGroup = new ButtonGroup();
+        JRadioButton[] stars = new JRadioButton[5];
+        // CHANGED: Track the currently hovered star index
+        final int[] currentHoverIndex = {-1}; // -1 means no hover
+
+        // CHANGED: Updated StarIcon class to handle selection and hover correctly
+        class StarIcon implements Icon {
+            private final int width;
+            private final int height;
+            private final Color normalColor;
+            private final Color highlightColor;
+            private final int starIndex;
+            private final JRadioButton[] stars;
+
+            public StarIcon(int width, int height, int starIndex, JRadioButton[] stars) {
+                this.width = width;
+                this.height = height;
+                this.normalColor = Color.YELLOW;
+                this.highlightColor = new Color(255, 215, 0);
+                this.starIndex = starIndex;
+                this.stars = stars;
+            }
+
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // CHANGED: Highlight if this star is within the selected or hovered range
+                boolean shouldHighlight = false;
+                // Check for selection
+                for (int i = 0; i < stars.length; i++) {
+                    if (stars[i].isSelected() && starIndex <= i) {
+                        shouldHighlight = true;
+                        break;
+                    }
+                }
+                // Check for hover
+                if (currentHoverIndex[0] >= 0 && starIndex <= currentHoverIndex[0]) {
+                    shouldHighlight = true;
+                }
+
+                g2d.setColor(shouldHighlight ? highlightColor : normalColor);
+
+                int[] xPoints = new int[10];
+                int[] yPoints = new int[10];
+                double outerRadius = width / 2.0;
+                double innerRadius = outerRadius / 2.0;
+                int centerX = x + width / 2;
+                int centerY = y + height / 2;
+
+                for (int i = 0; i < 10; i++) {
+                    double angle = Math.toRadians(36 * i + 18);
+                    double radius = (i % 2 == 0) ? outerRadius : innerRadius;
+                    xPoints[i] = (int) (centerX + radius * Math.cos(angle));
+                    yPoints[i] = (int) (centerY - radius * Math.sin(angle));
+                }
+
+                g2d.fillPolygon(xPoints, yPoints, 10);
+                g2d.dispose();
+            }
+
+            @Override
+            public int getIconWidth() {
+                return width;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return height;
+            }
+        }
+
+        // CHANGED: Updated star creation loop to handle hover from 1st star
+        for (int i = 0; i < 5; i++) {
+            stars[i] = new JRadioButton();
+            stars[i].setIcon(new StarIcon(20, 20, i, stars));
+            stars[i].setRolloverEnabled(true);
+            stars[i].setContentAreaFilled(false);
+            stars[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+            stars[i].setBackground(new Color(245, 245, 245));
+            ratingGroup.add(stars[i]);
+            ratingPanel.add(stars[i]);
+
+            // CHANGED: Updated mouse listener to highlight stars from 1st to hovered
+            final int starIndex = i;
+            stars[i].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    currentHoverIndex[0] = starIndex;
+                    for (int j = 0; j < stars.length; j++) {
+                        stars[j].repaint();
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    currentHoverIndex[0] = -1;
+                    for (int j = 0; j < stars.length; j++) {
+                        stars[j].repaint();
+                    }
+                }
+            });
+
+            // CHANGED: Ensure repaint on selection
+            stars[i].addActionListener(e -> {
+                for (JRadioButton star : stars) {
+                    star.repaint();
+                }
+            });
+        }
+
+        JButton submitRating = new JButton("Submit Rating");
+        submitRating.setBackground(new Color(0, 4, 80));
+        submitRating.setForeground(Color.WHITE);
+        submitRating.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+        submitRating.setFocusPainted(false);
+        submitRating.addActionListener(e -> {
+            int rating = 0;
+            for (int i = 0; i < 5; i++) {
+                if (stars[i].isSelected()) {
+                    rating = i + 1;
+                    break;
+                }
+            }
+            if (rating > 0) {
+                ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
+                String currentDateTime = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+                JOptionPane.showMessageDialog(view, "Thank you for rating us " + rating + " stars!\nSubmitted at " + currentDateTime, "Rating Submitted", JOptionPane.INFORMATION_MESSAGE);
+                boolean success = saveRatingToDatabase(userId, rating);
+                if (!success) {
+                    JOptionPane.showMessageDialog(view, "Failed to save rating. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(view, "Please select a rating.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        ratingPanel.add(submitRating);
+
+        // Combine featured and rating panels
+        JPanel centerPanel = new JPanel(new BorderLayout(15, 15));
+        centerPanel.setBackground(new Color(245, 245, 245));
+        centerPanel.add(featuredPanel, BorderLayout.CENTER);
+        centerPanel.add(ratingPanel, BorderLayout.SOUTH);
+
+        contentPanel.add(centerPanel, BorderLayout.CENTER);
 
         updateContentPanel(contentPanel);
     }
@@ -306,6 +465,7 @@ public class Dashboard_JobseekersController {
         }
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
+
         updateContentPanel(mainPanel);
     }
 
@@ -742,17 +902,307 @@ public class Dashboard_JobseekersController {
         updateContentPanel(mainPanel);
     }
 
-    public void showSettingsPanel() {
-        System.out.println("Navigating to Settings");
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setBackground(new java.awt.Color(245, 245, 245));
-        settingsPanel.setLayout(new java.awt.BorderLayout());
-        JLabel title = new JLabel("Settings");
-        title.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        settingsPanel.add(title, java.awt.BorderLayout.NORTH);
-        updateContentPanel(settingsPanel);
+public void showSettingsPanel() {
+    System.out.println("Navigating to Settings");
+    
+    // Main container panel (white background like My Account)
+    JPanel settingsPanel = new JPanel();
+    settingsPanel.setBackground(new Color(245, 245, 245));
+    settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
+    settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+    // Dark blue title bar
+    JPanel titlePanel = new JPanel();
+    titlePanel.setBackground(new Color(0, 20, 90));  // Dark blue
+    titlePanel.setPreferredSize(new java.awt.Dimension(680, 70));
+    titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
+    
+    JLabel titleLabel = new JLabel("Settings");
+    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+    titleLabel.setForeground(Color.WHITE);
+    titlePanel.add(titleLabel);
+
+    // Content box (like the white form in My Account tab)
+    JPanel contentBox = new JPanel();
+    contentBox.setBackground(Color.WHITE);
+    contentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
+    contentBox.setPreferredSize(new Dimension(500, 250));  // Increased height for more content
+    contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    // Dark Mode checkbox
+    JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
+    darkModeCheck.setBackground(Color.WHITE);
+    darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap checkbox inside a panel for alignment
+    JPanel darkModePanel = new JPanel();
+    darkModePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    darkModePanel.setBackground(Color.WHITE);
+    darkModePanel.add(new JLabel("🌙")); // Moon icon
+    darkModePanel.add(Box.createHorizontalStrut(10));
+    darkModePanel.add(darkModeCheck);
+
+    // Notifications checkbox
+    JCheckBox notificationCheck = new JCheckBox("Enable Notifications");
+    notificationCheck.setBackground(Color.WHITE);
+    notificationCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    notificationCheck.setSelected(true); // Default enabled
+    notificationCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap notifications checkbox inside a panel for alignment
+    JPanel notificationPanel = new JPanel();
+    notificationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    notificationPanel.setBackground(Color.WHITE);
+    notificationPanel.add(new JLabel("🔔")); // Bell icon
+    notificationPanel.add(Box.createHorizontalStrut(10));
+    notificationPanel.add(notificationCheck);
+
+    // Contact Us label
+    JLabel contactUsLabel = new JLabel("Contact Us: support@pahilopaila.com");
+    contactUsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    contactUsLabel.setForeground(new Color(0, 123, 255)); // Blue color for link appearance
+    contactUsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    contactUsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap contact label inside a panel for alignment
+    JPanel contactPanel = new JPanel();
+    contactPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    contactPanel.setBackground(Color.WHITE);
+    contactPanel.add(new JLabel("📞")); // Phone icon
+    contactPanel.add(Box.createHorizontalStrut(10));
+    contactPanel.add(contactUsLabel);
+
+    // Update button
+    JButton updateButton = new JButton("Update Settings");
+    updateButton.setBackground(new Color(0, 20, 90));  // Same dark blue as title
+    updateButton.setForeground(Color.WHITE);
+    updateButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    updateButton.setPreferredSize(new Dimension(150, 35));
+    updateButton.setFocusPainted(false);
+    updateButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+    
+    // Wrap update button in a panel for right alignment
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    buttonPanel.setBackground(Color.WHITE);
+    buttonPanel.add(updateButton);
+
+    // Add all components to content box with proper spacing
+    contentBox.add(Box.createVerticalStrut(20));  // Top spacing
+    contentBox.add(darkModePanel);
+    contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
+    contentBox.add(notificationPanel);
+    contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
+    contentBox.add(contactPanel);
+    contentBox.add(Box.createVerticalStrut(20));  // Spacing before button
+    contentBox.add(buttonPanel);
+    contentBox.add(Box.createVerticalStrut(20));  // Bottom spacing
+
+    // Add event listeners
+    darkModeCheck.addActionListener(e -> {
+        applyDarkModeToSettings(darkModeCheck.isSelected(), settingsPanel);
+        String status = darkModeCheck.isSelected() ? "enabled" : "disabled";
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
+            "Dark mode " + status + " successfully!", 
+            "Dark Mode", 
+            JOptionPane.INFORMATION_MESSAGE);
+    });
+
+    notificationCheck.addActionListener(e -> {
+        String status = notificationCheck.isSelected() ? "enabled" : "disabled";
+        System.out.println("Notifications " + status);
+    });
+
+    contactUsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent e) {
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
+                "Contact Information:\n\n" +
+                "Email: support@pahilopaila.com\n" +
+                "Phone: +977-123-456-789\n" +
+                "Address: Kathmandu, Nepal\n\n" +
+                "We're here to help!", 
+                "Contact Us", 
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+        
+        @Override
+        public void mouseEntered(java.awt.event.MouseEvent e) {
+            contactUsLabel.setText("<html><u>Contact Us: support@pahilopaila.com</u></html>");
+        }
+        
+        @Override
+        public void mouseExited(java.awt.event.MouseEvent e) {
+            contactUsLabel.setText("Contact Us: support@pahilopaila.com");
+        }
+    });
+
+    updateButton.addActionListener(e -> {
+        StringBuilder message = new StringBuilder("Settings Updated Successfully!\n\n");
+        message.append("Dark Mode: ").append(darkModeCheck.isSelected() ? "Enabled" : "Disabled").append("\n");
+        message.append("Notifications: ").append(notificationCheck.isSelected() ? "Enabled" : "Disabled");
+        
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
+            message.toString(), 
+            "Settings Updated", 
+            JOptionPane.INFORMATION_MESSAGE);
+    });
+
+    // Center wrapper for content box
+    JPanel centerPanel = new JPanel();
+    centerPanel.setBackground(Color.WHITE);
+    centerPanel.setLayout(new GridBagLayout());
+    centerPanel.add(contentBox);
+
+    // Add title and content to main settings panel
+    settingsPanel.add(titlePanel, BorderLayout.NORTH);
+    settingsPanel.add(centerPanel, BorderLayout.CENTER);
+
+    updateContentPanel(settingsPanel);
+}
+
+// Method to apply dark mode to the current settings panel and find parent frame
+private void applyDarkModeToSettings(boolean isDarkMode, JPanel settingsPanel) {
+    // Find the parent frame/window
+    Window parentWindow = SwingUtilities.getWindowAncestor(settingsPanel);
+    
+    if (isDarkMode) {
+        // Dark mode colors
+        Color darkBackground = new Color(45, 45, 48);
+        Color darkPanel = new Color(37, 37, 38);
+        Color darkText = new Color(220, 220, 220);
+        Color darkBorder = new Color(60, 60, 60);
+        
+        // Apply to parent window if it exists
+        if (parentWindow != null) {
+            parentWindow.setBackground(darkBackground);
+            if (parentWindow instanceof JFrame) {
+                ((JFrame) parentWindow).getContentPane().setBackground(darkBackground);
+            }
+        }
+        
+        // Apply dark theme to current panel
+        applyDarkThemeToComponent(settingsPanel, darkBackground, darkPanel, darkText, darkBorder);
+        
+    } else {
+        // Light mode colors (original)
+        Color lightBackground = Color.WHITE;
+        Color lightPanel = new Color(245, 245, 245);
+        Color lightText = Color.BLACK;
+        Color lightBorder = Color.LIGHT_GRAY;
+        
+        // Apply to parent window if it exists
+        if (parentWindow != null) {
+            parentWindow.setBackground(lightBackground);
+            if (parentWindow instanceof JFrame) {
+                ((JFrame) parentWindow).getContentPane().setBackground(lightPanel);
+            }
+        }
+        
+        // Apply light theme to current panel
+        applyLightThemeToComponent(settingsPanel, lightBackground, lightPanel, lightText, lightBorder);
     }
+    
+    // Force repaint
+    if (parentWindow != null) {
+        parentWindow.repaint();
+    }
+    settingsPanel.repaint();
+}
+
+// Helper method to apply dark theme recursively
+private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, Color darkText, Color darkBorder) {
+    for (Component component : container.getComponents()) {
+        if (component instanceof JPanel) {
+            JPanel panel = (JPanel) component;
+            // Keep title panels with original dark blue
+            if (panel.getBackground().equals(new Color(0, 20, 90))) {
+                // Keep original dark blue for title bars
+            } else if (panel.getBackground().equals(Color.WHITE)) {
+                panel.setBackground(darkPanel);
+            } else if (panel.getBackground().equals(new Color(245, 245, 245))) {
+                panel.setBackground(darkBg);
+            }
+            
+            // Update border if it exists
+            if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                panel.setBorder(BorderFactory.createLineBorder(darkBorder));
+            }
+            
+            // Recursively apply to child components
+            applyDarkThemeToComponent(panel, darkBg, darkPanel, darkText, darkBorder);
+            
+        } else if (component instanceof JLabel) {
+            JLabel label = (JLabel) component;
+            // Don't change white text (title labels) or blue link text
+            if (!label.getForeground().equals(Color.WHITE) && 
+                !label.getForeground().equals(new Color(0, 123, 255))) {
+                label.setForeground(darkText);
+            }
+            
+        } else if (component instanceof JCheckBox) {
+            JCheckBox checkBox = (JCheckBox) component;
+            checkBox.setBackground(darkPanel);
+            checkBox.setForeground(darkText);
+            
+        } else if (component instanceof JButton) {
+            JButton button = (JButton) component;
+            // Keep original button styling for consistency
+            
+        } else if (component instanceof Container) {
+            applyDarkThemeToComponent((Container) component, darkBg, darkPanel, darkText, darkBorder);
+        }
+    }
+}
+
+// Helper method to apply light theme recursively
+private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, Color lightText, Color lightBorder) {
+    for (Component component : container.getComponents()) {
+        if (component instanceof JPanel) {
+            JPanel panel = (JPanel) component;
+            // Restore original colors based on what they should be
+            if (panel.getBackground().equals(new Color(0, 20, 90))) {
+                // Keep original dark blue for title bars
+            } else if (panel.getBackground().equals(new Color(37, 37, 38))) {
+                // This was a white panel, restore to white
+                panel.setBackground(Color.WHITE);
+            } else if (panel.getBackground().equals(new Color(45, 45, 48))) {
+                // This was the main background, restore to light gray
+                panel.setBackground(lightPanel);
+            }
+            
+            // Update border if it exists
+            if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                panel.setBorder(BorderFactory.createLineBorder(lightBorder));
+            }
+            
+            // Recursively apply to child components
+            applyLightThemeToComponent(panel, lightBg, lightPanel, lightText, lightBorder);
+            
+        } else if (component instanceof JLabel) {
+            JLabel label = (JLabel) component;
+            // Restore original text colors
+            if (!label.getForeground().equals(Color.WHITE) && 
+                !label.getForeground().equals(new Color(0, 123, 255))) {
+                label.setForeground(lightText);
+            }
+            
+        } else if (component instanceof JCheckBox) {
+            JCheckBox checkBox = (JCheckBox) component;
+            checkBox.setBackground(Color.WHITE);
+            checkBox.setForeground(lightText);
+            
+        } else if (component instanceof JButton) {
+            JButton button = (JButton) component;
+            // Keep original button styling
+            
+        } else if (component instanceof Container) {
+            applyLightThemeToComponent((Container) component, lightBg, lightPanel, lightText, lightBorder);
+        }
+    }
+}
 
     // My account Pnel to manually change and update the password 
     public void showMyAccountPanel() {
@@ -1009,4 +1459,25 @@ public class Dashboard_JobseekersController {
         System.out.println("Filter button clicked");
         JOptionPane.showMessageDialog(view, "Filter options coming soon!");
     }
+    private boolean saveRatingToDatabase(int userId, int rating) {
+    // Check if the rating is valid (must be between 1 and 5)
+    if (rating < 1 || rating > 5) {
+        System.err.println("Invalid rating value: " + rating + ". Must be between 1 and 5.");
+        return false;
+    }
+
+    // Create a new RatingDao instance and try to save the rating
+    RatingDao ratingDao = new RatingDao();
+    boolean success = ratingDao.saveRating(userId, rating);
+
+    // Log the result
+    if (success) {
+        System.out.println("Rating " + rating + " saved successfully for userId: " + userId);
+    } else {
+        System.err.println("Failed to save rating for userId: " + userId);
+    }
+
+    // Return the result of the save operation
+    return success;
+}
 }

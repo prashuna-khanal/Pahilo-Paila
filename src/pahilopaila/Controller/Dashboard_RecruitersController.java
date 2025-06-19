@@ -491,17 +491,307 @@ public class Dashboard_RecruitersController {
     }
 
     public void showSettingsPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(245, 245, 245));
-        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        JLabel label = new JLabel("Settings Panel");
-        label.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(label);
-        panel.setPreferredSize(new Dimension(680, 320));
-        updateContentPanel(panel);
+    System.out.println("Navigating to Settings");
+    
+    // Main container panel (white background like My Account)
+    JPanel settingsPanel = new JPanel();
+    settingsPanel.setBackground(new Color(245, 245, 245));
+    settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
+    settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
+    // Dark blue title bar
+    JPanel titlePanel = new JPanel();
+    titlePanel.setBackground(new Color(0, 20, 90));  // Dark blue
+    titlePanel.setPreferredSize(new java.awt.Dimension(680, 70));
+    titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
+    
+    JLabel titleLabel = new JLabel("Settings");
+    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+    titleLabel.setForeground(Color.WHITE);
+    titlePanel.add(titleLabel);
+
+    // Content box (like the white form in My Account tab)
+    JPanel contentBox = new JPanel();
+    contentBox.setBackground(Color.WHITE);
+    contentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
+    contentBox.setPreferredSize(new Dimension(500, 250));  // Increased height for more content
+    contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    // Dark Mode checkbox
+    JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
+    darkModeCheck.setBackground(Color.WHITE);
+    darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap checkbox inside a panel for alignment
+    JPanel darkModePanel = new JPanel();
+    darkModePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    darkModePanel.setBackground(Color.WHITE);
+    darkModePanel.add(new JLabel("🌙")); // Moon icon
+    darkModePanel.add(Box.createHorizontalStrut(10));
+    darkModePanel.add(darkModeCheck);
+
+    // Notifications checkbox
+    JCheckBox notificationCheck = new JCheckBox("Enable Notifications");
+    notificationCheck.setBackground(Color.WHITE);
+    notificationCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    notificationCheck.setSelected(true); // Default enabled
+    notificationCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap notifications checkbox inside a panel for alignment
+    JPanel notificationPanel = new JPanel();
+    notificationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    notificationPanel.setBackground(Color.WHITE);
+    notificationPanel.add(new JLabel("🔔")); // Bell icon
+    notificationPanel.add(Box.createHorizontalStrut(10));
+    notificationPanel.add(notificationCheck);
+
+    // Contact Us label
+    JLabel contactUsLabel = new JLabel("Contact Us: support@pahilopaila.com");
+    contactUsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    contactUsLabel.setForeground(new Color(0, 123, 255)); // Blue color for link appearance
+    contactUsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    contactUsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+    // Wrap contact label inside a panel for alignment
+    JPanel contactPanel = new JPanel();
+    contactPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    contactPanel.setBackground(Color.WHITE);
+    contactPanel.add(new JLabel("📞")); // Phone icon
+    contactPanel.add(Box.createHorizontalStrut(10));
+    contactPanel.add(contactUsLabel);
+
+    // Update button
+    JButton updateButton = new JButton("Update Settings");
+    updateButton.setBackground(new Color(0, 20, 90));  // Same dark blue as title
+    updateButton.setForeground(Color.WHITE);
+    updateButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    updateButton.setPreferredSize(new Dimension(150, 35));
+    updateButton.setFocusPainted(false);
+    updateButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+    
+    // Wrap update button in a panel for right alignment
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    buttonPanel.setBackground(Color.WHITE);
+    buttonPanel.add(updateButton);
+
+    // Add all components to content box with proper spacing
+    contentBox.add(Box.createVerticalStrut(20));  // Top spacing
+    contentBox.add(darkModePanel);
+    contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
+    contentBox.add(notificationPanel);
+    contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
+    contentBox.add(contactPanel);
+    contentBox.add(Box.createVerticalStrut(20));  // Spacing before button
+    contentBox.add(buttonPanel);
+    contentBox.add(Box.createVerticalStrut(20));  // Bottom spacing
+
+    // Add event listeners
+    darkModeCheck.addActionListener(e -> {
+        applyDarkModeToSettings(darkModeCheck.isSelected(), settingsPanel);
+        String status = darkModeCheck.isSelected() ? "enabled" : "disabled";
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
+            "Dark mode " + status + " successfully!", 
+            "Dark Mode", 
+            JOptionPane.INFORMATION_MESSAGE);
+    });
+
+    notificationCheck.addActionListener(e -> {
+        String status = notificationCheck.isSelected() ? "enabled" : "disabled";
+        System.out.println("Notifications " + status);
+    });
+
+    contactUsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent e) {
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
+                "Contact Information:\n\n" +
+                "Email: support@pahilopaila.com\n" +
+                "Phone: +977-123-456-789\n" +
+                "Address: Kathmandu, Nepal\n\n" +
+                "We're here to help!", 
+                "Contact Us", 
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+        
+        @Override
+        public void mouseEntered(java.awt.event.MouseEvent e) {
+            contactUsLabel.setText("<html><u>Contact Us: support@pahilopaila.com</u></html>");
+        }
+        
+        @Override
+        public void mouseExited(java.awt.event.MouseEvent e) {
+            contactUsLabel.setText("Contact Us: support@pahilopaila.com");
+        }
+    });
+
+    updateButton.addActionListener(e -> {
+        StringBuilder message = new StringBuilder("Settings Updated Successfully!\n\n");
+        message.append("Dark Mode: ").append(darkModeCheck.isSelected() ? "Enabled" : "Disabled").append("\n");
+        message.append("Notifications: ").append(notificationCheck.isSelected() ? "Enabled" : "Disabled");
+        
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
+            message.toString(), 
+            "Settings Updated", 
+            JOptionPane.INFORMATION_MESSAGE);
+    });
+
+    // Center wrapper for content box
+    JPanel centerPanel = new JPanel();
+    centerPanel.setBackground(Color.WHITE);
+    centerPanel.setLayout(new GridBagLayout());
+    centerPanel.add(contentBox);
+
+    // Add title and content to main settings panel
+    settingsPanel.add(titlePanel, BorderLayout.NORTH);
+    settingsPanel.add(centerPanel, BorderLayout.CENTER);
+
+    updateContentPanel(settingsPanel);
+}
+
+// Method to apply dark mode to the current settings panel and find parent frame
+private void applyDarkModeToSettings(boolean isDarkMode, JPanel settingsPanel) {
+    // Find the parent frame/window
+    Window parentWindow = SwingUtilities.getWindowAncestor(settingsPanel);
+    
+    if (isDarkMode) {
+        // Dark mode colors
+        Color darkBackground = new Color(45, 45, 48);
+        Color darkPanel = new Color(37, 37, 38);
+        Color darkText = new Color(220, 220, 220);
+        Color darkBorder = new Color(60, 60, 60);
+        
+        // Apply to parent window if it exists
+        if (parentWindow != null) {
+            parentWindow.setBackground(darkBackground);
+            if (parentWindow instanceof JFrame) {
+                ((JFrame) parentWindow).getContentPane().setBackground(darkBackground);
+            }
+        }
+        
+        // Apply dark theme to current panel
+        applyDarkThemeToComponent(settingsPanel, darkBackground, darkPanel, darkText, darkBorder);
+        
+    } else {
+        // Light mode colors (original)
+        Color lightBackground = Color.WHITE;
+        Color lightPanel = new Color(245, 245, 245);
+        Color lightText = Color.BLACK;
+        Color lightBorder = Color.LIGHT_GRAY;
+        
+        // Apply to parent window if it exists
+        if (parentWindow != null) {
+            parentWindow.setBackground(lightBackground);
+            if (parentWindow instanceof JFrame) {
+                ((JFrame) parentWindow).getContentPane().setBackground(lightPanel);
+            }
+        }
+        
+        // Apply light theme to current panel
+        applyLightThemeToComponent(settingsPanel, lightBackground, lightPanel, lightText, lightBorder);
     }
+    
+    // Force repaint
+    if (parentWindow != null) {
+        parentWindow.repaint();
+    }
+    settingsPanel.repaint();
+}
+
+// Helper method to apply dark theme recursively
+private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, Color darkText, Color darkBorder) {
+    for (Component component : container.getComponents()) {
+        if (component instanceof JPanel) {
+            JPanel panel = (JPanel) component;
+            // Keep title panels with original dark blue
+            if (panel.getBackground().equals(new Color(0, 20, 90))) {
+                // Keep original dark blue for title bars
+            } else if (panel.getBackground().equals(Color.WHITE)) {
+                panel.setBackground(darkPanel);
+            } else if (panel.getBackground().equals(new Color(245, 245, 245))) {
+                panel.setBackground(darkBg);
+            }
+            
+            // Update border if it exists
+            if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                panel.setBorder(BorderFactory.createLineBorder(darkBorder));
+            }
+            
+            // Recursively apply to child components
+            applyDarkThemeToComponent(panel, darkBg, darkPanel, darkText, darkBorder);
+            
+        } else if (component instanceof JLabel) {
+            JLabel label = (JLabel) component;
+            // Don't change white text (title labels) or blue link text
+            if (!label.getForeground().equals(Color.WHITE) && 
+                !label.getForeground().equals(new Color(0, 123, 255))) {
+                label.setForeground(darkText);
+            }
+            
+        } else if (component instanceof JCheckBox) {
+            JCheckBox checkBox = (JCheckBox) component;
+            checkBox.setBackground(darkPanel);
+            checkBox.setForeground(darkText);
+            
+        } else if (component instanceof JButton) {
+            JButton button = (JButton) component;
+            // Keep original button styling for consistency
+            
+        } else if (component instanceof Container) {
+            applyDarkThemeToComponent((Container) component, darkBg, darkPanel, darkText, darkBorder);
+        }
+    }
+}
+
+// Helper method to apply light theme recursively
+private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, Color lightText, Color lightBorder) {
+    for (Component component : container.getComponents()) {
+        if (component instanceof JPanel) {
+            JPanel panel = (JPanel) component;
+            // Restore original colors based on what they should be
+            if (panel.getBackground().equals(new Color(0, 20, 90))) {
+                // Keep original dark blue for title bars
+            } else if (panel.getBackground().equals(new Color(37, 37, 38))) {
+                // This was a white panel, restore to white
+                panel.setBackground(Color.WHITE);
+            } else if (panel.getBackground().equals(new Color(45, 45, 48))) {
+                // This was the main background, restore to light gray
+                panel.setBackground(lightPanel);
+            }
+            
+            // Update border if it exists
+            if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                panel.setBorder(BorderFactory.createLineBorder(lightBorder));
+            }
+            
+            // Recursively apply to child components
+            applyLightThemeToComponent(panel, lightBg, lightPanel, lightText, lightBorder);
+            
+        } else if (component instanceof JLabel) {
+            JLabel label = (JLabel) component;
+            // Restore original text colors
+            if (!label.getForeground().equals(Color.WHITE) && 
+                !label.getForeground().equals(new Color(0, 123, 255))) {
+                label.setForeground(lightText);
+            }
+            
+        } else if (component instanceof JCheckBox) {
+            JCheckBox checkBox = (JCheckBox) component;
+            checkBox.setBackground(Color.WHITE);
+            checkBox.setForeground(lightText);
+            
+        } else if (component instanceof JButton) {
+            JButton button = (JButton) component;
+            // Keep original button styling
+            
+        } else if (component instanceof Container) {
+            applyLightThemeToComponent((Container) component, lightBg, lightPanel, lightText, lightBorder);
+        }
+    }
+}
+
 
     
      public void showMyAccountPanel() {
