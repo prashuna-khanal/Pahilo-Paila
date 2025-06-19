@@ -1,6 +1,8 @@
 package pahilopaila.Controller;
 
 import com.toedter.calendar.JDateChooser;
+
+import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.CVDao;
 import pahilopaila.Dao.UserDao;
 import pahilopaila.Dao.VacancyDao;
@@ -19,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
+import java.text.SimpleDateFormat; // Add this import at the top if not present
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
@@ -112,7 +115,7 @@ public class Dashboard_JobseekersController {
         view.content.repaint();
     }
 
-    // Create a vacancy card for display
+    // Create a vacancy card for display of vacancies
     private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(new Color(0, 4, 80));
@@ -156,12 +159,68 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 3;
         card.add(daysLeftLabel, gbc);
 
+        // Apply Button
+        JButton applyButton = new JButton("Apply") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (getModel().isRollover()) {
+                    g2d.setColor(new Color(0, 20, 120));
+                } else {
+                    g2d.setColor(new Color(0, 4, 80));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
+        applyButton.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+        applyButton.setForeground(Color.WHITE);
+        applyButton.setContentAreaFilled(false);
+        applyButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
+        applyButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        applyButton.setFocusPainted(false);
+        gbc.gridy = 4;
+        gbc.insets = new Insets(10, 5, 5, 5);
+        card.add(applyButton, gbc);
+
+        // Apply Button Action
+        ApplicationDao applicationDao = new ApplicationDao();
+        applyButton.addActionListener(e -> {
+            // Check if the job seeker has already applied
+            if (applicationDao.hasApplied(userId, vacancy.getId())) {
+                JOptionPane.showMessageDialog(view, "You have already applied for this vacancy.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Check if the job seeker has a CV
+            ResultSet rs = cvDao.getCVByUserId(userId);
+            try {
+                if (rs == null || !rs.next()) {
+                    JOptionPane.showMessageDialog(view, "Please upload a CV before applying.", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (rs != null) rs.close();
+                    return;
+                }
+                int cvId = rs.getInt("id");
+                rs.close();
+
+                // Save the application
+                boolean success = applicationDao.saveApplication(userId, vacancy.getRecruiterId(), vacancy.getId(), cvId);
+                if (success) {
+                    JOptionPane.showMessageDialog(view, "Application submitted successfully!", "Success ", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(view, "Failed to submit application. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException ex) {
+                System.err.println("Error checking CV: " + ex.getMessage());
+                JOptionPane.showMessageDialog(view, "Error processing application.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         return card;
     }
-
-    // Navigation methods
-    public void showDashboardPanel() {
-        System.out.println("Navigating to Dashboard");
+public void showDashboardPanel() {
+    System.out.println("Navigating to Dashboard");
         JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
         contentPanel.setBackground(new java.awt.Color(245, 245, 245));
 
@@ -223,56 +282,54 @@ public class Dashboard_JobseekersController {
 
         contentPanel.add(messagePanel, BorderLayout.NORTH);
 
-        // Featured Jobs Section
-        JPanel featuredPanel = new JPanel(new BorderLayout());
-        featuredPanel.setBackground(new Color(245, 245, 245));
+    // Featured Jobs Section
+    JPanel featuredPanel = new JPanel(new BorderLayout());
+    featuredPanel.setBackground(new Color(245, 245, 245));
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        headerPanel.setBackground(new Color(245, 245, 245));
-        JLabel featuredLabel = new JLabel("Featured Jobs");
-        featuredLabel.setFont(new Font("Microsoft Himalaya", Font.BOLD, 36));
-        headerPanel.add(featuredLabel);
+    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    headerPanel.setBackground(new Color(245, 245, 245));
+    JLabel featuredLabel = new JLabel("Featured Jobs");
+    featuredLabel.setFont(new Font("Microsoft Himalaya", Font.BOLD, 36));
+    headerPanel.add(featuredLabel);
 
-        JButton seeAllButton = new JButton("See all");
-        seeAllButton.setBackground(new Color(0, 4, 80));
-        seeAllButton.setForeground(Color.WHITE);
-        seeAllButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
-        seeAllButton.addActionListener(this::handleSeeAll);
-        headerPanel.add(Box.createHorizontalGlue());
-        headerPanel.add(seeAllButton);
-        featuredPanel.add(headerPanel, BorderLayout.NORTH);
+    JButton seeAllButton = new JButton("See all");
+    seeAllButton.setBackground(new Color(0, 4, 80));
+    seeAllButton.setForeground(Color.WHITE);
+    seeAllButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
+    seeAllButton.addActionListener(this::handleSeeAll);
+    headerPanel.add(Box.createHorizontalGlue());
+    headerPanel.add(seeAllButton);
+    featuredPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Vacancies Panel
-        JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
-        vacanciesPanel.setBackground(new Color(245, 245, 245));
-        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
-        scrollPane.setBorder(null);
+    // Vacancies Panel
+    JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+    vacanciesPanel.setBackground(new Color(245, 245, 245));
+    JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+    scrollPane.setBorder(null);
 
-        // Fetch vacancies (limit to 3 for Featured Jobs)
-        List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
-        if (allVacancies.isEmpty()) {
-            JLabel noVacanciesLabel = new JLabel("No vacancies available.");
-            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            vacanciesPanel.add(noVacanciesLabel);
-        } else {
-            // Select up to 3 random vacancies
-            Random rand = new Random();
-            int count = Math.min(3, allVacancies.size());
-            for (int i = 0; i < count; i++) {
-                int index = rand.nextInt(allVacancies.size());
-                Vacancy vacancy = allVacancies.remove(index); // Remove to avoid duplicates
-                JPanel vacancyCard = createVacancyCard(vacancy);
-                vacanciesPanel.add(vacancyCard);
-            }
+    // Fetch vacancies (limit to 3 for Featured Jobs)
+    List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
+    if (allVacancies.isEmpty()) {
+        JLabel noVacanciesLabel = new JLabel("No vacancies available.");
+        noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        vacanciesPanel.add(noVacanciesLabel);
+    } else {
+        // Select up to 3 random vacancies
+        Random rand = new Random();
+        int count = Math.min(3, allVacancies.size());
+        java.util.Collections.shuffle(allVacancies, rand);
+        for (int i = 0; i < count; i++) {
+            JPanel card = createVacancyCard(allVacancies.get(i));
+            vacanciesPanel.add(card);
         }
-
-        featuredPanel.add(scrollPane, BorderLayout.CENTER);
-        contentPanel.add(featuredPanel, BorderLayout.CENTER);
-
-        updateContentPanel(contentPanel);
     }
 
+    featuredPanel.add(scrollPane, BorderLayout.CENTER);
+    contentPanel.add(featuredPanel, BorderLayout.CENTER);
+
+    updateContentPanel(contentPanel);
+}
     public void showVacancyPanel() {
         System.out.println("Navigating to Vacancy");
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
@@ -516,18 +573,22 @@ public class Dashboard_JobseekersController {
         submitButton.addActionListener(e -> {
             String firstName = firstNameField.getText().trim();
             String lastName = lastNameField.getText().trim();
-            java.util.Date dob = dateChooser.getDate();
+            java.util.Date dobDate = dateChooser.getDate();
             String contact = contactField.getText().trim();
             String education = educationField.getText().trim();
             String skills = skillsField.getText().trim();
             String experience = experienceArea.getText().trim();
 
             // Basic validation
-            if (firstName.isEmpty() || lastName.isEmpty() || dob == null || contact.isEmpty() ||
+            if (firstName.isEmpty() || lastName.isEmpty() || dobDate == null || contact.isEmpty() ||
                 education.isEmpty() || skills.isEmpty() || experience.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
+            // Convert dobDate to String
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String dob = sdf.format(dobDate);
 
             // Save to database
             boolean success = cvDao.saveCV(userId, firstName, lastName, dob, contact, education, skills, experience);
