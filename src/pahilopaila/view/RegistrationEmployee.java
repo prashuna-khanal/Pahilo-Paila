@@ -16,6 +16,7 @@ public class RegistrationEmployee extends javax.swing.JFrame {
      * Creates new form RegistrationEmployee
      */
     public RegistrationEmployee() {
+        setResizable(false);
         initComponents();
     }
 

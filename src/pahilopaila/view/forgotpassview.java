@@ -16,6 +16,7 @@ public class forgotpassview extends javax.swing.JFrame {
      * Creates new form forgotpassview
      */
     public forgotpassview() {
+        setResizable(false);
         initComponents();
     }
 
