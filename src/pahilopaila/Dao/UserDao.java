@@ -74,4 +74,58 @@ public class UserDao {
         }
         return false;
     }
+
+    public boolean verifyPassword(int userId, String password) {
+        String sql = "SELECT user_password FROM users WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String storedHash = rs.getString("user_password");
+                String inputHash = String.valueOf(password.hashCode());
+                return storedHash.equals(inputHash);
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error during password verification: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateUser(int userId, String username, String email, String newPassword) {
+        String sql = "UPDATE users SET username = ?, email = ?, user_password = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, email);
+            stmt.setString(3, String.valueOf(newPassword.hashCode()));
+            stmt.setInt(4, userId);
+            int rows = stmt.executeUpdate();
+            System.out.println("Update user rows affected: " + rows);
+            return rows > 0;
+        } catch (SQLException e) {
+            System.err.println("SQL error during user update: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public UserData getUserById(int userId) {
+        String sql = "SELECT id, username, email, roles FROM users WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new UserData(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("roles")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error during user fetch: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
