@@ -87,7 +87,7 @@ public class Dashboard_RecruitersController {
             }
         });
     }
-
+//method to change content panel
     private void updateContentPanel(JPanel panel) {
         view.getContentPanel().removeAll();
         view.getContentPanel().setLayout(new BorderLayout());
