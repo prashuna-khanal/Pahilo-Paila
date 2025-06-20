@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.awt.image.BufferedImage;
+import pahilopaila.Dao.NotificationDao; 
+import pahilopaila.model.Notification;
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
@@ -28,6 +30,7 @@ public class Dashboard_JobseekersController {
     private final Dashboard_JobSeekers view;
     private final CVDao cvDao;
     private final VacancyDao vacancyDao;
+    private final NotificationDao notificationDao; 
     private int userId; // Store userId
 
     // Constructor to accept the view and userId
@@ -36,6 +39,7 @@ public class Dashboard_JobseekersController {
         this.userId = userId;
         this.cvDao = new CVDao();
         this.vacancyDao = new VacancyDao();
+        this.notificationDao = new NotificationDao();
         initializeListeners();
         showDashboardPanel();
     }
@@ -68,6 +72,13 @@ public class Dashboard_JobseekersController {
         view.viewCVItem.addActionListener(e -> {
             System.out.println("View CV menu item clicked");
             showCVDisplayPanel();
+        });
+          view.notifications.addMouseListener(new MouseAdapter() { // Added Notifications listener
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Notifications label clicked");
+                showNotificationsPanel();
+            }
         });
 
         view.settings.addMouseListener(new MouseAdapter() {
@@ -685,8 +696,15 @@ public class Dashboard_JobseekersController {
 
             // Save to database
             boolean success = cvDao.saveCV(userId, firstName, lastName, dob, contact, education, skills, experience);
-            if (success) {
+           if (success) {
                 JOptionPane.showMessageDialog(view, "CV saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                // Add notification for CV submission
+                ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
+                String timestamp = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+                String message = "Your CV has been submitted successfully.";
+                notificationDao.saveNotification(userId, message, timestamp, false);
+                // Simulate status change notifications (for demonstration)
+                simulateStatusChangeNotifications();
                 // Reset fields
                 firstNameField.setText("");
                 lastNameField.setText("");
@@ -895,8 +913,108 @@ public class Dashboard_JobseekersController {
         mainPanel.add(centerWrapper, BorderLayout.CENTER);
         updateContentPanel(mainPanel);
     }
+     public void showNotificationsPanel() {
+        System.out.println("Navigating to Notifications");
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setLayout(new BorderLayout(15, 15));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-public void showSettingsPanel() {
+        JPanel headerPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GradientPaint gp = new GradientPaint(
+                    0, 0, new Color(0, 4, 80),
+                    0, getHeight(), new Color(0, 20, 120)
+                );
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        headerPanel.setPreferredSize(new Dimension(680, 70));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 20));
+
+        JLabel headerLabel = new JLabel("Notifications");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        headerLabel.setForeground(Color.WHITE);
+        headerPanel.add(headerLabel);
+
+        JPanel notificationsPanel = new JPanel();
+        notificationsPanel.setBackground(new Color(252, 252, 252));
+        notificationsPanel.setLayout(new BoxLayout(notificationsPanel, BoxLayout.Y_AXIS));
+        notificationsPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 2, 2, new Color(180, 180, 180, 100)),
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(20, 20, 20, 20),
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true)
+            )
+        ));
+
+        List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
+        if (notifications.isEmpty()) {
+            JLabel noNotificationsLabel = new JLabel("No notifications available.");
+            noNotificationsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            noNotificationsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            notificationsPanel.add(noNotificationsLabel);
+        } else {
+            for (Notification notification : notifications) {
+                JPanel notificationCard = new JPanel();
+                notificationCard.setLayout(new BorderLayout(10, 10));
+                notificationCard.setBackground(notification.isImportant() ? new Color(255, 245, 245) : Color.WHITE);
+                notificationCard.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(notification.isImportant() ? new Color(255, 100, 100) : new Color(200, 200, 200), 1, true),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                ));
+                notificationCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+
+                JLabel messageLabel = new JLabel(notification.getMessage());
+                messageLabel.setFont(new Font("Segoe UI", notification.isImportant() ? Font.BOLD : Font.PLAIN, 12));
+                messageLabel.setForeground(notification.isImportant() ? new Color(200, 0, 0) : Color.BLACK);
+                notificationCard.add(messageLabel, BorderLayout.CENTER);
+
+                JLabel timestampLabel = new JLabel(notification.getTimestamp());
+                timestampLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+                timestampLabel.setForeground(Color.GRAY);
+                notificationCard.add(timestampLabel, BorderLayout.SOUTH);
+
+                notificationsPanel.add(notificationCard);
+                notificationsPanel.add(Box.createVerticalStrut(10));
+            }
+        }
+
+        JScrollPane scrollPane = new JScrollPane(notificationsPanel);
+        scrollPane.setBorder(null);
+
+        JPanel centerWrapper = new JPanel();
+        centerWrapper.setBackground(new Color(245, 245, 245));
+        centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        centerWrapper.add(scrollPane);
+
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(centerWrapper, BorderLayout.CENTER);
+        updateContentPanel(mainPanel);
+    }
+    private void simulateStatusChangeNotifications() {
+        // Simulate status changes for demonstration
+        String[] statuses = {
+            "Your application is under review.",
+            "Your application has been shortlisted.",
+            "Your application has been rejected.",
+            "Interview scheduled for your application."
+        };
+        Random rand = new Random();
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
+        String timestamp = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+        String message = statuses[rand.nextInt(statuses.length)];
+        boolean isImportant = message.contains("rejected") || message.contains("scheduled");
+        notificationDao.saveNotification(userId, message, timestamp, isImportant);
+    }
+    
+
+    public void showSettingsPanel() {
     System.out.println("Navigating to Settings");
     
     // Main container panel (white background like My Account)
