@@ -865,8 +865,10 @@ public class Dashboard_JobseekersController {
                         experienceArea.setLineWrap(true);
                         experienceArea.setWrapStyleWord(true);
                         experienceArea.setEditable(false);
-                        JScrollPane scrollPane = new JScrollPane(experienceArea);
-                        scrollPane.setPreferredSize(new Dimension(300, 100)); // Larger scroll pane
+                         JScrollPane scrollPane = new JScrollPane(experienceArea);
+                        scrollPane.setPreferredSize(new Dimension(400, 120));
+                        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
                         gbc.gridx = 1;
                         gbc.gridy = row;
                         gbc.gridwidth = 3;
