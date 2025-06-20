@@ -3,6 +3,8 @@ package pahilopaila.view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Timer;
 import java.util.TimerTask;
 import pahilopaila.Controller.Dashboard_JobseekersController;
@@ -16,10 +18,12 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
     private boolean vacancyPressed = false, vacancyHovered = false;
     private boolean CVPressed = false, CVHovered = false;
     private boolean settingsPressed = false, settingsHovered = false;
+     private boolean notificationsPressed = false, notificationsHovered = false;
     private boolean myAccountPressed = false, myAccountHovered = false;
     private boolean signOutPressed = false, signOutHovered = false;
 
     // UI components
+    public JLabel notifications;
     public JTextField Searchfield;
     public JButton filter;
     public JButton search;
@@ -82,6 +86,25 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         setSize(900, 700); // Fixed window size
         setLocationRelativeTo(null);
     }
+    // NEW: Method to create a notification icon using Graphics2D
+    private ImageIcon createNotificationIcon() {
+        int width = 16;
+        int height = 16;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = image.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Draw bell shape
+        g2d.setColor(new Color(102, 102, 102)); // Match label text color
+        g2d.fillOval(5, 10, 6, 4); // Bell clapper
+        g2d.fillArc(3, 2, 10, 10, 0, 180); // Bell top
+        int[] xPoints = {3, 13, 10, 6};
+        int[] yPoints = {7, 7, 12, 12};
+        g2d.fillPolygon(xPoints, yPoints, 4); // Bell body
+
+        g2d.dispose();
+        return new ImageIcon(image);
+    }
 
     // Helper method to create styled navigation labels
     private JLabel createStyledLabel(String text, String iconPath) {
@@ -91,12 +114,14 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
-                    this == CV && CVPressed || this == settings && settingsPressed ||
-                    this == myAccount && myAccountPressed || this == signOut && signOutPressed) {
+                    this == CV && CVPressed || this == notifications && notificationsPressed || // NEW: Added Notifications
+                    this == settings && settingsPressed || this == myAccount && myAccountPressed ||
+                    this == signOut && signOutPressed) {
                     g2d.setColor(new Color(200, 200, 200));
                 } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
-                           this == CV && CVHovered || this == settings && settingsHovered ||
-                           this == myAccount && myAccountHovered || this == signOut && signOutHovered) {
+                           this == CV && CVHovered || this == notifications && notificationsHovered || // NEW: Added Notifications
+                           this == settings && settingsHovered || this == myAccount && myAccountHovered ||
+                           this == signOut && signOutHovered) {
                     g2d.setColor(new Color(230, 230, 230));
                 } else {
                     g2d.setColor(new Color(255, 255, 255));
@@ -105,10 +130,15 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 super.paintComponent(g);
             }
         };
-        label.setFont(new java.awt.Font("Segoe UI", 1, 14));
+         label.setFont(new java.awt.Font("Segoe UI", 1, 14));
         label.setForeground(new Color(102, 102, 102));
         try {
-            label.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconPath)));
+            // MODIFIED: Use custom notification icon for Notifications label
+            if (text.equals("Notifications")) {
+                label.setIcon(createNotificationIcon());
+            } else {
+                label.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconPath)));
+            }
             label.setVerticalTextPosition(JLabel.CENTER);
             label.setHorizontalTextPosition(JLabel.RIGHT);
             label.setIconTextGap(10);
@@ -126,6 +156,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 if (label == dashboard) dashboardPressed = true;
                 else if (label == vacancy) vacancyPressed = true;
                 else if (label == CV) CVPressed = true;
+                else if (label == notifications) notificationsPressed = true; // NEW: Added Notifications
                 else if (label == settings) settingsPressed = true;
                 else if (label == myAccount) myAccountPressed = true;
                 else if (label == signOut) signOutPressed = true;
@@ -141,6 +172,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                         if (label == dashboard) dashboardPressed = false;
                         else if (label == vacancy) vacancyPressed = false;
                         else if (label == CV) CVPressed = false;
+                        else if (label == notifications) notificationsPressed = false; // NEW: Added Notifications
                         else if (label == settings) settingsPressed = false;
                         else if (label == myAccount) myAccountPressed = false;
                         else if (label == signOut) signOutPressed = false;
@@ -159,6 +191,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 if (label == dashboard) dashboardHovered = true;
                 else if (label == vacancy) vacancyHovered = true;
                 else if (label == CV) CVHovered = true;
+                else if (label == notifications) notificationsHovered = true; // NEW: Added Notifications
                 else if (label == settings) settingsHovered = true;
                 else if (label == myAccount) myAccountHovered = true;
                 else if (label == signOut) signOutHovered = true;
@@ -171,6 +204,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                 if (label == dashboard) dashboardHovered = false;
                 else if (label == vacancy) vacancyHovered = false;
                 else if (label == CV) CVHovered = false;
+                else if (label == notifications) notificationsHovered = false; // NEW: Added Notifications
                 else if (label == settings) settingsHovered = false;
                 else if (label == myAccount) myAccountHovered = false;
                 else if (label == signOut) signOutHovered = false;
@@ -188,9 +222,8 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         });
         return label;
     }
-
     @SuppressWarnings("unchecked")
-    private void initComponents() {
+      private void initComponents() {
         Searchfield = new javax.swing.JTextField();
         filter = new javax.swing.JButton();
         search = new javax.swing.JButton();
@@ -202,6 +235,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg");
         vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png");
         CV = createStyledLabel("CV", "/Image/logo/application.png");
+        notifications = createStyledLabel("Notifications", null); // MODIFIED: Pass null to use custom icon
         settings = createStyledLabel("Settings", "/Image/logo/setting.png");
         myAccount = createStyledLabel("My Account", "/Image/logo/account.png");
         signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png");
@@ -241,7 +275,6 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         jPanel16 = new javax.swing.JPanel();
         jLabel33 = new javax.swing.JLabel();
         jLabel34 = new javax.swing.JLabel();
-
         // Initialize CV popup menu
         cvPopupMenu = new JPopupMenu();
         uploadCVItem = new JMenuItem("Upload CV");
@@ -308,6 +341,7 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                         .addComponent(dashboard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(vacancy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(CV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(notifications, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) // NEW: Added Notifications
                         .addComponent(settings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(myAccount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(signOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -325,12 +359,14 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(CV, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(notifications, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE) // NEW: Added Notifications
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(settings, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(85, 85, 85)
+                    .addGap(60, 60, 60) // MODIFIED: Reduced gap to fit Notifications
                     .addComponent(myAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(signOut, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(105, Short.MAX_VALUE))
+                    .addContainerGap(80, Short.MAX_VALUE))
         );
 
         getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 520));
