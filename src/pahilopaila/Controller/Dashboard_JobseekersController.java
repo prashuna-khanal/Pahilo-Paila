@@ -13,6 +13,7 @@ import pahilopaila.view.LoginPageview;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
@@ -473,36 +474,7 @@ public void showDashboardPanel() {
 
     public void showVacancyPanel() {
         System.out.println("Navigating to Vacancy");
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBackground(isDarkMode ? new Color(25, 25, 25) : new Color(245, 245, 245));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
-        JLabel headerLabel = new JLabel("Browse Vacancies");
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        headerLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
-        mainPanel.add(headerLabel, BorderLayout.NORTH);
-
-        JPanel vacanciesPanel = new JPanel(new GridLayout(0, 3, 10, 10));
-        vacanciesPanel.setBackground(isDarkMode ? new Color(25, 25, 25) : new Color(245, 245, 245));
-        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
-        scrollPane.setBorder(null);
-
-        List<Vacancy> vacancies = vacancyDao.getAllVacancies();
-        if (vacancies.isEmpty()) {
-            JLabel noVacanciesLabel = new JLabel("No vacancies available.");
-            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-            noVacanciesLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
-            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            vacanciesPanel.add(noVacanciesLabel);
-        } else {
-            for (Vacancy vacancy : vacancies) {
-                JPanel vacancyCard = createVacancyCard(vacancy);
-                vacanciesPanel.add(vacancyCard);
-            }
-        }
-
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        updateContentPanel(mainPanel);
+        applyFilters(null, null, null, null); // Load all vacancies initially
     }
 
     public void showCVUploadPanel() {
@@ -1533,45 +1505,239 @@ public void showDashboardPanel() {
         view.dispose();
         LoginPageview loginView = new LoginPageview();
         loginView.setVisible(true);
- new LoginController(loginView);
- } public void setUserInfo(String username, String email, int userId) {
- this.userId = userId;
- this.currentEmail = email;
- view.username.setText(username);
- view.email.setText(email);
- } private void handleGetStarted(ActionEvent e) {
- System.out.println("Get Started button clicked");
- JOptionPane.showMessageDialog(view, "Getting started with job search!");
- } private void handleLearnMore(ActionEvent e) {
- System.out.println("Learn More button clicked");
- JOptionPane.showMessageDialog(view, "Learn more about our platform!");
- } private void handleSearch(ActionEvent e) {
- System.out.println("Search button clicked");
- String query = view.Searchfield.getText().trim();
- JOptionPane.showMessageDialog(view, "Searching for: " + query);
- } private void handleSeeAll(ActionEvent e) {
- System.out.println("See All button clicked");
- showVacancyPanel();
- } private void handleFilter(ActionEvent e) {
- System.out.println("Filter button clicked");
- JOptionPane.showMessageDialog(view, "Filter options coming soon!");
- } private boolean saveRatingToDatabase(int userId, int rating) {
- if (rating < 1 || rating > 5) {
-     System.err.println("Invalid rating value: " + rating + ". Must be between 1 and 5.");
-     return false;
- }
+        new LoginController(loginView);
+ } 
+    public void setUserInfo(String username, String email, int userId) {
+        this.userId = userId;
+        this.currentEmail = email;
+        view.username.setText(username);
+        view.email.setText(email);
+    } 
+    private void handleGetStarted(ActionEvent e) {
+        System.out.println("Get Started button clicked");
+        JOptionPane.showMessageDialog(view, "Getting started with job search!");
+    } 
+    private void handleLearnMore(ActionEvent e) {
+        System.out.println("Learn More button clicked");
+        JOptionPane.showMessageDialog(view, "Learn more about our platform!");
+    }  
+    private void handleSearch(ActionEvent e) {
+         System.out.println("Search button clicked");
+        String query = view.Searchfield.getText().trim();
+        JOptionPane.showMessageDialog(view, "Searching for: " + query);
+    } 
+    private void handleSeeAll(ActionEvent e) {
+        System.out.println("See All button clicked");
+        showVacancyPanel();
+    } 
+    private void showFilterDialog() {
+        JDialog filterDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(view), "Filter Vacancies", true);
+        filterDialog.setLayout(new BorderLayout(10, 10));
+        filterDialog.setSize(400, 350);
+        filterDialog.setLocationRelativeTo(view);
+        filterDialog.getContentPane().setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
 
- RatingDao ratingDao = new RatingDao();
- boolean success = ratingDao.saveRating(userId, rating);
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
- if (success) {
-     System.out.println("Rating " + rating + " saved successfully for userId: " + userId);
- } else {
-     System.err.println("Failed to save rating for userId: " + userId);
- }
+        // Job Type
+        JLabel jobTypeLabel = new JLabel("Job Type:");
+        jobTypeLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+        jobTypeLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(jobTypeLabel, gbc);
+
+        JComboBox<String> jobTypeCombo = new JComboBox<>(new String[]{"All", "Full-time", "Part-time", "Contract", "Internship"});
+        jobTypeCombo.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
+        jobTypeCombo.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        formPanel.add(jobTypeCombo, gbc);
+
+        // Experience Level
+        JLabel experienceLabel = new JLabel("Experience Level:");
+        experienceLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+        experienceLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(experienceLabel, gbc);
+
+        JComboBox<String> experienceCombo = new JComboBox<>(new String[]{"All", "Junior", "Mid", "Senior"});
+        experienceCombo.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
+        experienceCombo.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        formPanel.add(experienceCombo, gbc);
+
+        // Min Days Left
+        JLabel minDaysLabel = new JLabel("Min Days Left:");
+        minDaysLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+        minDaysLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(minDaysLabel, gbc);
+
+        JSpinner minDaysSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 365, 1));
+        minDaysSpinner.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
+        minDaysSpinner.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        formPanel.add(minDaysSpinner, gbc);
+
+        // Max Days Left
+        JLabel maxDaysLabel = new JLabel("Max Days Left:");
+        maxDaysLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+        maxDaysLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(maxDaysLabel, gbc);
+
+        JSpinner maxDaysSpinner = new JSpinner(new SpinnerNumberModel(30, 0, 365, 1));
+        maxDaysSpinner.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
+        maxDaysSpinner.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        formPanel.add(maxDaysSpinner, gbc);
+
+        // Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+
+        JButton clearButton = new JButton("Clear") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(isDarkMode ? new Color(100, 100, 100) : new Color(150, 150, 150));
+                if (getModel().isRollover()) {
+                    g2d.setColor(isDarkMode ? new Color(120, 120, 120) : new Color(170, 170, 170));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
+        clearButton.setForeground(Color.WHITE);
+        clearButton.setContentAreaFilled(false);
+        clearButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
+        buttonPanel.add(clearButton);
+
+        JButton applyButton = new JButton("Apply") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(isDarkMode ? new Color(33, 150, 243) : new Color(0, 4, 80));
+                if (getModel().isRollover()) {
+                    g2d.setColor(isDarkMode ? new Color(66, 165, 245) : new Color(0, 20, 120));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
+        applyButton.setForeground(Color.WHITE);
+        applyButton.setContentAreaFilled(false);
+        applyButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
+        buttonPanel.add(applyButton);
+
+        clearButton.addActionListener(e -> {
+            jobTypeCombo.setSelectedIndex(0);
+            experienceCombo.setSelectedIndex(0);
+            minDaysSpinner.setValue(0);
+            maxDaysSpinner.setValue(30);
+        });
+
+        applyButton.addActionListener(e -> {
+            String jobType = jobTypeCombo.getSelectedItem().toString();
+            String experienceLevel = experienceCombo.getSelectedItem().toString();
+            Integer minDays = (Integer) minDaysSpinner.getValue();
+            Integer maxDays = (Integer) maxDaysSpinner.getValue();
+
+            // Validate minDays <= maxDays
+            if (minDays > maxDays) {
+                JOptionPane.showMessageDialog(filterDialog, "Minimum days cannot be greater than maximum days.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Apply filters
+            applyFilters(jobType, experienceLevel, minDays, maxDays);
+            filterDialog.dispose();
+        });
+
+        filterDialog.add(formPanel, BorderLayout.CENTER);
+        filterDialog.add(buttonPanel, BorderLayout.SOUTH);
+        filterDialog.setVisible(true);
+    }
+    
+    private void handleFilter(ActionEvent e) {
+        System.out.println("Filter button clicked");
+        showFilterDialog();
+    }
+    private void applyFilters(String jobType, String experienceLevel, Integer minDays, Integer maxDays) {
+        List<Vacancy> filteredVacancies = vacancyDao.getFilteredVacancies(
+            jobType.equals("All") ? null : jobType,
+            experienceLevel.equals("All") ? null : experienceLevel,
+            minDays == 0 ? null : minDays,
+         maxDays == 365 ? null : maxDays
+        );
+        refreshVacancyPanel(filteredVacancies);
+    }
+    private void refreshVacancyPanel(List<Vacancy> vacancies) {
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBackground(isDarkMode ? new Color(25, 25, 25) : new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        JLabel headerLabel = new JLabel("Browse Vacancies");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        headerLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
+        mainPanel.add(headerLabel, BorderLayout.NORTH);
+
+        JPanel vacanciesPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        vacanciesPanel.setBackground(isDarkMode ? new Color(25, 25, 25) : new Color(245, 245, 245));
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+
+        if (vacancies.isEmpty()) {
+            JLabel noVacanciesLabel = new JLabel("No vacancies match the selected filters.");
+            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            noVacanciesLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
+            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            vacanciesPanel.add(noVacanciesLabel);
+        } else {
+            for (Vacancy vacancy : vacancies) {
+                JPanel vacancyCard = createVacancyCard(vacancy);
+                vacanciesPanel.add(vacancyCard);
+            }
+        }
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        updateContentPanel(mainPanel);
+    }   
+     private boolean saveRatingToDatabase(int userId, int rating) {
+        if (rating < 1 || rating > 5) {
+        System.err.println("Invalid rating value: " + rating + ". Must be between 1 and 5.");
+        return false;
+    }
+
+    RatingDao ratingDao = new RatingDao();
+    boolean success = ratingDao.saveRating(userId, rating);
+
+    if (success) {
+         System.out.println("Rating " + rating + " saved successfully for userId: " + userId);
+    } else {
+         System.err.println("Failed to save rating for userId: " + userId);
+    }
 
  return success;
  }
 
+   
+
+   
 }
 
