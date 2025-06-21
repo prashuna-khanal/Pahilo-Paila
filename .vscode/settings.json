@@ -2,7 +2,15 @@
     "java.project.referencedLibraries": [
         "c:\\Users\\LENOVO\\Downloads\\junit-4.13.2.jar",
         "c:\\Users\\LENOVO\\Downloads\\mysql-connector-j-9.2.0\\mysql-connector-j-9.2.0.jar",
-        "c:\\Users\\LENOVO\\Downloads\\AbsoluteLayout.jar"
+        "c:\\Users\\LENOVO\\Downloads\\AbsoluteLayout.jar",
+        "c:\\Users\\dl009\\Downloads\\mysql-connector-j-9.2.0.jar",
+        "c:\\Users\\dl009\\Downloads\\javax.activation-1.2.0 (1).jar",
+        "c:\\Users\\dl009\\Downloads\\junit-4.13.2.jar",
+        "c:\\Users\\dl009\\Downloads\\AbsoluteLayout.jar",
+        "c:\\Users\\dl009\\Downloads\\jcalendar-1.4.jar",
+        "c:\\Users\\dl009\\Downloads\\javax.activation-1.2.0.jar",
+        "c:\\Users\\dl009\\Downloads\\mail.jar",
+        "c:\\Users\\dl009\\Downloads\\AbsoluteLayout (1).jar"
     ],
     "java.project.sourcePaths": [
         "src"
