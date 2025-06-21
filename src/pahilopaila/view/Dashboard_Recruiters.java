@@ -1,19 +1,16 @@
 package pahilopaila.view;
 
-import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
-
-import pahilopaila.Controller.Dashboard_RecruitersController;
-
+import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
+import pahilopaila.Controller.Dashboard_RecruitersController;
 
 /**
  * Dashboard view for recruiters.
  */
 public class Dashboard_Recruiters extends JFrame {
-
     private boolean dashboardPressed = false, dashboardHovered = false;
     private boolean vacancyPressed = false, vacancyHovered = false;
     private boolean applicationPressed = false, applicationHovered = false;
@@ -23,33 +20,38 @@ public class Dashboard_Recruiters extends JFrame {
 
     // UI components
     public JTextField Searchfield;
-    public JLabel application;
-    public JPanel content;
-    public JLabel dashboard;
-    public JLabel email;
-    private JPanel featurePanel;
-    private JLabel find;
-    public JButton getStarted;
-    public JButton jButton1;
-    public JButton jButton2;
-    private JLabel jLabel1;
-    private JLabel jLabel4;
-    public JButton learnMore;
-    private JPanel logo;
-    private JPanel messagePanel;
-    public JLabel myAccount;
-    private JLabel profileIcon;
-    private JLabel right;
-    public JLabel settings;
-    public JLabel signOut;
+    public JButton search;
+    public JButton filter;
     public JLabel username;
+    public JLabel email;
+    public JPanel featurePanel;
+    public JPanel logo;
+    public JLabel jLabel4;
+    public JLabel dashboard;
     public JLabel vacancy;
+    public JLabel application;
+    public JLabel settings;
+    public JLabel myAccount;
+    public JLabel signOut;
+    public JLabel profileIcon;
+    public JPanel content;
+    public JPanel messagePanel;
+    public JLabel jLabel1;
+    public JLabel find;
+    public JLabel right;
+    public JButton learnMore;
+    public JButton getStarted;
+    public Object jButton1;
+    public Object jButton2;
 
     public Dashboard_Recruiters() {
         initComponents();
+        setResizable(false);
+        setSize(900, 700);
+        setLocationRelativeTo(null);
     }
 
-    private JLabel createStyledLabel(String text, String iconPath, Runnable onClick) {
+    private JLabel createStyledLabel(String text, String iconPath) {
         JLabel label = new JLabel(text) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -71,7 +73,7 @@ public class Dashboard_Recruiters extends JFrame {
             }
         };
         label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        label.setForeground(new Color(45, 22, 116));
+        label.setForeground(new Color(102, 102, 102)); // Match JobSeekers
         try {
             label.setIcon(new ImageIcon(getClass().getResource(iconPath)));
             label.setVerticalTextPosition(JLabel.CENTER);
@@ -87,7 +89,7 @@ public class Dashboard_Recruiters extends JFrame {
             private Timer pressTimer;
 
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt) {
+            public void mousePressed(MouseEvent evt) {
                 if (label == dashboard) dashboardPressed = true;
                 else if (label == vacancy) vacancyPressed = true;
                 else if (label == application) applicationPressed = true;
@@ -95,9 +97,7 @@ public class Dashboard_Recruiters extends JFrame {
                 else if (label == myAccount) myAccountPressed = true;
                 else if (label == signOut) signOutPressed = true;
                 label.repaint();
-                if (pressTimer != null) {
-                    pressTimer.cancel();
-                }
+                if (pressTimer != null) pressTimer.cancel();
                 pressTimer = new Timer();
                 pressTimer.schedule(new TimerTask() {
                     @Override
@@ -114,32 +114,25 @@ public class Dashboard_Recruiters extends JFrame {
             }
 
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = true;
                 else if (label == vacancy) vacancyHovered = true;
                 else if (label == application) applicationHovered = true;
                 else if (label == settings) settingsHovered = true;
-                else if (label == myAccount) myAccountHovered = true;
-                else if (label == signOut) signOutHovered = true;
+                else if (label == myAccount) myAccountPressed = true;
+                else if (label == signOut) signOutPressed = true;
                 label.repaint();
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 if (label == dashboard) dashboardHovered = false;
-                else if (label == vacancy) vacancyHovered = false;
-                else if (label == application) applicationHovered = false;
-                else if (label == settings) settingsHovered = false;
-                else if (label == myAccount) myAccountHovered = false;
-                else if (label == signOut) signOutHovered = false;
+                if (label == vacancy) vacancyHovered = false;
+                if (label == application) applicationHovered = false;
+                if (label == settings) settingsHovered = false;
+                if (label == myAccount) myAccountHovered = false;
+                if (label == signOut) signOutHovered = false;
                 label.repaint();
-            }
-
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (onClick != null) {
-                    onClick.run();
-                }
             }
         });
         return label;
@@ -148,8 +141,8 @@ public class Dashboard_Recruiters extends JFrame {
     @SuppressWarnings("unchecked")
     private void initComponents() {
         Searchfield = new JTextField();
-        jButton1 = new JButton();
-        jButton2 = new JButton();
+        search = new JButton();
+        filter = new JButton();
         username = new JLabel();
         email = new JLabel();
         profileIcon = new JLabel();
@@ -163,36 +156,25 @@ public class Dashboard_Recruiters extends JFrame {
         featurePanel = new JPanel();
         logo = new JPanel();
         jLabel4 = new JLabel();
-
-        dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg", null);
-        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png", null);
-        application = createStyledLabel("Application", "/Image/logo/application.png", null);
-        settings = createStyledLabel("Settings", "/Image/logo/setting.png", null);
-        myAccount = createStyledLabel("My Account", "/Image/logo/account.png", null);
-        signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png", null);
+        dashboard = createStyledLabel("Dashboard", "/Image/logo/dashboard.jpg");
+        vacancy = createStyledLabel("Vacancy", "/Image/logo/vacancy.png");
+        application = createStyledLabel("Application", "/Image/logo/application.png");
+        settings = createStyledLabel("Settings", "/Image/logo/setting.png");
+        myAccount = createStyledLabel("My Account", "/Image/logo/account.png");
+        signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(900, 600));
-        setMinimumSize(new Dimension(800, 500));
+        setBackground(new Color(255, 255, 255));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Searchfield.setHorizontalAlignment(JTextField.LEFT);
         getContentPane().add(Searchfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 280, 30));
 
-        try {
-            jButton1.setIcon(new ImageIcon(getClass().getResource("/Image/logo/search.png")));
-        } catch (Exception e) {
-            System.out.println("Error loading search icon: " + e.getMessage());
-        }
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 30, 30));
+        search.setIcon(new ImageIcon(getClass().getResource("/Image/logo/search.jpg")));
+        getContentPane().add(search, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 30, 30));
 
-        try {
-            jButton2.setIcon(new ImageIcon(getClass().getResource("/Image/logo/filter.png")));
-        } catch (Exception e) {
-            System.out.println("Error loading filter icon: " + e.getMessage());
-        }
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
+        filter.setIcon(new ImageIcon(getClass().getResource("/Image/logo/filter.png")));
+        getContentPane().add(filter, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
 
         username.setFont(new Font("Segoe UI Semibold", Font.BOLD, 18));
         username.setForeground(new Color(0, 0, 102));
@@ -201,13 +183,9 @@ public class Dashboard_Recruiters extends JFrame {
 
         email.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         email.setText("@ramkumar");
-        getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 50, 100, 20));
+        getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 50, 100, -1));
 
-        try {
-            profileIcon.setIcon(new ImageIcon(getClass().getResource("/Image/logo/ram.png")));
-        } catch (Exception e) {
-            System.out.println("Error loading profile icon: " + e.getMessage());
-        }
+        profileIcon.setIcon(new ImageIcon(getClass().getResource("/Image/logo/ram.png")));
         getContentPane().add(profileIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 40, 60));
 
         content.setBackground(new Color(245, 245, 245));
@@ -227,20 +205,9 @@ public class Dashboard_Recruiters extends JFrame {
         learnMore.setBackground(new Color(0, 4, 80));
         learnMore.setForeground(Color.WHITE);
         learnMore.setText("Learn More");
-        learnMore.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.WHITE),
-            "",
-            TitledBorder.DEFAULT_JUSTIFICATION,
-            TitledBorder.DEFAULT_POSITION,
-            new Font("Segoe UI", Font.PLAIN, 12),
-            Color.WHITE
-        ));
+        learnMore.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
-        try {
-            jLabel1.setIcon(new ImageIcon(getClass().getResource("/Image/logo/3man.png")));
-        } catch (Exception e) {
-            System.out.println("Error loading 3man icon: " + e.getMessage());
-        }
+        jLabel1.setIcon(new ImageIcon(getClass().getResource("/Image/logo/3man.png")));
 
         GroupLayout messagePanelLayout = new GroupLayout(messagePanel);
         messagePanel.setLayout(messagePanelLayout);
@@ -293,16 +260,11 @@ public class Dashboard_Recruiters extends JFrame {
                     .addContainerGap(309, Short.MAX_VALUE))
         );
 
-        getContentPane().add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 70, 700, 440));
+        getContentPane().add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 80, 680, 430));
 
         featurePanel.setBackground(Color.WHITE);
         logo.setBackground(Color.WHITE);
-
-        try {
-            jLabel4.setIcon(new ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png")));
-        } catch (Exception e) {
-            System.out.println("Error loading logo icon: " + e.getMessage());
-        }
+        jLabel4.setIcon(new ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png")));
 
         GroupLayout logoLayout = new GroupLayout(logo);
         logo.setLayout(logoLayout);
@@ -325,6 +287,7 @@ public class Dashboard_Recruiters extends JFrame {
         featurePanel.setLayout(featurePanelLayout);
         featurePanelLayout.setHorizontalGroup(
             featurePanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(logo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(featurePanelLayout.createSequentialGroup()
                     .addGap(15)
                     .addGroup(featurePanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -335,31 +298,29 @@ public class Dashboard_Recruiters extends JFrame {
                         .addComponent(myAccount)
                         .addComponent(signOut))
                     .addContainerGap(15, Short.MAX_VALUE))
-                .addComponent(logo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         featurePanelLayout.setVerticalGroup(
             featurePanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(featurePanelLayout.createSequentialGroup()
                     .addComponent(logo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addGap(5)
-                    .addComponent(dashboard)
-                    .addGap(20)
-                    .addComponent(vacancy)
-                    .addGap(20)
-                    .addComponent(application)
-                    .addGap(20)
-                    .addComponent(settings)
-                    .addGap(40)
-                    .addComponent(myAccount)
-                    .addGap(10)
-                    .addComponent(signOut)
-                    .addContainerGap(15, Short.MAX_VALUE))
+                    .addGap(29)
+                    .addComponent(dashboard, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(vacancy, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(application, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(settings, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                    .addGap(85)
+                    .addComponent(myAccount, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(signOut, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(105, Short.MAX_VALUE))
         );
 
-        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 510));
+        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 520));
 
         pack();
-        setLocationRelativeTo(null);
     }
 
     public void setUserInfo(String usernameText, String emailText) {
@@ -374,9 +335,7 @@ public class Dashboard_Recruiters extends JFrame {
     public static void main(String args[]) {
         SwingUtilities.invokeLater(() -> {
             Dashboard_Recruiters view = new Dashboard_Recruiters();
-            Dashboard_RecruitersController controller = new Dashboard_RecruitersController(view, 1);
-            controller.setUserInfo("Test User", "@testuser");
-            controller.open();
+            new Dashboard_RecruitersController(view, 1);
         });
     }
 }

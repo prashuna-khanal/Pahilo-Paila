@@ -14,7 +14,6 @@ public class VacancyDao {
         System.out.println("VacancyDao initialized");
     }
 
-    // Existing method (retained for compatibility)
     public boolean saveVacancy(int recruiterId, String jobTitle, String jobType, String experienceLevel, int daysLeft, String description) {
         String sql = "INSERT INTO vacancies (recruiter_id, job_title, job_type, experience_level, days_left, description) VALUES (?, ?, ?, ?, ?, ?)";
         System.out.println("Saving vacancy for recruiter_id: " + recruiterId);
@@ -34,7 +33,6 @@ public class VacancyDao {
         }
     }
 
-    // New method to save a Vacancy object
     public boolean saveVacancy(Vacancy vacancy) {
         String sql = "INSERT INTO vacancies (recruiter_id, job_title, job_type, experience_level, days_left, description) VALUES (?, ?, ?, ?, ?, ?)";
         System.out.println("Saving vacancy for recruiter_id: " + vacancy.getRecruiterId());
@@ -101,5 +99,31 @@ public class VacancyDao {
             System.err.println("Error retrieving all vacancies: " + e.getMessage());
         }
         return vacancies;
+    }
+
+    public Vacancy getVacancyById(int vacancyId) {
+        String sql = "SELECT * FROM vacancies WHERE id = ?";
+        System.out.println("Retrieving vacancy for id: " + vacancyId);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, vacancyId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Vacancy vacancy = new Vacancy(
+                    rs.getInt("id"),
+                    rs.getInt("recruiter_id"),
+                    rs.getString("job_title"),
+                    rs.getString("job_type"),
+                    rs.getString("experience_level"),
+                    rs.getInt("days_left"),
+                    rs.getString("description")
+                );
+                rs.close();
+                return vacancy;
+            }
+            rs.close();
+        } catch (SQLException e) {
+            System.err.println("Error retrieving vacancy: " + e.getMessage());
+        }
+        return null;
     }
 }

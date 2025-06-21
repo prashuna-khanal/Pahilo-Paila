@@ -12,10 +12,10 @@ public class Cv {
     private String education;
     private String skills;
     private String experience;
-    private Timestamp uploadedAt;
+
 
     public Cv(int id, String userId, String firstName, String lastName, String dob, String contact,
-              String education, String skills, String experience, Timestamp uploadedAt) {
+              String education, String skills, String experience) {
         this.id = id;
         this.userId = userId;
         this.firstName = firstName;
@@ -25,7 +25,6 @@ public class Cv {
         this.education = education;
         this.skills = skills;
         this.experience = experience;
-        this.uploadedAt = uploadedAt;
     }
 
     public int getId() { return id; }
@@ -36,6 +35,5 @@ public class Cv {
     public String getContact() { return contact; }
     public String getEducation() { return education; }
     public String getSkills() { return skills; }
-    public String getExperience() { return experience; }
-    public Timestamp getUploadedAt() { return uploadedAt; }
+    public String getExperience() { return experience;}
 }

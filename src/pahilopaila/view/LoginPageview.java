@@ -21,11 +21,13 @@ import java.awt.event.FocusEvent;
  * @author Acer
  */
 public class LoginPageview extends javax.swing.JFrame {
+    
 
     /**
      * Creates new form Registration
      */
     public LoginPageview() {
+        setResizable(false);
         initComponents();
         setupPlaceholderLogic();
     }

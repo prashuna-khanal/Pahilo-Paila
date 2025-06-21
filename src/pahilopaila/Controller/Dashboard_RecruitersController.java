@@ -1,7 +1,10 @@
 package pahilopaila.Controller;
 
 import pahilopaila.Dao.VacancyDao;
+import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.UserDao;
+import pahilopaila.model.Application;
+import pahilopaila.model.Cv;
 import pahilopaila.model.UserData;
 import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_Recruiters;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import javax.swing.text.JTextComponent;
 
 public class Dashboard_RecruitersController {
     private final Dashboard_Recruiters view;
@@ -27,12 +31,15 @@ public class Dashboard_RecruitersController {
     private final UserDao userDao;
     private int userId;
     private String currentEmail;
+    // Static variables to persist settings
+    private static boolean isDarkMode = false;
+    private static boolean notificationsEnabled = true;
 
     public Dashboard_RecruitersController(Dashboard_Recruiters view, int recruiterId) {
         this.view = view;
         this.recruiterId = recruiterId;
         this.vacancyDao = new VacancyDao();
-        this.userId=recruiterId;
+        this.userId = recruiterId;
         this.userDao = new UserDao();
         initializeListeners();
         showDashboardPanel();
@@ -40,8 +47,6 @@ public class Dashboard_RecruitersController {
 
     private void initializeListeners() {
         view.Searchfield.addActionListener(this::searchFieldActionPerformed);
-        view.jButton1.addActionListener(this::searchButtonActionPerformed);
-        view.jButton2.addActionListener(this::filterButtonActionPerformed);
         view.getStarted.addActionListener(this::getStartedActionPerformed);
         view.learnMore.addActionListener(this::learnMoreActionPerformed);
 
@@ -82,18 +87,27 @@ public class Dashboard_RecruitersController {
             }
         });
     }
-
+//method to change content panel
     private void updateContentPanel(JPanel panel) {
         view.getContentPanel().removeAll();
         view.getContentPanel().setLayout(new BorderLayout());
         view.getContentPanel().add(panel, BorderLayout.CENTER);
+        applyThemeToPanel(panel); // Apply theme to new panel
         view.getContentPanel().revalidate();
         view.getContentPanel().repaint();
     }
 
+    private void applyThemeToPanel(JPanel panel) {
+        if (isDarkMode) {
+            applyDarkThemeToComponent(panel, new Color(45, 45, 48), new Color(37, 37, 38), new Color(220, 220, 220), new Color(60, 60, 60));
+        } else {
+            applyLightThemeToComponent(panel, Color.WHITE, new Color(245, 245, 245), Color.BLACK, Color.LIGHT_GRAY);
+        }
+    }
+
     private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(new Color(0, 10, 100));
+        card.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(0, 10, 100));
         card.setPreferredSize(new Dimension(220, 190));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -103,7 +117,7 @@ public class Dashboard_RecruitersController {
 
         JLabel titleLabel = new JLabel("<html>" + vacancy.getJobTitle().replaceAll("\n", "<br>") + "</html>");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -131,11 +145,11 @@ public class Dashboard_RecruitersController {
 
     private void styleButton(JButton button) {
         button.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        button.setForeground(new Color(0, 10, 100));
-        button.setBackground(Color.WHITE);
+        button.setForeground(isDarkMode ? new Color(37, 37, 38) : new Color(0, 10, 100));
+        button.setBackground(isDarkMode ? new Color(220, 220, 220) : Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         button.setPreferredSize(new Dimension(140, 30));
@@ -144,11 +158,11 @@ public class Dashboard_RecruitersController {
 
     public void showDashboardPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
-        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         JPanel messagePanel = new JPanel();
-        messagePanel.setBackground(new Color(0, 4, 80));
+        messagePanel.setBackground(new Color(0, 4, 80)); // Keep original dark blue for consistency
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
         messagePanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
         messagePanel.setPreferredSize(new Dimension(680, 140));
@@ -173,7 +187,8 @@ public class Dashboard_RecruitersController {
         buttonPanel.setBackground(new Color(0, 4, 80));
         JButton getStarted = new JButton("Get Started");
         getStarted.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        getStarted.setForeground(new Color(0, 0, 102));
+        getStarted.setForeground(isDarkMode ? new Color(37, 37, 38) : new Color(0, 0, 102));
+        getStarted.setBackground(isDarkMode ? new Color(220, 220, 220) : Color.WHITE);
         getStarted.setPreferredSize(new Dimension(120, 30));
         getStarted.addActionListener(this::getStartedActionPerformed);
         buttonPanel.add(getStarted);
@@ -198,7 +213,7 @@ public class Dashboard_RecruitersController {
         messagePanel.add(buttonPanel);
 
         JPanel vacanciesPanel = new JPanel(new GridBagLayout());
-        vacanciesPanel.setBackground(new Color(245, 245, 245));
+        vacanciesPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
         vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         GridBagConstraints cardGbc = new GridBagConstraints();
@@ -215,6 +230,7 @@ public class Dashboard_RecruitersController {
         if (vacancies.isEmpty()) {
             JLabel noVacanciesLabel = new JLabel("No vacancies posted yet.");
             noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            noVacanciesLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
             noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
             cardGbc.gridx = 0;
             cardGbc.gridy = 0;
@@ -236,7 +252,7 @@ public class Dashboard_RecruitersController {
         }
 
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-        contentPanel.setBackground(new Color(245, 245, 245));
+        contentPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
         contentPanel.add(messagePanel, BorderLayout.NORTH);
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -246,9 +262,9 @@ public class Dashboard_RecruitersController {
     }
 
     public void showVacancyPanel() {
-        JPanel mainPanel = new JPanel(new BorderLayout(12, 12)); // Increased from 8
-        mainPanel.setBackground(new Color(245, 245, 245));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12)); // Increased from 8
+        JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
+        mainPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
         JPanel headerPanel = new JPanel() {
             @Override
@@ -270,26 +286,27 @@ public class Dashboard_RecruitersController {
         headerPanel.add(headerLabel);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(new Color(252, 252, 252));
+        formPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(252, 252, 252));
         formPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1, true),
                 "Vacancy Details",
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 14)
+                new Font("Segoe UI", Font.BOLD, 14),
+                isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102)
             ),
             BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
-        formPanel.setPreferredSize(new Dimension(660, 360)); // Increased from 320
+        formPanel.setPreferredSize(new Dimension(660, 360));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(12, 20, 12, 20); // Increased from 8,12
+        gbc.insets = new Insets(12, 20, 12, 20);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
         JPanel jobTitleRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-        jobTitleRow.setBackground(new Color(252, 252, 252));
+        jobTitleRow.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(252, 252, 252));
         JLabel jobTitleIcon = new JLabel();
         try {
             ImageIcon icon = new ImageIcon(getClass().getResource("/Image/logo/job.png"));
@@ -301,18 +318,19 @@ public class Dashboard_RecruitersController {
         jobTitleRow.add(jobTitleIcon);
         JLabel jobTitleLabel = new JLabel("Job Title:");
         jobTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        jobTitleLabel.setForeground(new Color(0, 0, 102));
+        jobTitleLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         jobTitleRow.add(jobTitleLabel);
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(jobTitleRow, gbc);
 
-        JTextField jobTitleField = new JTextField(25); // Increased from 22
+        JTextField jobTitleField = new JTextField(25);
         jobTitleField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        jobTitleField.setBackground(new Color(245, 245, 245));
+        jobTitleField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        jobTitleField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         jobTitleField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-            BorderFactory.createEmptyBorder(6, 12, 6, 12) // Increased padding
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -320,30 +338,32 @@ public class Dashboard_RecruitersController {
 
         JLabel jobTypeLabel = new JLabel("Job Type:");
         jobTypeLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        jobTypeLabel.setForeground(new Color(0, 0, 102));
+        jobTypeLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 1;
         formPanel.add(jobTypeLabel, gbc);
 
         JComboBox<String> jobTypeCombo = new JComboBox<>(new String[]{"Full time", "Part time", "Contract"});
         jobTypeCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        jobTypeCombo.setBackground(new Color(245, 245, 245));
-        jobTypeCombo.setPreferredSize(new Dimension(280, 35)); // Increased from 260x30
+        jobTypeCombo.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        jobTypeCombo.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        jobTypeCombo.setPreferredSize(new Dimension(280, 35));
         gbc.gridx = 1;
         gbc.gridy = 1;
         formPanel.add(jobTypeCombo, gbc);
 
         JLabel experienceLabel = new JLabel("Experience Level:");
         experienceLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        experienceLabel.setForeground(new Color(0, 0, 102));
+        experienceLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 2;
         formPanel.add(experienceLabel, gbc);
 
         JComboBox<String> experienceCombo = new JComboBox<>(new String[]{"Junior-Level", "Mid-Level", "Senior-Level"});
         experienceCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        experienceCombo.setBackground(new Color(245, 245, 245));
-        experienceCombo.setPreferredSize(new Dimension(280, 35)); // Increased from 180x30
+        experienceCombo.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        experienceCombo.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        experienceCombo.setPreferredSize(new Dimension(280, 35));
         gbc.gridx = 1;
         gbc.gridy = 2;
         formPanel.add(experienceCombo, gbc);
@@ -352,48 +372,51 @@ public class Dashboard_RecruitersController {
 
         JLabel deadlineLabel = new JLabel("Deadline Date:");
         deadlineLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        deadlineLabel.setForeground(new Color(0, 0, 102));
+        deadlineLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 3;
         formPanel.add(deadlineLabel, gbc);
 
         JDateChooser deadlineDateChooser = new JDateChooser();
         deadlineDateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        deadlineDateChooser.setBackground(new Color(245, 245, 245));
+        deadlineDateChooser.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        deadlineDateChooser.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         deadlineDateChooser.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-            BorderFactory.createEmptyBorder(6, 12, 6, 12) // Increased padding
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         deadlineDateChooser.setDateFormatString("yyyy-MM-dd");
-        deadlineDateChooser.setPreferredSize(new Dimension(280, 35)); // Increased from 260x30
+        deadlineDateChooser.setPreferredSize(new Dimension(280, 35));
         gbc.gridx = 1;
         gbc.gridy = 3;
         formPanel.add(deadlineDateChooser, gbc);
 
         JLabel descriptionLabel = new JLabel("Description:");
         descriptionLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        descriptionLabel.setForeground(new Color(0, 0, 102));
+        descriptionLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 4;
         formPanel.add(descriptionLabel, gbc);
 
-        JTextArea descriptionArea = new JTextArea(6, 25); // Increased from 4,22
+        JTextArea descriptionArea = new JTextArea(6, 25);
         descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        descriptionArea.setBackground(new Color(245, 245, 245));
+        descriptionArea.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        descriptionArea.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         descriptionArea.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
-            BorderFactory.createEmptyBorder(6, 12, 6, 12) // Increased padding
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
         JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
-        descriptionScroll.setPreferredSize(new Dimension(300, 120)); // Increased from 260x80
+        descriptionScroll.setPreferredSize(new Dimension(300, 120));
         gbc.gridx = 1;
         gbc.gridy = 4;
         formPanel.add(descriptionScroll, gbc);
 
         JLabel statusLabel = new JLabel("");
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        statusLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         gbc.gridx = 1;
         gbc.gridy = 5;
         formPanel.add(statusLabel, gbc);
@@ -409,17 +432,17 @@ public class Dashboard_RecruitersController {
                 } else {
                     g2d.setColor(new Color(0, 4, 80));
                 }
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Increased rounding
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 super.paintComponent(g);
             }
         };
-        postButton.setFont(new Font("Segoe UI", Font.BOLD, 14)); // Increased from 12
+        postButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         postButton.setForeground(Color.WHITE);
         postButton.setContentAreaFilled(false);
-        postButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Increased padding
+        postButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         postButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         postButton.setFocusPainted(false);
-        postButton.setPreferredSize(new Dimension(200, 50)); // Increased from 160x40
+        postButton.setPreferredSize(new Dimension(200, 50));
         gbc.gridx = 1;
         gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -479,328 +502,536 @@ public class Dashboard_RecruitersController {
     }
 
     public void showApplicationsPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(245, 245, 245));
-        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        JLabel label = new JLabel("Applications Panel");
-        label.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(label);
-        panel.setPreferredSize(new Dimension(680, 320));
-        updateContentPanel(panel);
-    }
+ JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
+ mainPanel.setBackground(new Color(245, 245, 245));
+ mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
+ // Header Panel
+ JPanel headerPanel = new JPanel() {
+ @Override
+ protected void paintComponent(Graphics g) {
+ super.paintComponent(g);
+ Graphics2D g2d = (Graphics2D) g;
+ g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+ GradientPaint gp = new GradientPaint(0, 0, new Color(0, 4, 80), 0, getHeight(), new Color(0, 20, 120));
+ g2d.setPaint(gp);
+ g2d.fillRect(0, 0, getWidth(), getHeight());
+ }
+ };
+ headerPanel.setPreferredSize(new Dimension(680, 60));
+ headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 12));
+
+ JLabel headerLabel = new JLabel("Applications");
+ headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+ headerLabel.setForeground(Color.WHITE);
+ headerPanel.add(headerLabel);
+
+ // Applications Panel
+ JPanel applicationsPanel = new JPanel(new GridBagLayout());
+ applicationsPanel.setBackground(new Color(245, 245, 245));
+ JScrollPane scrollPane = new JScrollPane(applicationsPanel);
+ scrollPane.setBorder(null);
+ scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+ scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+ GridBagConstraints gbc = new GridBagConstraints();
+ gbc.insets = new Insets(10, 10, 10, 10);
+ gbc.fill = GridBagConstraints.HORIZONTAL;
+ gbc.anchor = GridBagConstraints.NORTHWEST;
+
+ // Fetch applications
+ ApplicationDao applicationDao = new ApplicationDao();
+ List<Application> applications = applicationDao.getApplicationsByRecruiterId(recruiterId);
+ if (applications.isEmpty()) {
+ JLabel noApplicationsLabel = new JLabel("No applications received yet.");
+ noApplicationsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+ noApplicationsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+ gbc.gridx = 0;
+ gbc.gridy = 0;
+ applicationsPanel.add(noApplicationsLabel, gbc);
+ } else {
+ int gridy = 0;
+ for (Application app : applications) {
+ JPanel appCard = createApplicationCard(app, applicationDao);
+ gbc.gridx = 0;
+ gbc.gridy = gridy;
+ applicationsPanel.add(appCard, gbc);
+ gridy++;
+ }
+ }
+
+ mainPanel.add(headerPanel, BorderLayout.NORTH);
+ mainPanel.add(scrollPane, BorderLayout.CENTER);
+ updateContentPanel(mainPanel);
+}
+
+private JPanel createApplicationCard(Application app, ApplicationDao applicationDao) {
+ JPanel card = new JPanel(new GridBagLayout());
+ card.setBackground(new Color(252, 252, 252));
+ card.setBorder(BorderFactory.createCompoundBorder(
+ BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+ BorderFactory.createEmptyBorder(10, 10, 10, 10)
+ ));
+ card.setPreferredSize(new Dimension(600, 250));
+
+ GridBagConstraints gbc = new GridBagConstraints();
+ gbc.insets = new Insets(5, 5, 5, 5);
+ gbc.fill = GridBagConstraints.HORIZONTAL;
+ gbc.anchor = GridBagConstraints.WEST;
+
+ // Applicant Name
+ JLabel nameLabel = new JLabel("Applicant: " + app.getJobSeekerName());
+ nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+ nameLabel.setForeground(new Color(0, 4, 80));
+ gbc.gridx = 0;
+ gbc.gridy = 0;
+ gbc.gridwidth = 2;
+ card.add(nameLabel, gbc);
+
+ // Applicant Email
+ JLabel emailLabel = new JLabel("Email: " + app.getJobSeekerEmail());
+ emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+ gbc.gridy = 1;
+ card.add(emailLabel, gbc);
+
+ // CV Details
+ Cv cv = app.getCv();
+ JLabel cvDetailsLabel = new JLabel("<html><b>CV Details:</b><br>" +
+ "First Name: " + cv.getFirstName() + "<br>" +
+ "Last Name: " + cv.getLastName() + "<br>" +
+ "Date of Birth: " + cv.getDob() + "<br>" +
+ "Contact: " + cv.getContact() + "<br>" +
+ "Education: " + cv.getEducation() + "<br>" +
+ "Skills: " + cv.getSkills() + "<br>" +
+ "Experience: " + cv.getExperience() + "</html>");
+ cvDetailsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+ gbc.gridy = 2;
+ gbc.gridwidth = 2;
+ card.add(cvDetailsLabel, gbc);
+
+ // Status
+ JLabel statusLabel = new JLabel("Status: " + app.getStatus());
+ statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+ gbc.gridy = 3;
+ gbc.gridwidth = 2;
+ card.add(statusLabel, gbc);
+
+ // Buttons Panel
+ JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+ buttonPanel.setBackground(new Color(252, 252, 252));
+
+ JButton acceptButton = new JButton("Accept") {
+ @Override
+ protected void paintComponent(Graphics g) {
+ Graphics2D g2d = (Graphics2D) g;
+ g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+ if (getModel().isRollover()) {
+ g2d.setColor(new Color(0, 100, 0));
+ } else {
+ g2d.setColor(new Color(0, 128, 0));
+ }
+ g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+ super.paintComponent(g);
+ }
+ };
+ acceptButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+ acceptButton.setForeground(Color.WHITE);
+ acceptButton.setContentAreaFilled(false);
+ acceptButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+ acceptButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+ acceptButton.setFocusPainted(false);
+ acceptButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
+
+ JButton rejectButton = new JButton("Reject") {
+ @Override
+ protected void paintComponent(Graphics g) {
+ Graphics2D g2d = (Graphics2D) g;
+ g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+ if (getModel().isRollover()) {
+ g2d.setColor(new Color(139, 0, 0));
+ } else {
+ g2d.setColor(new Color(178, 34, 34));
+ }
+ g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+ super.paintComponent(g);
+ }
+ };
+ rejectButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+ rejectButton.setForeground(Color.WHITE);
+ rejectButton.setContentAreaFilled(false);
+ rejectButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+ rejectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+ rejectButton.setFocusPainted(false);
+ rejectButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
+
+ // Button Actions
+ acceptButton.addActionListener(e -> {
+ boolean success = applicationDao.updateApplicationStatus(app.getId(), "Accepted");
+ if (success) {
+ statusLabel.setText("Status: Accepted");
+ acceptButton.setEnabled(false);
+ rejectButton.setEnabled(false);
+ JOptionPane.showMessageDialog(view, "Application accepted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+ } else {
+ JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
+ }
+ });
+
+ rejectButton.addActionListener(e -> {
+ boolean success = applicationDao.updateApplicationStatus(app.getId(), "Rejected");
+ if (success) {
+ statusLabel.setText("Status: Rejected");
+ acceptButton.setEnabled(false);
+ rejectButton.setEnabled(false);
+ JOptionPane.showMessageDialog(view, "Application rejected successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+ } else {
+ JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
+ }
+ });
+
+ buttonPanel.add(acceptButton);
+ buttonPanel.add(rejectButton);
+ gbc.gridy = 4;
+ gbc.gridwidth = 2;
+ gbc.anchor = GridBagConstraints.EAST;
+ card.add(buttonPanel, gbc);
+
+ return card;
+}
     public void showSettingsPanel() {
-    System.out.println("Navigating to Settings");
-    
-    // Main container panel (white background like My Account)
-    JPanel settingsPanel = new JPanel();
-    settingsPanel.setBackground(new Color(245, 245, 245));
-    settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
-    settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        System.out.println("Navigating to Settings");
 
-    // Dark blue title bar
-    JPanel titlePanel = new JPanel();
-    titlePanel.setBackground(new Color(0, 20, 90));  // Dark blue
-    titlePanel.setPreferredSize(new java.awt.Dimension(680, 70));
-    titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
-    
-    JLabel titleLabel = new JLabel("Settings");
-    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-    titleLabel.setForeground(Color.WHITE);
-    titlePanel.add(titleLabel);
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
+        settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-    // Content box (like the white form in My Account tab)
-    JPanel contentBox = new JPanel();
-    contentBox.setBackground(Color.WHITE);
-    contentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-    contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
-    contentBox.setPreferredSize(new Dimension(500, 250));  // Increased height for more content
-    contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(new Color(0, 20, 90));
+        titlePanel.setPreferredSize(new java.awt.Dimension(680, 70));
+        titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
 
-    // Dark Mode checkbox
-    JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
-    darkModeCheck.setBackground(Color.WHITE);
-    darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
-    
-    // Wrap checkbox inside a panel for alignment
-    JPanel darkModePanel = new JPanel();
-    darkModePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-    darkModePanel.setBackground(Color.WHITE);
-    darkModePanel.add(new JLabel("🌙")); // Moon icon
-    darkModePanel.add(Box.createHorizontalStrut(10));
-    darkModePanel.add(darkModeCheck);
+        JLabel titleLabel = new JLabel("Settings");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titleLabel.setForeground(Color.WHITE);
+        titlePanel.add(titleLabel);
 
-    // Notifications checkbox
-    JCheckBox notificationCheck = new JCheckBox("Enable Notifications");
-    notificationCheck.setBackground(Color.WHITE);
-    notificationCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    notificationCheck.setSelected(true); // Default enabled
-    notificationCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
-    
-    // Wrap notifications checkbox inside a panel for alignment
-    JPanel notificationPanel = new JPanel();
-    notificationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-    notificationPanel.setBackground(Color.WHITE);
-    notificationPanel.add(new JLabel("🔔")); // Bell icon
-    notificationPanel.add(Box.createHorizontalStrut(10));
-    notificationPanel.add(notificationCheck);
+        JPanel contentBox = new JPanel();
+        contentBox.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        contentBox.setBorder(BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : Color.LIGHT_GRAY));
+        contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
+        contentBox.setPreferredSize(new Dimension(500, 250));
+        contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // Contact Us label
-    JLabel contactUsLabel = new JLabel("Contact Us: support@pahilopaila.com");
-    contactUsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    contactUsLabel.setForeground(new Color(0, 123, 255)); // Blue color for link appearance
-    contactUsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    contactUsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-    
-    // Wrap contact label inside a panel for alignment
-    JPanel contactPanel = new JPanel();
-    contactPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-    contactPanel.setBackground(Color.WHITE);
-    contactPanel.add(new JLabel("📞")); // Phone icon
-    contactPanel.add(Box.createHorizontalStrut(10));
-    contactPanel.add(contactUsLabel);
+        JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
+        darkModeCheck.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        darkModeCheck.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        darkModeCheck.setSelected(isDarkMode);
+        darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // Update button
-    JButton updateButton = new JButton("Update Settings");
-    updateButton.setBackground(new Color(0, 20, 90));  // Same dark blue as title
-    updateButton.setForeground(Color.WHITE);
-    updateButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-    updateButton.setPreferredSize(new Dimension(150, 35));
-    updateButton.setFocusPainted(false);
-    updateButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
-    
-    // Wrap update button in a panel for right alignment
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    buttonPanel.setBackground(Color.WHITE);
-    buttonPanel.add(updateButton);
+        JPanel darkModePanel = new JPanel();
+        darkModePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        darkModePanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        darkModePanel.add(new JLabel("🌙"));
+        darkModePanel.add(Box.createHorizontalStrut(10));
+        darkModePanel.add(darkModeCheck);
 
-    // Add all components to content box with proper spacing
-    contentBox.add(Box.createVerticalStrut(20));  // Top spacing
-    contentBox.add(darkModePanel);
-    contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
-    contentBox.add(notificationPanel);
-    contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
-    contentBox.add(contactPanel);
-    contentBox.add(Box.createVerticalStrut(20));  // Spacing before button
-    contentBox.add(buttonPanel);
-    contentBox.add(Box.createVerticalStrut(20));  // Bottom spacing
+        JCheckBox notificationCheck = new JCheckBox("Enable Notifications");
+        notificationCheck.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        notificationCheck.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        notificationCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        notificationCheck.setSelected(notificationsEnabled);
+        notificationCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // Add event listeners
-    darkModeCheck.addActionListener(e -> {
-        applyDarkModeToSettings(darkModeCheck.isSelected(), settingsPanel);
-        String status = darkModeCheck.isSelected() ? "enabled" : "disabled";
-        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
-            "Dark mode " + status + " successfully!", 
-            "Dark Mode", 
-            JOptionPane.INFORMATION_MESSAGE);
-    });
+        JPanel notificationPanel = new JPanel();
+        notificationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        notificationPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        notificationPanel.add(new JLabel("🔔"));
+        notificationPanel.add(Box.createHorizontalStrut(10));
+        notificationPanel.add(notificationCheck);
 
-    notificationCheck.addActionListener(e -> {
-        String status = notificationCheck.isSelected() ? "enabled" : "disabled";
-        System.out.println("Notifications " + status);
-    });
+        JLabel contactUsLabel = new JLabel("Contact Us: support@pahilopaila.com");
+        contactUsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        contactUsLabel.setForeground(isDarkMode ? new Color(0, 123, 255) : new Color(0, 123, 255));
+        contactUsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        contactUsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    contactUsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-        @Override
-        public void mouseClicked(java.awt.event.MouseEvent e) {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
-                "Contact Information:\n\n" +
-                "Email: support@pahilopaila.com\n" +
-                "Phone: +977-123-456-789\n" +
-                "Address: Kathmandu, Nepal\n\n" +
-                "We're here to help!", 
-                "Contact Us", 
+        JPanel contactPanel = new JPanel();
+        contactPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        contactPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        contactPanel.add(new JLabel("📞"));
+        contactPanel.add(Box.createHorizontalStrut(10));
+        contactPanel.add(contactUsLabel);
+
+        JButton updateButton = new JButton("Update Settings");
+        updateButton.setBackground(new Color(0, 20, 90));
+        updateButton.setForeground(Color.WHITE);
+        updateButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        updateButton.setPreferredSize(new Dimension(150, 35));
+        updateButton.setFocusPainted(false);
+        updateButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        buttonPanel.add(updateButton);
+
+        contentBox.add(Box.createVerticalStrut(20));
+        contentBox.add(darkModePanel);
+        contentBox.add(Box.createVerticalStrut(15));
+        contentBox.add(notificationPanel);
+        contentBox.add(Box.createVerticalStrut(15));
+        contentBox.add(contactPanel);
+        contentBox.add(Box.createVerticalStrut(20));
+        contentBox.add(buttonPanel);
+        contentBox.add(Box.createVerticalStrut(20));
+
+        darkModeCheck.addActionListener(e -> {
+            isDarkMode = darkModeCheck.isSelected();
+            applyDarkModeToSettings(isDarkMode, settingsPanel);
+            String status = isDarkMode ? "enabled" : "disabled";
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
+                "Dark mode " + status + " successfully!",
+                "Dark Mode",
                 JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        notificationCheck.addActionListener(e -> {
+            notificationsEnabled = notificationCheck.isSelected();
+            String status = notificationsEnabled ? "enabled" : "disabled";
+            System.out.println("Notifications " + status);
+        });
+
+        contactUsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
+                    "Contact Information:\n\n" +
+                    "Email: support@pahilopaila.com\n" +
+                    "Phone: +977-123-456-789\n" +
+                    "Address: Kathmandu, Nepal\n\n" +
+                    "We're here to help!",
+                    "Contact Us",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                contactUsLabel.setText("<html><u>Contact Us: support@pahilopaila.com</u></html>");
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                contactUsLabel.setText("Contact Us: support@pahilopaila.com");
+            }
+        });
+
+        updateButton.addActionListener(e -> {
+            isDarkMode = darkModeCheck.isSelected();
+            notificationsEnabled = notificationCheck.isSelected();
+            applyDarkModeToSettings(isDarkMode, settingsPanel);
+            StringBuilder message = new StringBuilder("Settings Updated Successfully!\n\n");
+            message.append("Dark Mode: ").append(isDarkMode ? "Enabled" : "Disabled").append("\n");
+            message.append("Notifications: ").append(notificationsEnabled ? "Enabled" : "Disabled");
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
+                message.toString(),
+                "Settings Updated",
+                JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
+        centerPanel.setLayout(new GridBagLayout());
+        centerPanel.add(contentBox);
+
+        settingsPanel.add(titlePanel, BorderLayout.NORTH);
+        settingsPanel.add(centerPanel, BorderLayout.CENTER);
+
+        updateContentPanel(settingsPanel);
+    }
+
+    private void applyDarkModeToSettings(boolean darkMode, JPanel settingsPanel) {
+        Window parentWindow = SwingUtilities.getWindowAncestor(settingsPanel);
+
+        if (darkMode) {
+            Color darkBackground = new Color(45, 45, 48);
+            Color darkPanel = new Color(37, 37, 38);
+            Color darkText = new Color(220, 220, 220);
+            Color darkBorder = new Color(60, 60, 60);
+
+            if (parentWindow != null) {
+                parentWindow.setBackground(darkBackground);
+                if (parentWindow instanceof JFrame) {
+                    ((JFrame) parentWindow).getContentPane().setBackground(darkBackground);
+                }
+            }
+
+            applyDarkThemeToComponent(settingsPanel, darkBackground, darkPanel, darkText, darkBorder);
+        } else {
+            Color lightBackground = Color.WHITE;
+            Color lightPanel = new Color(245, 245, 245);
+            Color lightText = Color.BLACK;
+            Color lightBorder = Color.LIGHT_GRAY;
+
+            if (parentWindow != null) {
+                parentWindow.setBackground(lightBackground);
+                if (parentWindow instanceof JFrame) {
+                    ((JFrame) parentWindow).getContentPane().setBackground(lightPanel);
+                }
+            }
+
+            applyLightThemeToComponent(settingsPanel, lightBackground, lightPanel, lightText, lightBorder);
         }
-        
-        @Override
-        public void mouseEntered(java.awt.event.MouseEvent e) {
-            contactUsLabel.setText("<html><u>Contact Us: support@pahilopaila.com</u></html>");
-        }
-        
-        @Override
-        public void mouseExited(java.awt.event.MouseEvent e) {
-            contactUsLabel.setText("Contact Us: support@pahilopaila.com");
-        }
-    });
 
-    updateButton.addActionListener(e -> {
-        StringBuilder message = new StringBuilder("Settings Updated Successfully!\n\n");
-        message.append("Dark Mode: ").append(darkModeCheck.isSelected() ? "Enabled" : "Disabled").append("\n");
-        message.append("Notifications: ").append(notificationCheck.isSelected() ? "Enabled" : "Disabled");
-        
-        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
-            message.toString(), 
-            "Settings Updated", 
-            JOptionPane.INFORMATION_MESSAGE);
-    });
-
-    // Center wrapper for content box
-    JPanel centerPanel = new JPanel();
-    centerPanel.setBackground(Color.WHITE);
-    centerPanel.setLayout(new GridBagLayout());
-    centerPanel.add(contentBox);
-
-    // Add title and content to main settings panel
-    settingsPanel.add(titlePanel, BorderLayout.NORTH);
-    settingsPanel.add(centerPanel, BorderLayout.CENTER);
-
-    updateContentPanel(settingsPanel);
-}
-
-// Method to apply dark mode to the current settings panel and find parent frame
-private void applyDarkModeToSettings(boolean isDarkMode, JPanel settingsPanel) {
-    // Find the parent frame/window
-    Window parentWindow = SwingUtilities.getWindowAncestor(settingsPanel);
-    
-    if (isDarkMode) {
-        // Dark mode colors
-        Color darkBackground = new Color(45, 45, 48);
-        Color darkPanel = new Color(37, 37, 38);
-        Color darkText = new Color(220, 220, 220);
-        Color darkBorder = new Color(60, 60, 60);
-        
-        // Apply to parent window if it exists
         if (parentWindow != null) {
-            parentWindow.setBackground(darkBackground);
-            if (parentWindow instanceof JFrame) {
-                ((JFrame) parentWindow).getContentPane().setBackground(darkBackground);
+            parentWindow.repaint();
+        }
+        settingsPanel.repaint();
+    }
+
+    private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, Color darkText, Color darkBorder) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JPanel) {
+                JPanel panel = (JPanel) component;
+                if (panel.getBackground().equals(new Color(0, 20, 90))) {
+                    // Keep original dark blue for title bars
+                } else if (panel.getBackground().equals(Color.WHITE) || panel.getBackground().equals(new Color(252, 252, 252))) {
+                    panel.setBackground(darkPanel);
+                } else if (panel.getBackground().equals(new Color(245, 245, 245))) {
+                    panel.setBackground(darkBg);
+                }
+
+                if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                    panel.setBorder(BorderFactory.createLineBorder(darkBorder));
+                } else if (panel.getBorder() instanceof javax.swing.border.TitledBorder) {
+                    TitledBorder oldBorder = (TitledBorder) panel.getBorder();
+                    panel.setBorder(BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(darkBorder, 1, true),
+                        oldBorder.getTitle(),
+                        TitledBorder.DEFAULT_JUSTIFICATION,
+                        TitledBorder.TOP,
+                        new Font("Segoe UI", Font.BOLD, 14),
+                        darkText
+                    ));
+                }
+
+                applyDarkThemeToComponent(panel, darkBg, darkPanel, darkText, darkBorder);
+            } else if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+                if (!label.getForeground().equals(Color.WHITE) && !label.getForeground().equals(new Color(0, 123, 255))) {
+                    label.setForeground(darkText);
+                }
+            } else if (component instanceof JCheckBox) {
+                JCheckBox checkBox = (JCheckBox) component;
+                checkBox.setBackground(darkPanel);
+                checkBox.setForeground(darkText);
+            } else if (component instanceof JTextField || component instanceof JTextArea) {
+                JTextComponent textComponent = (JTextComponent) component;
+                textComponent.setBackground(darkBg);
+                textComponent.setForeground(darkText);
+                textComponent.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(darkBorder, 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JComboBox) {
+                JComboBox<?> comboBox = (JComboBox<?>) component;
+                comboBox.setBackground(darkBg);
+                comboBox.setForeground(darkText);
+            } else if (component instanceof JDateChooser) {
+                JDateChooser dateChooser = (JDateChooser) component;
+                dateChooser.setBackground(darkBg);
+                dateChooser.setForeground(darkText);
+                dateChooser.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(darkBorder, 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                if (!button.getText().equals("Get Started") && !button.getText().equals("Learn More") && !button.getText().equals("Update Settings")) {
+                    button.setBackground(darkPanel);
+                    button.setForeground(darkText);
+                }
+            } else if (component instanceof Container) {
+                applyDarkThemeToComponent((Container) component, darkBg, darkPanel, darkText, darkBorder);
             }
         }
-        
-        // Apply dark theme to current panel
-        applyDarkThemeToComponent(settingsPanel, darkBackground, darkPanel, darkText, darkBorder);
-        
-    } else {
-        // Light mode colors (original)
-        Color lightBackground = Color.WHITE;
-        Color lightPanel = new Color(245, 245, 245);
-        Color lightText = Color.BLACK;
-        Color lightBorder = Color.LIGHT_GRAY;
-        
-        // Apply to parent window if it exists
-        if (parentWindow != null) {
-            parentWindow.setBackground(lightBackground);
-            if (parentWindow instanceof JFrame) {
-                ((JFrame) parentWindow).getContentPane().setBackground(lightPanel);
+    }
+
+    private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, Color lightText, Color lightBorder) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JPanel) {
+                JPanel panel = (JPanel) component;
+                if (panel.getBackground().equals(new Color(0, 20, 90))) {
+                    // Keep original dark blue for title bars
+                } else if (panel.getBackground().equals(new Color(37, 37, 38)) || panel.getBackground().equals(new Color(252, 252, 252))) {
+                    panel.setBackground(lightBg);
+                } else if (panel.getBackground().equals(new Color(45, 45, 48))) {
+                    panel.setBackground(lightPanel);
+                }
+
+                if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                    panel.setBorder(BorderFactory.createLineBorder(lightBorder));
+                } else if (panel.getBorder() instanceof javax.swing.border.TitledBorder) {
+                    TitledBorder oldBorder = (TitledBorder) panel.getBorder();
+                    panel.setBorder(BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(lightBorder, 1, true),
+                        oldBorder.getTitle(),
+                        TitledBorder.DEFAULT_JUSTIFICATION,
+                        TitledBorder.TOP,
+                        new Font("Segoe UI", Font.BOLD, 14),
+                        new Color(0, 0, 102)
+                    ));
+                }
+
+                applyLightThemeToComponent(panel, lightBg, lightPanel, lightText, lightBorder);
+            } else if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+                if (!label.getForeground().equals(Color.WHITE) && !label.getForeground().equals(new Color(0, 123, 255))) {
+                    label.setForeground(lightText);
+                }
+            } else if (component instanceof JCheckBox) {
+                JCheckBox checkBox = (JCheckBox) component;
+                checkBox.setBackground(lightBg);
+                checkBox.setForeground(lightText);
+            } else if (component instanceof JTextField || component instanceof JTextArea) {
+                JTextComponent textComponent = (JTextComponent) component;
+                textComponent.setBackground(lightPanel);
+                textComponent.setForeground(lightText);
+                textComponent.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(lightBorder, 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JComboBox) {
+                JComboBox<?> comboBox = (JComboBox<?>) component;
+                comboBox.setBackground(lightPanel);
+                comboBox.setForeground(lightText);
+            } else if (component instanceof JDateChooser) {
+                JDateChooser dateChooser = (JDateChooser) component;
+                dateChooser.setBackground(lightPanel);
+                dateChooser.setForeground(lightText);
+                dateChooser.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(lightBorder, 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                if (!button.getText().equals("Get Started") && !button.getText().equals("Learn More") && !button.getText().equals("Update Settings")) {
+                    button.setBackground(lightBg);
+                    button.setForeground(new Color(0, 0, 102));
+                }
+            } else if (component instanceof Container) {
+                applyLightThemeToComponent((Container) component, lightBg, lightPanel, lightText, lightBorder);
             }
         }
-        
-        // Apply light theme to current panel
-        applyLightThemeToComponent(settingsPanel, lightBackground, lightPanel, lightText, lightBorder);
     }
-    
-    // Force repaint
-    if (parentWindow != null) {
-        parentWindow.repaint();
-    }
-    settingsPanel.repaint();
-}
 
-// Helper method to apply dark theme recursively
-private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, Color darkText, Color darkBorder) {
-    for (Component component : container.getComponents()) {
-        if (component instanceof JPanel) {
-            JPanel panel = (JPanel) component;
-            // Keep title panels with original dark blue
-            if (panel.getBackground().equals(new Color(0, 20, 90))) {
-                // Keep original dark blue for title bars
-            } else if (panel.getBackground().equals(Color.WHITE)) {
-                panel.setBackground(darkPanel);
-            } else if (panel.getBackground().equals(new Color(245, 245, 245))) {
-                panel.setBackground(darkBg);
-            }
-            
-            // Update border if it exists
-            if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
-                panel.setBorder(BorderFactory.createLineBorder(darkBorder));
-            }
-            
-            // Recursively apply to child components
-            applyDarkThemeToComponent(panel, darkBg, darkPanel, darkText, darkBorder);
-            
-        } else if (component instanceof JLabel) {
-            JLabel label = (JLabel) component;
-            // Don't change white text (title labels) or blue link text
-            if (!label.getForeground().equals(Color.WHITE) && 
-                !label.getForeground().equals(new Color(0, 123, 255))) {
-                label.setForeground(darkText);
-            }
-            
-        } else if (component instanceof JCheckBox) {
-            JCheckBox checkBox = (JCheckBox) component;
-            checkBox.setBackground(darkPanel);
-            checkBox.setForeground(darkText);
-            
-        } else if (component instanceof JButton) {
-            JButton button = (JButton) component;
-            // Keep original button styling for consistency
-            
-        } else if (component instanceof Container) {
-            applyDarkThemeToComponent((Container) component, darkBg, darkPanel, darkText, darkBorder);
-        }
-    }
-}
-
-// Helper method to apply light theme recursively
-private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, Color lightText, Color lightBorder) {
-    for (Component component : container.getComponents()) {
-        if (component instanceof JPanel) {
-            JPanel panel = (JPanel) component;
-            // Restore original colors based on what they should be
-            if (panel.getBackground().equals(new Color(0, 20, 90))) {
-                // Keep original dark blue for title bars
-            } else if (panel.getBackground().equals(new Color(37, 37, 38))) {
-                // This was a white panel, restore to white
-                panel.setBackground(Color.WHITE);
-            } else if (panel.getBackground().equals(new Color(45, 45, 48))) {
-                // This was the main background, restore to light gray
-                panel.setBackground(lightPanel);
-            }
-            
-            // Update border if it exists
-            if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
-                panel.setBorder(BorderFactory.createLineBorder(lightBorder));
-            }
-            
-            // Recursively apply to child components
-            applyLightThemeToComponent(panel, lightBg, lightPanel, lightText, lightBorder);
-            
-        } else if (component instanceof JLabel) {
-            JLabel label = (JLabel) component;
-            // Restore original text colors
-            if (!label.getForeground().equals(Color.WHITE) && 
-                !label.getForeground().equals(new Color(0, 123, 255))) {
-                label.setForeground(lightText);
-            }
-            
-        } else if (component instanceof JCheckBox) {
-            JCheckBox checkBox = (JCheckBox) component;
-            checkBox.setBackground(Color.WHITE);
-            checkBox.setForeground(lightText);
-            
-        } else if (component instanceof JButton) {
-            JButton button = (JButton) component;
-            // Keep original button styling
-            
-        } else if (component instanceof Container) {
-            applyLightThemeToComponent((Container) component, lightBg, lightPanel, lightText, lightBorder);
-        }
-    }
-}
-
-
-    
-     public void showMyAccountPanel() {
+    public void showMyAccountPanel() {
         System.out.println("Navigating to My Account");
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
-        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-        // Header Panel with Gradient
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -823,16 +1054,14 @@ private void applyLightThemeToComponent(Container container, Color lightBg, Colo
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
 
-        // Center Wrapper for Form
         JPanel centerWrapper = new JPanel();
-        centerWrapper.setBackground(new Color(245, 245, 245));
+        centerWrapper.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
         centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
-        // Form Panel
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(new Color(252, 252, 252));
+        formPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(252, 252, 252));
         formPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1, true),
             BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
         formPanel.setPreferredSize(new Dimension(660, 360));
@@ -842,19 +1071,16 @@ private void applyLightThemeToComponent(Container container, Color lightBg, Colo
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Fetch user data from database
         UserData user = userDao.getUserById(userId);
         String usernameText = user != null ? user.getName() : view.username.getText();
         String emailText = user != null ? user.getEmail() : view.email.getText();
-        // Ensure currentEmail is set correctly
         if (user != null) {
             currentEmail = user.getEmail();
         }
 
-        // Username
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        usernameLabel.setForeground(new Color(0, 0, 102));
+        usernameLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(usernameLabel, gbc);
@@ -862,19 +1088,19 @@ private void applyLightThemeToComponent(Container container, Color lightBg, Colo
         JTextField usernameField = new JTextField(18);
         usernameField.setText(usernameText);
         usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        usernameField.setBackground(new Color(245, 245, 245));
+        usernameField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        usernameField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         usernameField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
         gbc.gridy = 0;
         formPanel.add(usernameField, gbc);
 
-        // Email
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        emailLabel.setForeground(new Color(0, 0, 102));
+        emailLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 1;
         formPanel.add(emailLabel, gbc);
@@ -882,54 +1108,54 @@ private void applyLightThemeToComponent(Container container, Color lightBg, Colo
         JTextField emailField = new JTextField(18);
         emailField.setText(emailText);
         emailField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        emailField.setBackground(new Color(245, 245, 245));
+        emailField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        emailField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         emailField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
         gbc.gridy = 1;
         formPanel.add(emailField, gbc);
 
-        // Password
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        passwordLabel.setForeground(new Color(0, 0, 102));
+        passwordLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 2;
         formPanel.add(passwordLabel, gbc);
 
         JPasswordField passwordField = new JPasswordField(18);
         passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        passwordField.setBackground(new Color(245, 245, 245));
+        passwordField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        passwordField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         passwordField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
         gbc.gridy = 2;
         formPanel.add(passwordField, gbc);
 
-        // New Password
         JLabel newPasswordLabel = new JLabel("New Password:");
         newPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        newPasswordLabel.setForeground(new Color(0, 0, 102));
+        newPasswordLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 3;
         formPanel.add(newPasswordLabel, gbc);
 
         JPasswordField newPasswordField = new JPasswordField(18);
         newPasswordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        newPasswordField.setBackground(new Color(245, 245, 245));
+        newPasswordField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        newPasswordField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
         newPasswordField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
         gbc.gridy = 3;
         formPanel.add(newPasswordField, gbc);
 
-        // Update Button
         JButton saveButton = new JButton("Update") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -956,36 +1182,31 @@ private void applyLightThemeToComponent(Container container, Color lightBg, Colo
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(saveButton, gbc);
 
-        // Button Action
         saveButton.addActionListener(e -> {
             String updatedUsername = usernameField.getText().trim();
             String updatedEmail = emailField.getText().trim();
             String passwordText = new String(passwordField.getPassword()).trim();
             String newPasswordText = new String(newPasswordField.getPassword()).trim();
 
-            // Validate inputs
             if (updatedUsername.isEmpty() || updatedEmail.isEmpty() || passwordText.isEmpty() || newPasswordText.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Please fill all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Validate email format
             if (!updatedEmail.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 JOptionPane.showMessageDialog(view, "Invalid email format.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Verify current password
             if (!verifyCurrentPassword(passwordText)) {
                 JOptionPane.showMessageDialog(view, "Current password is incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Update user info in database
             boolean success = updateUserInfo(updatedUsername, updatedEmail, newPasswordText);
             if (success) {
                 JOptionPane.showMessageDialog(view, "User info updated successfully!\nUsername: " + updatedUsername, "Success", JOptionPane.INFORMATION_MESSAGE);
-                view.setUserInfo(updatedUsername, updatedEmail); // Update view
+                view.setUserInfo(updatedUsername, updatedEmail);
                 currentEmail = updatedEmail;
             } else {
                 JOptionPane.showMessageDialog(view, "Failed to update user info. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -998,12 +1219,10 @@ private void applyLightThemeToComponent(Container container, Color lightBg, Colo
         updateContentPanel(mainPanel);
     }
 
-    // Verify current password using UserDao
     private boolean verifyCurrentPassword(String password) {
         return userDao.verifyPassword(userId, password);
     }
 
-    // Update user info using UserDao
     private boolean updateUserInfo(String username, String email, String newPassword) {
         return userDao.updateUser(userId, username, email, newPassword);
     }
