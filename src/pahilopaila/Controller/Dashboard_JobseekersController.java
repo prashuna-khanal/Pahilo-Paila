@@ -132,6 +132,7 @@ public class Dashboard_JobseekersController {
         view.content.removeAll();
         view.content.setLayout(new java.awt.BorderLayout());
         view.content.add(newPanel, java.awt.BorderLayout.CENTER);
+    }
 
     // Starts a timer to poll for new notifications every 5 seconds
     private void startNotificationPolling() {
@@ -221,8 +222,9 @@ public class Dashboard_JobseekersController {
             dialog.add(buttonPanel, BorderLayout.SOUTH);
 
             applyThemeToPanel(buttonPanel);
-            applyThemeToComponent(notificationList);
-            applyThemeToComponent(scrollPane);
+            // Optionally, set background/foreground for notificationList directly if needed
+            notificationList.setBackground(isDarkMode ? new Color(40, 40, 40) : Color.WHITE);
+            notificationList.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
 
             dialog.setVisible(true);
         } catch (Exception e) {
@@ -282,17 +284,6 @@ public class Dashboard_JobseekersController {
     // Displays an error message to the user via JOptionPane
     private void showError(String message) {
         JOptionPane.showMessageDialog(view, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    // Update the content panel with a new panel
-    private void updateContentPanel(JPanel newPanel) {
-        view.content.removeAll();
-        view.content.setLayout(new BorderLayout());
-        view.content.add(newPanel, BorderLayout.CENTER);
-
-        applyThemeToPanel(newPanel);
-        view.content.revalidate();
-        view.content.repaint();
     }
     // Helper method to apply the current theme to a panel
     private void applyThemeToPanel(JPanel panel) {
@@ -642,7 +633,6 @@ public void showDashboardPanel() {
             vacanciesPanel.add(card);
         }
 
-=
     featuredPanel.add(scrollPane, BorderLayout.CENTER);
 
     // Add panels to wrapper with explicit gap
@@ -655,6 +645,8 @@ public void showDashboardPanel() {
     contentPanel.add(wrapperPanel, BorderLayout.CENTER);
 
     updateContentPanel(contentPanel);
+}
+
 }
 
 
@@ -1844,45 +1836,9 @@ public void showDashboardPanel() {
         view.dispose();
         LoginPageview loginView = new LoginPageview();
         loginView.setVisible(true);
- new LoginController(loginView);
- } public void setUserInfo(String username, String email, int userId) {
- this.userId = userId;
- this.currentEmail = email;
- view.username.setText(username);
- view.email.setText(email);
- } private void handleGetStarted(ActionEvent e) {
- System.out.println("Get Started button clicked");
- JOptionPane.showMessageDialog(view, "Getting started with job search!");
- } private void handleLearnMore(ActionEvent e) {
- System.out.println("Learn More button clicked");
- JOptionPane.showMessageDialog(view, "Learn more about our platform!");
- } private void handleSearch(ActionEvent e) {
- System.out.println("Search button clicked");
- String query = view.Searchfield.getText().trim();
- JOptionPane.showMessageDialog(view, "Searching for: " + query);
- } private void handleSeeAll(ActionEvent e) {
- System.out.println("See All button clicked");
- showVacancyPanel();
- } private void handleFilter(ActionEvent e) {
- System.out.println("Filter button clicked");
- JOptionPane.showMessageDialog(view, "Filter options coming soon!");
- } private boolean saveRatingToDatabase(int userId, int rating) {
- if (rating < 1 || rating > 5) {
-     System.err.println("Invalid rating value: " + rating + ". Must be between 1 and 5.");
-     return false;
- }
+        new LoginController(loginView);
+    }
 
- RatingDao ratingDao = new RatingDao();
- boolean success = ratingDao.saveRating(userId, rating);
-
- if (success) {
-     System.out.println("Rating " + rating + " saved successfully for userId: " + userId);
- } else {
-     System.err.println("Failed to save rating for userId: " + userId);
- }
-
- return success;
- }
     // Set user information
     public void setUserInfo(String username, String email, int userId) {
         this.userId = userId;
@@ -2079,4 +2035,5 @@ public void showDashboardPanel() {
         return success;
     }
 }
+
 
