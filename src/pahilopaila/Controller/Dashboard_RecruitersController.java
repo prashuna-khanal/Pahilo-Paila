@@ -1,5 +1,6 @@
 package pahilopaila.Controller;
 
+import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.VacancyDao;
 import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.UserDao;
@@ -9,14 +10,10 @@ import pahilopaila.model.UserData;
 import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_Recruiters;
 import pahilopaila.view.LoginPageview;
-import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 import java.util.Date;
 import java.time.LocalDate;
@@ -26,26 +23,29 @@ import javax.swing.text.JTextComponent;
 public class Dashboard_RecruitersController {
     private final Dashboard_Recruiters view;
     private final VacancyDao vacancyDao;
+    private final ApplicationDao applicationDao;
     private final int recruiterId;
     private boolean isVacancyPosted = false;
     private final UserDao userDao;
     private int userId;
     private String currentEmail;
-    // Static variables to persist settings
-    private static boolean isDarkMode = false;
     private static boolean notificationsEnabled = true;
+    private static boolean isDarkMode = false; // Replaced Theme with isDarkMode
 
     public Dashboard_RecruitersController(Dashboard_Recruiters view, int recruiterId) {
         this.view = view;
         this.recruiterId = recruiterId;
         this.vacancyDao = new VacancyDao();
+        this.applicationDao = new ApplicationDao();
         this.userId = recruiterId;
         this.userDao = new UserDao();
         initializeListeners();
+        applyFeaturePanelTheme(); // Apply initial theme to sidebar
         showDashboardPanel();
     }
 
     private void initializeListeners() {
+        // Existing listeners remain unchanged
         view.Searchfield.addActionListener(this::searchFieldActionPerformed);
         view.getStarted.addActionListener(this::getStartedActionPerformed);
         view.learnMore.addActionListener(this::learnMoreActionPerformed);
@@ -87,28 +87,239 @@ public class Dashboard_RecruitersController {
             }
         });
     }
-//method to change content panel
+
     private void updateContentPanel(JPanel panel) {
         view.getContentPanel().removeAll();
         view.getContentPanel().setLayout(new BorderLayout());
         view.getContentPanel().add(panel, BorderLayout.CENTER);
         applyThemeToPanel(panel); // Apply theme to new panel
+        addButtonHoverEffects(panel);
         view.getContentPanel().revalidate();
         view.getContentPanel().repaint();
     }
 
-    private void applyThemeToPanel(JPanel panel) {
-        if (isDarkMode) {
-            applyDarkThemeToComponent(panel, new Color(45, 45, 48), new Color(37, 37, 38), new Color(220, 220, 220), new Color(60, 60, 60));
-        } else {
-            applyLightThemeToComponent(panel, Color.WHITE, new Color(245, 245, 245), Color.BLACK, Color.LIGHT_GRAY);
+    private void addButtonHoverEffects(JPanel panel) {
+        Component[] components = panel.getComponents();
+        applyHoverEffectsRecursively(components);
+    }
+
+    private void applyHoverEffectsRecursively(Component[] components) {
+        for (Component component : components) {
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                if (!button.getText().equals("Post Vacancy") && !button.getText().equals("Accept") && 
+                    !button.getText().equals("Reject") && !button.getText().equals("Update")) {
+                    button.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseEntered(MouseEvent e) {
+                            button.setBackground(isDarkMode ? new Color(66, 165, 245) : new Color(0, 20, 120));
+                        }
+                        @Override
+                        public void mouseExited(MouseEvent e) {
+                            button.setBackground(isDarkMode ? new Color(33, 150, 243) : new Color(0, 4, 80));
+                        }
+                    });
+                }
+            } else if (component instanceof Container) {
+                applyHoverEffectsRecursively(((Container) component).getComponents());
+            }
         }
     }
 
-    private JPanel createVacancyCard(Vacancy vacancy) {
+    private void applyThemeToPanel(JPanel panel) {
+        if (isDarkMode) {
+            applyDarkThemeToComponent(panel, new Color(18, 18, 18), new Color(30, 30, 30), 
+                                     new Color(230, 230, 230), new Color(50, 50, 50));
+        } else {
+            applyLightThemeToComponent(panel, Color.WHITE, new Color(245, 245, 245), 
+                                       Color.BLACK, Color.LIGHT_GRAY);
+        }
+    }
+
+    private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, 
+                                          Color darkText, Color darkBorder) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JPanel) {
+                JPanel panel = (JPanel) component;
+                if (panel.getBackground().equals(new Color(0, 4, 80)) || 
+                    panel.getBackground().equals(new Color(0, 20, 90))) {
+                    // Preserve specific dark blue backgrounds
+                } else {
+                    panel.setBackground(darkPanel);
+                }
+                if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                    panel.setBorder(BorderFactory.createLineBorder(darkBorder));
+                } else if (panel.getBorder() instanceof TitledBorder) {
+                    TitledBorder oldBorder = (TitledBorder) panel.getBorder();
+                    panel.setBorder(BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(darkBorder, 1, true),
+                        oldBorder.getTitle(),
+                        TitledBorder.DEFAULT_JUSTIFICATION,
+                        TitledBorder.TOP,
+                        new Font("Segoe UI", Font.BOLD, 14),
+                        darkText
+                    ));
+                }
+                applyDarkThemeToComponent(panel, darkBg, darkPanel, darkText, darkBorder);
+            } else if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+                if (!label.getForeground().equals(Color.WHITE) && 
+                    !label.getForeground().equals(new Color(0, 123, 255))) {
+                    label.setForeground(darkText);
+                }
+            } else if (component instanceof JCheckBox) {
+                JCheckBox checkBox = (JCheckBox) component;
+                checkBox.setBackground(darkPanel);
+                checkBox.setForeground(darkText);
+            } else if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                if (!button.getText().equals("Get Started") && !button.getText().equals("Learn More") &&
+                    !button.getText().equals("Post Vacancy") && !button.getText().equals("Accept") &&
+                    !button.getText().equals("Reject") && !button.getText().equals("Update")) {
+                    button.setBackground(new Color(33, 150, 243));
+                    button.setForeground(Color.WHITE);
+                }
+            } else if (component instanceof JTextField || component instanceof JTextArea) {
+                JTextComponent textComp = (JTextComponent) component;
+                textComp.setBackground(darkPanel);
+                textComp.setForeground(darkText);
+                textComp.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(darkBorder, 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JComboBox) {
+                JComboBox<?> comboBox = (JComboBox) component;
+                comboBox.setBackground(darkPanel);
+                comboBox.setForeground(darkText);
+            } else if (component instanceof JDateChooser) {
+                JDateChooser dateChooser = (JDateChooser) component;
+                dateChooser.setBackground(darkPanel);
+                dateChooser.setForeground(darkText);
+                dateChooser.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(darkBorder, 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JScrollPane) {
+                JScrollPane scrollPane = (JScrollPane) component;
+                scrollPane.setBackground(darkBg);
+                scrollPane.setBorder(BorderFactory.createLineBorder(darkBorder));
+            } else if (component instanceof Container) {
+                applyDarkThemeToComponent((Container) component, darkBg, darkPanel, darkText, darkBorder);
+            }
+        }
+    }
+
+    private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, 
+                                           Color lightText, Color lightBorder) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JPanel) {
+                JPanel panel = (JPanel) component;
+                if (panel.getBackground().equals(new Color(0, 4, 80)) || 
+                    panel.getBackground().equals(new Color(0, 20, 90))) {
+                    // Preserve specific dark blue backgrounds
+                } else {
+                    panel.setBackground(lightPanel);
+                }
+                if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
+                    panel.setBorder(BorderFactory.createLineBorder(lightBorder));
+                } else if (panel.getBorder() instanceof TitledBorder) {
+                    TitledBorder oldBorder = (TitledBorder) panel.getBorder();
+                    panel.setBorder(BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(lightBorder, 1, true),
+                        oldBorder.getTitle(),
+                        TitledBorder.DEFAULT_JUSTIFICATION,
+                        TitledBorder.TOP,
+                        new Font("Segoe UI", Font.BOLD, 14),
+                        new Color(0, 0, 102)
+                    ));
+                }
+                applyLightThemeToComponent(panel, lightBg, lightPanel, lightText, lightBorder);
+            } else if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+                if (!label.getForeground().equals(Color.WHITE) && 
+                    !label.getForeground().equals(new Color(0, 123, 255))) {
+                    label.setForeground(lightText);
+                }
+            } else if (component instanceof JCheckBox) {
+                JCheckBox checkBox = (JCheckBox) component;
+                checkBox.setBackground(lightPanel);
+                checkBox.setForeground(lightText);
+            } else if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                if (button.getText().equals("Get Started")) {
+                    button.setForeground(new Color(0, 0, 102));
+                    button.setBackground(null);
+                } else if (button.getText().equals("Learn More")) {
+                    button.setForeground(Color.WHITE);
+                    button.setBackground(new Color(0, 4, 80));
+                    button.setBorder(BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(Color.WHITE, 2),
+                        "",
+                        TitledBorder.DEFAULT_JUSTIFICATION,
+                        TitledBorder.DEFAULT_POSITION,
+                        new Font("Segoe UI", Font.PLAIN, 11),
+                        Color.WHITE
+                    ));
+                } else if (!button.getText().equals("Post Vacancy") && 
+                           !button.getText().equals("Accept") && 
+                           !button.getText().equals("Reject") && 
+                           !button.getText().equals("Update")) {
+                    button.setBackground(new Color(0, 4, 80));
+                    button.setForeground(Color.WHITE);
+                }
+            } else if (component instanceof JTextField || component instanceof JTextArea) {
+                JTextComponent textComp = (JTextComponent) component;
+                textComp.setBackground(lightPanel);
+                textComp.setForeground(lightText);
+                textComp.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JComboBox) {
+                JComboBox<?> comboBox = (JComboBox) component;
+                comboBox.setBackground(lightPanel);
+                comboBox.setForeground(lightText);
+            } else if (component instanceof JDateChooser) {
+                JDateChooser dateChooser = (JDateChooser) component;
+                dateChooser.setBackground(lightPanel);
+                dateChooser.setForeground(lightText);
+                dateChooser.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                ));
+            } else if (component instanceof JScrollPane) {
+                JScrollPane scrollPane = (JScrollPane) component;
+                scrollPane.setBackground(lightBg);
+                scrollPane.setBorder(BorderFactory.createLineBorder(lightBorder));
+            } else if (component instanceof Container) {
+                applyLightThemeToComponent((Container) component, lightBg, lightPanel, lightText, lightBorder);
+            }
+        }
+    }
+
+    private void applyFeaturePanelTheme() {
+        // Assume view.featurePanel is the sidebar panel (similar to JobSeekers)
+        view.featurePanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        // Update labels (dashboard, vacancy, etc.)
+        Component[] components = view.featurePanel.getComponents();
+        for (Component comp : components) {
+            if (comp instanceof JLabel) {
+                JLabel label = (JLabel) comp;
+                label.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+            }
+        }
+        view.featurePanel.revalidate();
+        view.featurePanel.repaint();
+    }
+
+private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(0, 10, 100));
-        card.setPreferredSize(new Dimension(220, 190));
+        card.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(245, 245, 245));
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200), 1, true),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        card.setPreferredSize(new Dimension(200, 200));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 6, 10);
@@ -117,7 +328,7 @@ public class Dashboard_RecruitersController {
 
         JLabel titleLabel = new JLabel("<html>" + vacancy.getJobTitle().replaceAll("\n", "<br>") + "</html>");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        titleLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.WHITE);
+        titleLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -143,26 +354,47 @@ public class Dashboard_RecruitersController {
         return card;
     }
 
-    private void styleButton(JButton button) {
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        button.setForeground(isDarkMode ? new Color(37, 37, 38) : new Color(0, 10, 100));
-        button.setBackground(isDarkMode ? new Color(220, 220, 220) : Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1, true),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        ));
-        button.setPreferredSize(new Dimension(140, 30));
+   private void styleButton(JButton button) {
+        button.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
+        button.setForeground(Color.WHITE);
+        button.setContentAreaFilled(false);
+        button.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    }
+        button.setFocusPainted(false);
 
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
+            @Override
+            protected void paintButtonPressed(Graphics g, AbstractButton b) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(0, 20, 120));
+                g2d.fillRoundRect(0, 0, b.getWidth(), b.getHeight(), 10, 10);
+                super.paintButtonPressed(g, b);
+            }
+
+            // Not an override: helper method for background painting
+            protected void paintBackground(Graphics g, AbstractButton b, Color color) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(b.getModel().isRollover() ? new Color(0, 20, 120) : new Color(0, 4, 80));
+                g2d.fillRoundRect(0, 0, b.getWidth(), b.getHeight(), 10, 10);
+            }
+
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                AbstractButton b = (AbstractButton) c;
+                paintBackground(g, b, b.getBackground());
+                super.paint(g, c);
+            }
+        });
+    }
     public void showDashboardPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
-        mainPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         JPanel messagePanel = new JPanel();
-        messagePanel.setBackground(new Color(0, 4, 80)); // Keep original dark blue for consistency
+        messagePanel.setBackground(new Color(0, 4, 80)); // Keep original dark blue
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
         messagePanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
         messagePanel.setPreferredSize(new Dimension(680, 140));
@@ -187,8 +419,8 @@ public class Dashboard_RecruitersController {
         buttonPanel.setBackground(new Color(0, 4, 80));
         JButton getStarted = new JButton("Get Started");
         getStarted.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        getStarted.setForeground(isDarkMode ? new Color(37, 37, 38) : new Color(0, 0, 102));
-        getStarted.setBackground(isDarkMode ? new Color(220, 220, 220) : Color.WHITE);
+        getStarted.setForeground(isDarkMode ? Color.WHITE : new Color(0, 0, 102));
+        getStarted.setBackground(isDarkMode ? new Color(33, 150, 243) : null);
         getStarted.setPreferredSize(new Dimension(120, 30));
         getStarted.addActionListener(this::getStartedActionPerformed);
         buttonPanel.add(getStarted);
@@ -196,8 +428,8 @@ public class Dashboard_RecruitersController {
         JButton learnMore = new JButton("Learn More");
         learnMore.setFont(new Font("Segoe UI", Font.BOLD, 12));
         learnMore.setForeground(Color.WHITE);
-        learnMore.setBackground(new Color(0, 4, 80));
-        learnMore.setBorder(BorderFactory.createTitledBorder(
+        learnMore.setBackground(isDarkMode ? new Color(10, 10, 50) : new Color(0, 4, 80));
+        learnMore.setBorder(isDarkMode ? BorderFactory.createEmptyBorder() : BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.WHITE, 2),
             "",
             TitledBorder.DEFAULT_JUSTIFICATION,
@@ -213,7 +445,7 @@ public class Dashboard_RecruitersController {
         messagePanel.add(buttonPanel);
 
         JPanel vacanciesPanel = new JPanel(new GridBagLayout());
-        vacanciesPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         GridBagConstraints cardGbc = new GridBagConstraints();
@@ -230,7 +462,7 @@ public class Dashboard_RecruitersController {
         if (vacancies.isEmpty()) {
             JLabel noVacanciesLabel = new JLabel("No vacancies posted yet.");
             noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            noVacanciesLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+            noVacanciesLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
             noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
             cardGbc.gridx = 0;
             cardGbc.gridy = 0;
@@ -252,7 +484,7 @@ public class Dashboard_RecruitersController {
         }
 
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-        contentPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        contentPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         contentPanel.add(messagePanel, BorderLayout.NORTH);
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -263,7 +495,7 @@ public class Dashboard_RecruitersController {
 
     public void showVacancyPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
-        mainPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
         JPanel headerPanel = new JPanel() {
@@ -272,7 +504,8 @@ public class Dashboard_RecruitersController {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(0, 4, 80), 0, getHeight(), new Color(0, 20, 120));
+                GradientPaint gp = new GradientPaint(0, 0, isDarkMode ? new Color(33, 150, 243) : new Color(0, 4, 80),
+                    0, getHeight(), isDarkMode ? new Color(66, 165, 245) : new Color(0, 20, 120));
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
@@ -286,16 +519,9 @@ public class Dashboard_RecruitersController {
         headerPanel.add(headerLabel);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(252, 252, 252));
+        formPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(252, 252, 252));
         formPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1, true),
-                "Vacancy Details",
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 14),
-                isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102)
-            ),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200), 1, true),
             BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
         formPanel.setPreferredSize(new Dimension(660, 360));
@@ -305,8 +531,9 @@ public class Dashboard_RecruitersController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
+        // Job Title Row
         JPanel jobTitleRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-        jobTitleRow.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(252, 252, 252));
+        jobTitleRow.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(252, 252, 252));
         JLabel jobTitleIcon = new JLabel();
         try {
             ImageIcon icon = new ImageIcon(getClass().getResource("/Image/logo/job.png"));
@@ -318,7 +545,7 @@ public class Dashboard_RecruitersController {
         jobTitleRow.add(jobTitleIcon);
         JLabel jobTitleLabel = new JLabel("Job Title:");
         jobTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        jobTitleLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        jobTitleLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         jobTitleRow.add(jobTitleLabel);
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -326,10 +553,10 @@ public class Dashboard_RecruitersController {
 
         JTextField jobTitleField = new JTextField(25);
         jobTitleField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        jobTitleField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        jobTitleField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        jobTitleField.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        jobTitleField.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         jobTitleField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         gbc.gridx = 1;
@@ -338,15 +565,15 @@ public class Dashboard_RecruitersController {
 
         JLabel jobTypeLabel = new JLabel("Job Type:");
         jobTypeLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        jobTypeLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        jobTypeLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 1;
         formPanel.add(jobTypeLabel, gbc);
 
         JComboBox<String> jobTypeCombo = new JComboBox<>(new String[]{"Full time", "Part time", "Contract"});
         jobTypeCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        jobTypeCombo.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        jobTypeCombo.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        jobTypeCombo.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        jobTypeCombo.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         jobTypeCombo.setPreferredSize(new Dimension(280, 35));
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -354,35 +581,33 @@ public class Dashboard_RecruitersController {
 
         JLabel experienceLabel = new JLabel("Experience Level:");
         experienceLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        experienceLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        experienceLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 2;
         formPanel.add(experienceLabel, gbc);
 
         JComboBox<String> experienceCombo = new JComboBox<>(new String[]{"Junior-Level", "Mid-Level", "Senior-Level"});
         experienceCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        experienceCombo.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        experienceCombo.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        experienceCombo.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        experienceCombo.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         experienceCombo.setPreferredSize(new Dimension(280, 35));
         gbc.gridx = 1;
         gbc.gridy = 2;
         formPanel.add(experienceCombo, gbc);
-        experienceCombo.revalidate();
-        experienceCombo.repaint();
 
         JLabel deadlineLabel = new JLabel("Deadline Date:");
         deadlineLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        deadlineLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        deadlineLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 3;
         formPanel.add(deadlineLabel, gbc);
 
         JDateChooser deadlineDateChooser = new JDateChooser();
         deadlineDateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        deadlineDateChooser.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        deadlineDateChooser.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        deadlineDateChooser.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        deadlineDateChooser.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         deadlineDateChooser.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         deadlineDateChooser.setDateFormatString("yyyy-MM-dd");
@@ -393,17 +618,17 @@ public class Dashboard_RecruitersController {
 
         JLabel descriptionLabel = new JLabel("Description:");
         descriptionLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        descriptionLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        descriptionLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 4;
         formPanel.add(descriptionLabel, gbc);
 
         JTextArea descriptionArea = new JTextArea(6, 25);
         descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        descriptionArea.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        descriptionArea.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        descriptionArea.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        descriptionArea.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         descriptionArea.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         descriptionArea.setLineWrap(true);
@@ -416,7 +641,7 @@ public class Dashboard_RecruitersController {
 
         JLabel statusLabel = new JLabel("");
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        statusLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        statusLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         gbc.gridx = 1;
         gbc.gridy = 5;
         formPanel.add(statusLabel, gbc);
@@ -428,9 +653,9 @@ public class Dashboard_RecruitersController {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 if (getModel().isRollover()) {
-                    g2d.setColor(new Color(0, 20, 120));
+                    g2d.setColor(isDarkMode ? new Color(66, 165, 245) : new Color(0, 20, 120));
                 } else {
-                    g2d.setColor(new Color(0, 4, 80));
+                    g2d.setColor(isDarkMode ? new Color(33, 150, 243) : new Color(0, 4, 80));
                 }
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 super.paintComponent(g);
@@ -502,214 +727,209 @@ public class Dashboard_RecruitersController {
     }
 
     public void showApplicationsPanel() {
- JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
- mainPanel.setBackground(new Color(245, 245, 245));
- mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
+        mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
- // Header Panel
- JPanel headerPanel = new JPanel() {
- @Override
- protected void paintComponent(Graphics g) {
- super.paintComponent(g);
- Graphics2D g2d = (Graphics2D) g;
- g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
- GradientPaint gp = new GradientPaint(0, 0, new Color(0, 4, 80), 0, getHeight(), new Color(0, 20, 120));
- g2d.setPaint(gp);
- g2d.fillRect(0, 0, getWidth(), getHeight());
- }
- };
- headerPanel.setPreferredSize(new Dimension(680, 60));
- headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 12));
+        JPanel headerPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GradientPaint gp = new GradientPaint(0, 0, isDarkMode ? new Color(33, 150, 243) : new Color(0, 4, 80),
+                    0, getHeight(), isDarkMode ? new Color(66, 165, 245) : new Color(0, 20, 120));
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        headerPanel.setPreferredSize(new Dimension(680, 60));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 12));
 
- JLabel headerLabel = new JLabel("Applications");
- headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
- headerLabel.setForeground(Color.WHITE);
- headerPanel.add(headerLabel);
+        JLabel headerLabel = new JLabel("Applications");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        headerLabel.setForeground(Color.WHITE);
+        headerPanel.add(headerLabel);
 
- // Applications Panel
- JPanel applicationsPanel = new JPanel(new GridBagLayout());
- applicationsPanel.setBackground(new Color(245, 245, 245));
- JScrollPane scrollPane = new JScrollPane(applicationsPanel);
- scrollPane.setBorder(null);
- scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
- scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JPanel applicationsPanel = new JPanel(new GridBagLayout());
+        applicationsPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        JScrollPane scrollPane = new JScrollPane(applicationsPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
- GridBagConstraints gbc = new GridBagConstraints();
- gbc.insets = new Insets(10, 10, 10, 10);
- gbc.fill = GridBagConstraints.HORIZONTAL;
- gbc.anchor = GridBagConstraints.NORTHWEST;
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
 
- // Fetch applications
- ApplicationDao applicationDao = new ApplicationDao();
- List<Application> applications = applicationDao.getApplicationsByRecruiterId(recruiterId);
- if (applications.isEmpty()) {
- JLabel noApplicationsLabel = new JLabel("No applications received yet.");
- noApplicationsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
- noApplicationsLabel.setHorizontalAlignment(SwingConstants.CENTER);
- gbc.gridx = 0;
- gbc.gridy = 0;
- applicationsPanel.add(noApplicationsLabel, gbc);
- } else {
- int gridy = 0;
- for (Application app : applications) {
- JPanel appCard = createApplicationCard(app, applicationDao);
- gbc.gridx = 0;
- gbc.gridy = gridy;
- applicationsPanel.add(appCard, gbc);
- gridy++;
- }
- }
+        List<Application> applications = applicationDao.getApplicationsByRecruiterId(recruiterId);
+        if (applications.isEmpty()) {
+            JLabel noApplicationsLabel = new JLabel("No applications received yet.");
+            noApplicationsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            noApplicationsLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+            noApplicationsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            applicationsPanel.add(noApplicationsLabel, gbc);
+        } else {
+            int gridy = 0;
+            for (Application app : applications) {
+                JPanel appCard = createApplicationCard(app, applicationDao);
+                gbc.gridx = 0;
+                gbc.gridy = gridy;
+                applicationsPanel.add(appCard, gbc);
+                gridy++;
+            }
+        }
 
- mainPanel.add(headerPanel, BorderLayout.NORTH);
- mainPanel.add(scrollPane, BorderLayout.CENTER);
- updateContentPanel(mainPanel);
-}
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        updateContentPanel(mainPanel);
+    }
 
-private JPanel createApplicationCard(Application app, ApplicationDao applicationDao) {
- JPanel card = new JPanel(new GridBagLayout());
- card.setBackground(new Color(252, 252, 252));
- card.setBorder(BorderFactory.createCompoundBorder(
- BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
- BorderFactory.createEmptyBorder(10, 10, 10, 10)
- ));
- card.setPreferredSize(new Dimension(600, 250));
+    private JPanel createApplicationCard(Application app, ApplicationDao applicationDao) {
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200), 1, true),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        card.setPreferredSize(new Dimension(600, 250));
 
- GridBagConstraints gbc = new GridBagConstraints();
- gbc.insets = new Insets(5, 5, 5, 5);
- gbc.fill = GridBagConstraints.HORIZONTAL;
- gbc.anchor = GridBagConstraints.WEST;
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
- // Applicant Name
- JLabel nameLabel = new JLabel("Applicant: " + app.getJobSeekerName());
- nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
- nameLabel.setForeground(new Color(0, 4, 80));
- gbc.gridx = 0;
- gbc.gridy = 0;
- gbc.gridwidth = 2;
- card.add(nameLabel, gbc);
+        JLabel nameLabel = new JLabel("Applicant: " + app.getJobSeekerName());
+        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        nameLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        card.add(nameLabel, gbc);
 
- // Applicant Email
- JLabel emailLabel = new JLabel("Email: " + app.getJobSeekerEmail());
- emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
- gbc.gridy = 1;
- card.add(emailLabel, gbc);
+        JLabel emailLabel = new JLabel("Email: " + app.getJobSeekerEmail());
+        emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        emailLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+        gbc.gridy = 1;
+        card.add(emailLabel, gbc);
 
- // CV Details
- Cv cv = app.getCv();
- JLabel cvDetailsLabel = new JLabel("<html><b>CV Details:</b><br>" +
- "First Name: " + cv.getFirstName() + "<br>" +
- "Last Name: " + cv.getLastName() + "<br>" +
- "Date of Birth: " + cv.getDob() + "<br>" +
- "Contact: " + cv.getContact() + "<br>" +
- "Education: " + cv.getEducation() + "<br>" +
- "Skills: " + cv.getSkills() + "<br>" +
- "Experience: " + cv.getExperience() + "</html>");
- cvDetailsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
- gbc.gridy = 2;
- gbc.gridwidth = 2;
- card.add(cvDetailsLabel, gbc);
+        Cv cv = app.getCv();
+        JLabel cvDetailsLabel = new JLabel("<html><b>CV Details:</b><br>" +
+            "First Name: " + cv.getFirstName() + "<br>" +
+            "Last Name: " + cv.getLastName() + "<br>" +
+            "Date of Birth: " + cv.getDob() + "<br>" +
+            "Contact: " + cv.getContact() + "<br>" +
+            "Education: " + cv.getEducation() + "<br>" +
+            "Skills: " + cv.getSkills() + "<br>" +
+            "Experience: " + cv.getExperience() + "</html>");
+        cvDetailsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        cvDetailsLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        card.add(cvDetailsLabel, gbc);
 
- // Status
- JLabel statusLabel = new JLabel("Status: " + app.getStatus());
- statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
- gbc.gridy = 3;
- gbc.gridwidth = 2;
- card.add(statusLabel, gbc);
+        JLabel statusLabel = new JLabel("Status: " + app.getStatus());
+        statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        statusLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        card.add(statusLabel, gbc);
 
- // Buttons Panel
- JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
- buttonPanel.setBackground(new Color(252, 252, 252));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
 
- JButton acceptButton = new JButton("Accept") {
- @Override
- protected void paintComponent(Graphics g) {
- Graphics2D g2d = (Graphics2D) g;
- g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
- if (getModel().isRollover()) {
- g2d.setColor(new Color(0, 100, 0));
- } else {
- g2d.setColor(new Color(0, 128, 0));
- }
- g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
- super.paintComponent(g);
- }
- };
- acceptButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
- acceptButton.setForeground(Color.WHITE);
- acceptButton.setContentAreaFilled(false);
- acceptButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
- acceptButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
- acceptButton.setFocusPainted(false);
- acceptButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
+        JButton acceptButton = new JButton("Accept") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (getModel().isRollover()) {
+                    g2d.setColor(new Color(0, 100, 0));
+                } else {
+                    g2d.setColor(new Color(0, 128, 0));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
+        acceptButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        acceptButton.setForeground(Color.WHITE);
+        acceptButton.setContentAreaFilled(false);
+        acceptButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        acceptButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        acceptButton.setFocusPainted(false);
+        acceptButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
 
- JButton rejectButton = new JButton("Reject") {
- @Override
- protected void paintComponent(Graphics g) {
- Graphics2D g2d = (Graphics2D) g;
- g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
- if (getModel().isRollover()) {
- g2d.setColor(new Color(139, 0, 0));
- } else {
- g2d.setColor(new Color(178, 34, 34));
- }
- g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
- super.paintComponent(g);
- }
- };
- rejectButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
- rejectButton.setForeground(Color.WHITE);
- rejectButton.setContentAreaFilled(false);
- rejectButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
- rejectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
- rejectButton.setFocusPainted(false);
- rejectButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
+        JButton rejectButton = new JButton("Reject") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (getModel().isRollover()) {
+                    g2d.setColor(new Color(139, 0, 0));
+                } else {
+                    g2d.setColor(new Color(178, 34, 34));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
+        rejectButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        rejectButton.setForeground(Color.WHITE);
+        rejectButton.setContentAreaFilled(false);
+        rejectButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        rejectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rejectButton.setFocusPainted(false);
+        rejectButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
 
- // Button Actions
- acceptButton.addActionListener(e -> {
- boolean success = applicationDao.updateApplicationStatus(app.getId(), "Accepted");
- if (success) {
- statusLabel.setText("Status: Accepted");
- acceptButton.setEnabled(false);
- rejectButton.setEnabled(false);
- JOptionPane.showMessageDialog(view, "Application accepted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
- } else {
- JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
- }
- });
+        acceptButton.addActionListener(e -> {
+            boolean success = applicationDao.updateApplicationStatus(app.getId(), "Accepted");
+            if (success) {
+                statusLabel.setText("Status: Accepted");
+                acceptButton.setEnabled(false);
+                rejectButton.setEnabled(false);
+                JOptionPane.showMessageDialog(view, "Application accepted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
- rejectButton.addActionListener(e -> {
- boolean success = applicationDao.updateApplicationStatus(app.getId(), "Rejected");
- if (success) {
- statusLabel.setText("Status: Rejected");
- acceptButton.setEnabled(false);
- rejectButton.setEnabled(false);
- JOptionPane.showMessageDialog(view, "Application rejected successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
- } else {
- JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
- }
- });
+        rejectButton.addActionListener(e -> {
+            boolean success = applicationDao.updateApplicationStatus(app.getId(), "Rejected");
+            if (success) {
+                statusLabel.setText("Status: Rejected");
+                acceptButton.setEnabled(false);
+                rejectButton.setEnabled(false);
+                JOptionPane.showMessageDialog(view, "Application rejected successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
- buttonPanel.add(acceptButton);
- buttonPanel.add(rejectButton);
- gbc.gridy = 4;
- gbc.gridwidth = 2;
- gbc.anchor = GridBagConstraints.EAST;
- card.add(buttonPanel, gbc);
+        buttonPanel.add(acceptButton);
+        buttonPanel.add(rejectButton);
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        card.add(buttonPanel, gbc);
 
- return card;
-}
+        return card;
+    }
+
     public void showSettingsPanel() {
         System.out.println("Navigating to Settings");
-
         JPanel settingsPanel = new JPanel();
-        settingsPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
-        settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        settingsPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        settingsPanel.setLayout(new BorderLayout(15, 15));
+        settingsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(0, 20, 90));
-        titlePanel.setPreferredSize(new java.awt.Dimension(680, 70));
-        titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
+        titlePanel.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(0, 20, 90));
+        titlePanel.setPreferredSize(new Dimension(680, 70));
+        titlePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 20));
 
         JLabel titleLabel = new JLabel("Settings");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -717,64 +937,78 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         titlePanel.add(titleLabel);
 
         JPanel contentBox = new JPanel();
-        contentBox.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
-        contentBox.setBorder(BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : Color.LIGHT_GRAY));
+        contentBox.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
+        contentBox.setBorder(BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : Color.LIGHT_GRAY));
         contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
         contentBox.setPreferredSize(new Dimension(500, 250));
         contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
-        darkModeCheck.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
-        darkModeCheck.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        darkModeCheck.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
+        darkModeCheck.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         darkModeCheck.setSelected(isDarkMode);
         darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel darkModePanel = new JPanel();
         darkModePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        darkModePanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        darkModePanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         darkModePanel.add(new JLabel("🌙"));
         darkModePanel.add(Box.createHorizontalStrut(10));
         darkModePanel.add(darkModeCheck);
 
         JCheckBox notificationCheck = new JCheckBox("Enable Notifications");
-        notificationCheck.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
-        notificationCheck.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        notificationCheck.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
+        notificationCheck.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         notificationCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         notificationCheck.setSelected(notificationsEnabled);
         notificationCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel notificationPanel = new JPanel();
         notificationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        notificationPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        notificationPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         notificationPanel.add(new JLabel("🔔"));
         notificationPanel.add(Box.createHorizontalStrut(10));
         notificationPanel.add(notificationCheck);
 
         JLabel contactUsLabel = new JLabel("Contact Us: support@pahilopaila.com");
         contactUsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        contactUsLabel.setForeground(isDarkMode ? new Color(0, 123, 255) : new Color(0, 123, 255));
+        contactUsLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 123, 255));
         contactUsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         contactUsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel contactPanel = new JPanel();
         contactPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        contactPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        contactPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         contactPanel.add(new JLabel("📞"));
         contactPanel.add(Box.createHorizontalStrut(10));
         contactPanel.add(contactUsLabel);
 
-        JButton updateButton = new JButton("Update Settings");
-        updateButton.setBackground(new Color(0, 20, 90));
-        updateButton.setForeground(Color.WHITE);
+        JButton updateButton = new JButton("Update Settings") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GradientPaint gp = new GradientPaint(0, 0, isDarkMode ? new Color(33, 150, 243) : new Color(0, 20, 90),
+                    0, getHeight(), isDarkMode ? new Color(66, 165, 245) : new Color(0, 4, 80));
+                if (getModel().isRollover()) {
+                    g2d.setPaint(gp);
+                } else {
+                    g2d.setColor(isDarkMode ? new Color(33, 150, 243) : new Color(0, 20, 90));
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
         updateButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        updateButton.setForeground(Color.WHITE);
         updateButton.setPreferredSize(new Dimension(150, 35));
         updateButton.setFocusPainted(false);
         updateButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : Color.WHITE);
+        buttonPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         buttonPanel.add(updateButton);
 
         contentBox.add(Box.createVerticalStrut(20));
@@ -790,6 +1024,7 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         darkModeCheck.addActionListener(e -> {
             isDarkMode = darkModeCheck.isSelected();
             applyDarkModeToSettings(isDarkMode, settingsPanel);
+            applyFeaturePanelTheme();
             String status = isDarkMode ? "enabled" : "disabled";
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
                 "Dark mode " + status + " successfully!",
@@ -803,9 +1038,9 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
             System.out.println("Notifications " + status);
         });
 
-        contactUsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+        contactUsLabel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
                     "Contact Information:\n\n" +
                     "Email: support@pahilopaila.com\n" +
@@ -817,12 +1052,12 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
             }
 
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
+            public void mouseEntered(MouseEvent e) {
                 contactUsLabel.setText("<html><u>Contact Us: support@pahilopaila.com</u></html>");
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
+            public void mouseExited(MouseEvent e) {
                 contactUsLabel.setText("Contact Us: support@pahilopaila.com");
             }
         });
@@ -831,6 +1066,7 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
             isDarkMode = darkModeCheck.isSelected();
             notificationsEnabled = notificationCheck.isSelected();
             applyDarkModeToSettings(isDarkMode, settingsPanel);
+            applyFeaturePanelTheme();
             StringBuilder message = new StringBuilder("Settings Updated Successfully!\n\n");
             message.append("Dark Mode: ").append(isDarkMode ? "Enabled" : "Disabled").append("\n");
             message.append("Notifications: ").append(notificationsEnabled ? "Enabled" : "Disabled");
@@ -841,7 +1077,7 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         });
 
         JPanel centerPanel = new JPanel();
-        centerPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
+        centerPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         centerPanel.setLayout(new GridBagLayout());
         centerPanel.add(contentBox);
 
@@ -851,14 +1087,13 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         updateContentPanel(settingsPanel);
     }
 
-    private void applyDarkModeToSettings(boolean darkMode, JPanel settingsPanel) {
+    private void applyDarkModeToSettings(boolean isDarkMode, JPanel settingsPanel) {
         Window parentWindow = SwingUtilities.getWindowAncestor(settingsPanel);
-
-        if (darkMode) {
-            Color darkBackground = new Color(45, 45, 48);
-            Color darkPanel = new Color(37, 37, 38);
-            Color darkText = new Color(220, 220, 220);
-            Color darkBorder = new Color(60, 60, 60);
+        if (isDarkMode) {
+            Color darkBackground = new Color(18, 18, 18);
+            Color darkPanel = new Color(30, 30, 30);
+            Color darkText = new Color(230, 230, 230);
+            Color darkBorder = new Color(50, 50, 50);
 
             if (parentWindow != null) {
                 parentWindow.setBackground(darkBackground);
@@ -890,146 +1125,9 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         settingsPanel.repaint();
     }
 
-    private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, Color darkText, Color darkBorder) {
-        for (Component component : container.getComponents()) {
-            if (component instanceof JPanel) {
-                JPanel panel = (JPanel) component;
-                if (panel.getBackground().equals(new Color(0, 20, 90))) {
-                    // Keep original dark blue for title bars
-                } else if (panel.getBackground().equals(Color.WHITE) || panel.getBackground().equals(new Color(252, 252, 252))) {
-                    panel.setBackground(darkPanel);
-                } else if (panel.getBackground().equals(new Color(245, 245, 245))) {
-                    panel.setBackground(darkBg);
-                }
-
-                if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
-                    panel.setBorder(BorderFactory.createLineBorder(darkBorder));
-                } else if (panel.getBorder() instanceof javax.swing.border.TitledBorder) {
-                    TitledBorder oldBorder = (TitledBorder) panel.getBorder();
-                    panel.setBorder(BorderFactory.createTitledBorder(
-                        BorderFactory.createLineBorder(darkBorder, 1, true),
-                        oldBorder.getTitle(),
-                        TitledBorder.DEFAULT_JUSTIFICATION,
-                        TitledBorder.TOP,
-                        new Font("Segoe UI", Font.BOLD, 14),
-                        darkText
-                    ));
-                }
-
-                applyDarkThemeToComponent(panel, darkBg, darkPanel, darkText, darkBorder);
-            } else if (component instanceof JLabel) {
-                JLabel label = (JLabel) component;
-                if (!label.getForeground().equals(Color.WHITE) && !label.getForeground().equals(new Color(0, 123, 255))) {
-                    label.setForeground(darkText);
-                }
-            } else if (component instanceof JCheckBox) {
-                JCheckBox checkBox = (JCheckBox) component;
-                checkBox.setBackground(darkPanel);
-                checkBox.setForeground(darkText);
-            } else if (component instanceof JTextField || component instanceof JTextArea) {
-                JTextComponent textComponent = (JTextComponent) component;
-                textComponent.setBackground(darkBg);
-                textComponent.setForeground(darkText);
-                textComponent.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(darkBorder, 1, true),
-                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
-                ));
-            } else if (component instanceof JComboBox) {
-                JComboBox<?> comboBox = (JComboBox<?>) component;
-                comboBox.setBackground(darkBg);
-                comboBox.setForeground(darkText);
-            } else if (component instanceof JDateChooser) {
-                JDateChooser dateChooser = (JDateChooser) component;
-                dateChooser.setBackground(darkBg);
-                dateChooser.setForeground(darkText);
-                dateChooser.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(darkBorder, 1, true),
-                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
-                ));
-            } else if (component instanceof JButton) {
-                JButton button = (JButton) component;
-                if (!button.getText().equals("Get Started") && !button.getText().equals("Learn More") && !button.getText().equals("Update Settings")) {
-                    button.setBackground(darkPanel);
-                    button.setForeground(darkText);
-                }
-            } else if (component instanceof Container) {
-                applyDarkThemeToComponent((Container) component, darkBg, darkPanel, darkText, darkBorder);
-            }
-        }
-    }
-
-    private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, Color lightText, Color lightBorder) {
-        for (Component component : container.getComponents()) {
-            if (component instanceof JPanel) {
-                JPanel panel = (JPanel) component;
-                if (panel.getBackground().equals(new Color(0, 20, 90))) {
-                    // Keep original dark blue for title bars
-                } else if (panel.getBackground().equals(new Color(37, 37, 38)) || panel.getBackground().equals(new Color(252, 252, 252))) {
-                    panel.setBackground(lightBg);
-                } else if (panel.getBackground().equals(new Color(45, 45, 48))) {
-                    panel.setBackground(lightPanel);
-                }
-
-                if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
-                    panel.setBorder(BorderFactory.createLineBorder(lightBorder));
-                } else if (panel.getBorder() instanceof javax.swing.border.TitledBorder) {
-                    TitledBorder oldBorder = (TitledBorder) panel.getBorder();
-                    panel.setBorder(BorderFactory.createTitledBorder(
-                        BorderFactory.createLineBorder(lightBorder, 1, true),
-                        oldBorder.getTitle(),
-                        TitledBorder.DEFAULT_JUSTIFICATION,
-                        TitledBorder.TOP,
-                        new Font("Segoe UI", Font.BOLD, 14),
-                        new Color(0, 0, 102)
-                    ));
-                }
-
-                applyLightThemeToComponent(panel, lightBg, lightPanel, lightText, lightBorder);
-            } else if (component instanceof JLabel) {
-                JLabel label = (JLabel) component;
-                if (!label.getForeground().equals(Color.WHITE) && !label.getForeground().equals(new Color(0, 123, 255))) {
-                    label.setForeground(lightText);
-                }
-            } else if (component instanceof JCheckBox) {
-                JCheckBox checkBox = (JCheckBox) component;
-                checkBox.setBackground(lightBg);
-                checkBox.setForeground(lightText);
-            } else if (component instanceof JTextField || component instanceof JTextArea) {
-                JTextComponent textComponent = (JTextComponent) component;
-                textComponent.setBackground(lightPanel);
-                textComponent.setForeground(lightText);
-                textComponent.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(lightBorder, 1, true),
-                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
-                ));
-            } else if (component instanceof JComboBox) {
-                JComboBox<?> comboBox = (JComboBox<?>) component;
-                comboBox.setBackground(lightPanel);
-                comboBox.setForeground(lightText);
-            } else if (component instanceof JDateChooser) {
-                JDateChooser dateChooser = (JDateChooser) component;
-                dateChooser.setBackground(lightPanel);
-                dateChooser.setForeground(lightText);
-                dateChooser.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(lightBorder, 1, true),
-                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
-                ));
-            } else if (component instanceof JButton) {
-                JButton button = (JButton) component;
-                if (!button.getText().equals("Get Started") && !button.getText().equals("Learn More") && !button.getText().equals("Update Settings")) {
-                    button.setBackground(lightBg);
-                    button.setForeground(new Color(0, 0, 102));
-                }
-            } else if (component instanceof Container) {
-                applyLightThemeToComponent((Container) component, lightBg, lightPanel, lightText, lightBorder);
-            }
-        }
-    }
-
     public void showMyAccountPanel() {
-        System.out.println("Navigating to My Account");
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
-        mainPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         JPanel headerPanel = new JPanel() {
@@ -1038,10 +1136,8 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(
-                    0, 0, new Color(0, 4, 80),
-                    0, getHeight(), new Color(0, 20, 120)
-                );
+                GradientPaint gp = new GradientPaint(0, 0, isDarkMode ? new Color(33, 150, 243) : new Color(0, 4, 80),
+                    0, getHeight(), isDarkMode ? new Color(66, 165, 245) : new Color(0, 20, 120));
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
@@ -1055,13 +1151,13 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         headerPanel.add(headerLabel);
 
         JPanel centerWrapper = new JPanel();
-        centerWrapper.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
+        centerWrapper.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(isDarkMode ? new Color(37, 37, 38) : new Color(252, 252, 252));
+        formPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(252, 252, 252));
         formPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200), 1, true),
             BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
         formPanel.setPreferredSize(new Dimension(660, 360));
@@ -1080,7 +1176,7 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
 
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        usernameLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        usernameLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(usernameLabel, gbc);
@@ -1088,10 +1184,10 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         JTextField usernameField = new JTextField(18);
         usernameField.setText(usernameText);
         usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        usernameField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        usernameField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        usernameField.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        usernameField.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         usernameField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
@@ -1100,7 +1196,7 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
 
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        emailLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        emailLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 1;
         formPanel.add(emailLabel, gbc);
@@ -1108,10 +1204,10 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
         JTextField emailField = new JTextField(18);
         emailField.setText(emailText);
         emailField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        emailField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        emailField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        emailField.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        emailField.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         emailField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
@@ -1120,17 +1216,17 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
 
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        passwordLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        passwordLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 2;
         formPanel.add(passwordLabel, gbc);
 
         JPasswordField passwordField = new JPasswordField(18);
         passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        passwordField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        passwordField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        passwordField.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        passwordField.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         passwordField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
@@ -1139,17 +1235,17 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
 
         JLabel newPasswordLabel = new JLabel("New Password:");
         newPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        newPasswordLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
+        newPasswordLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 3;
         formPanel.add(newPasswordLabel, gbc);
 
         JPasswordField newPasswordField = new JPasswordField(18);
         newPasswordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        newPasswordField.setBackground(isDarkMode ? new Color(45, 45, 48) : new Color(245, 245, 245));
-        newPasswordField.setForeground(isDarkMode ? new Color(220, 220, 220) : Color.BLACK);
+        newPasswordField.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+        newPasswordField.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         newPasswordField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(150, 150, 150), 1, true),
+            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         gbc.gridx = 1;
@@ -1162,9 +1258,9 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 if (getModel().isRollover()) {
-                    g2d.setColor(new Color(0, 20, 120));
+                    g2d.setColor(isDarkMode ? new Color(66, 165, 245) : new Color(0, 20, 120));
                 } else {
-                    g2d.setColor(new Color(0, 4, 80));
+                    g2d.setColor(isDarkMode ? new Color(33, 150, 243) : new Color(0, 4, 80));
                 }
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 super.paintComponent(g);
@@ -1242,14 +1338,6 @@ private JPanel createApplicationCard(Application app, ApplicationDao application
 
     public void searchFieldActionPerformed(ActionEvent e) {
         System.out.println("Search: " + view.Searchfield.getText());
-    }
-
-    public void searchButtonActionPerformed(ActionEvent e) {
-        System.out.println("Search button clicked");
-    }
-
-    public void filterButtonActionPerformed(ActionEvent e) {
-        System.out.println("Filter button clicked");
     }
 
     public void getStartedActionPerformed(ActionEvent e) {

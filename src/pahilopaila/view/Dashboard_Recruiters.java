@@ -2,6 +2,7 @@ package pahilopaila.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,6 +18,7 @@ public class Dashboard_Recruiters extends JFrame {
     private boolean settingsPressed = false, settingsHovered = false;
     private boolean myAccountPressed = false, myAccountHovered = false;
     private boolean signOutPressed = false, signOutHovered = false;
+    private boolean isDarkMode = false; // Add dark mode support
 
     // UI components
     public JTextField Searchfield;
@@ -49,93 +51,129 @@ public class Dashboard_Recruiters extends JFrame {
         setResizable(false);
         setSize(900, 700);
         setLocationRelativeTo(null);
+        applyTheme(); // Apply initial theme
     }
 
     private JLabel createStyledLabel(String text, String iconPath) {
-        JLabel label = new JLabel(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
-                    this == application && applicationPressed || this == settings && settingsPressed ||
-                    this == myAccount && myAccountPressed || this == signOut && signOutPressed) {
-                    g2d.setColor(new Color(200, 200, 200));
-                } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
-                           this == application && applicationHovered || this == settings && settingsHovered ||
-                           this == myAccount && myAccountHovered || this == signOut && signOutHovered) {
-                    g2d.setColor(new Color(230, 230, 230));
-                } else {
-                    g2d.setColor(Color.WHITE);
-                }
-                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
-                super.paintComponent(g);
+    JLabel label = new JLabel(text) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Color defaultBg = isDarkMode ? new Color(30, 30, 30) : new Color(240, 240, 240);
+            Color hoverBg = isDarkMode ? new Color(50, 50, 50) : new Color(220, 220, 220);
+            Color pressedBg = isDarkMode ? new Color(40, 40, 40) : new Color(200, 200, 200);
+
+            if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
+                this == application && applicationPressed || this == settings && settingsPressed ||
+                this == myAccount && myAccountPressed || this == signOut && signOutPressed) {
+                g2d.setColor(pressedBg);
+            } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
+                       this == application && applicationHovered || this == settings && settingsHovered ||
+                       this == myAccount && myAccountHovered || this == signOut && signOutHovered) {
+                g2d.setColor(hoverBg);
+            } else {
+                g2d.setColor(defaultBg);
             }
-        };
-        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        label.setForeground(new Color(102, 102, 102)); // Match JobSeekers
-        try {
-            label.setIcon(new ImageIcon(getClass().getResource(iconPath)));
-            label.setVerticalTextPosition(JLabel.CENTER);
-            label.setHorizontalTextPosition(JLabel.RIGHT);
-            label.setIconTextGap(10);
-        } catch (Exception e) {
-            System.out.println("Error loading icon for " + text + ": " + e.getMessage());
+            g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+            super.paintComponent(g);
         }
-        label.setOpaque(false);
-        label.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
-        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        label.addMouseListener(new java.awt.event.MouseAdapter() {
-            private Timer pressTimer;
+    };
+    label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    label.setForeground(isDarkMode ? Color.BLACK : new Color(51, 51, 51)); // Black text in dark mode
+    label.setOpaque(true); // Force the label to use the painted background
+    try {
+        label.setIcon(new ImageIcon(getClass().getResource(iconPath)));
+        label.setVerticalTextPosition(JLabel.CENTER);
+        label.setHorizontalTextPosition(JLabel.RIGHT);
+        label.setIconTextGap(10);
+    } catch (Exception e) {
+        System.out.println("Error loading icon for " + text + ": " + e.getMessage());
+    }
+    label.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    label.addMouseListener(new MouseAdapter() {
+        private Timer pressTimer;
 
-            @Override
-            public void mousePressed(MouseEvent evt) {
-                if (label == dashboard) dashboardPressed = true;
-                else if (label == vacancy) vacancyPressed = true;
-                else if (label == application) applicationPressed = true;
-                else if (label == settings) settingsPressed = true;
-                else if (label == myAccount) myAccountPressed = true;
-                else if (label == signOut) signOutPressed = true;
-                label.repaint();
-                if (pressTimer != null) pressTimer.cancel();
-                pressTimer = new Timer();
-                pressTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (label == dashboard) dashboardPressed = false;
-                        else if (label == vacancy) vacancyPressed = false;
-                        else if (label == application) applicationPressed = false;
-                        else if (label == settings) settingsPressed = false;
-                        else if (label == myAccount) myAccountPressed = false;
-                        else if (label == signOut) signOutPressed = false;
-                        label.repaint();
-                    }
-                }, 200);
-            }
+        @Override
+        public void mousePressed(MouseEvent evt) {
+            if (label == dashboard) dashboardPressed = true;
+            else if (label == vacancy) vacancyPressed = true;
+            else if (label == application) applicationPressed = true;
+            else if (label == settings) settingsPressed = true;
+            else if (label == myAccount) myAccountPressed = true;
+            else if (label == signOut) signOutPressed = true;
+            label.repaint();
+            if (pressTimer != null) pressTimer.cancel();
+            pressTimer = new Timer();
+            pressTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (label == dashboard) dashboardPressed = false;
+                    else if (label == vacancy) vacancyPressed = false;
+                    else if (label == application) applicationPressed = false;
+                    else if (label == settings) settingsPressed = false;
+                    else if (label == myAccount) myAccountPressed = false;
+                    else if (label == signOut) signOutPressed = false;
+                    label.repaint();
+                }
+            }, 200);
+        }
 
-            @Override
-            public void mouseEntered(MouseEvent evt) {
-                if (label == dashboard) dashboardHovered = true;
-                else if (label == vacancy) vacancyHovered = true;
-                else if (label == application) applicationHovered = true;
-                else if (label == settings) settingsHovered = true;
-                else if (label == myAccount) myAccountPressed = true;
-                else if (label == signOut) signOutPressed = true;
-                label.repaint();
-            }
+        @Override
+        public void mouseEntered(MouseEvent evt) {
+            if (label == dashboard) dashboardHovered = true;
+            else if (label == vacancy) vacancyHovered = true;
+            else if (label == application) applicationHovered = true;
+            else if (label == settings) settingsHovered = true;
+            else if (label == myAccount) myAccountHovered = true;
+            else if (label == signOut) signOutHovered = true;
+            label.repaint();
+        }
 
-            @Override
-            public void mouseExited(MouseEvent evt) {
-                if (label == dashboard) dashboardHovered = false;
-                if (label == vacancy) vacancyHovered = false;
-                if (label == application) applicationHovered = false;
-                if (label == settings) settingsHovered = false;
-                if (label == myAccount) myAccountHovered = false;
-                if (label == signOut) signOutHovered = false;
-                label.repaint();
-            }
-        });
-        return label;
+        @Override
+        public void mouseExited(MouseEvent evt) {
+            if (label == dashboard) dashboardHovered = false;
+            else if (label == vacancy) vacancyHovered = false;
+            else if (label == application) applicationHovered = false;
+            else if (label == settings) settingsHovered = false;
+            else if (label == myAccount) myAccountHovered = false;
+            else if (label == signOut) signOutHovered = false;
+            label.repaint();
+        }
+    });
+    return label;
+}
+
+private void applyTheme() {
+    getContentPane().setBackground(isDarkMode ? new Color(35, 35, 35) : new Color(255, 255, 255));
+    featurePanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(255, 255, 255));
+    logo.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(255, 255, 255));
+    content.setBackground(isDarkMode ? new Color(35, 35, 35) : new Color(245, 245, 245));
+
+    Searchfield.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
+    Searchfield.setForeground(isDarkMode ? new Color(200, 200, 200) : new Color(0, 0, 0));
+    Searchfield.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1, true),
+        BorderFactory.createEmptyBorder(4, 8, 4, 8)
+    ));
+
+    search.setBackground(isDarkMode ? new Color(25, 118, 210) : new Color(240, 240, 240));
+    filter.setBackground(isDarkMode ? new Color(25, 118, 210) : new Color(240, 240, 240));
+
+    username.setForeground(isDarkMode ? new Color(245, 245, 245) : new Color(0, 0, 102));
+    email.setForeground(isDarkMode ? new Color(245, 245, 245) : new Color(0, 0, 0));
+
+    dashboard.repaint();
+    vacancy.repaint();
+    application.repaint();
+    settings.repaint();
+    myAccount.repaint();
+    signOut.repaint();
+}
+    public void toggleDarkMode(boolean enableDarkMode) {
+        isDarkMode = enableDarkMode;
+        applyTheme();
     }
 
     @SuppressWarnings("unchecked")
@@ -164,7 +202,6 @@ public class Dashboard_Recruiters extends JFrame {
         signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new Color(255, 255, 255));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Searchfield.setHorizontalAlignment(JTextField.LEFT);
@@ -177,7 +214,6 @@ public class Dashboard_Recruiters extends JFrame {
         getContentPane().add(filter, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 30, 30, 30));
 
         username.setFont(new Font("Segoe UI Semibold", Font.BOLD, 18));
-        username.setForeground(new Color(0, 0, 102));
         username.setText("Ram Kumar");
         getContentPane().add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 20, 100, 30));
 
@@ -262,8 +298,8 @@ public class Dashboard_Recruiters extends JFrame {
 
         getContentPane().add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 80, 680, 430));
 
-        featurePanel.setBackground(Color.WHITE);
-        logo.setBackground(Color.WHITE);
+        featurePanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
+        logo.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
         jLabel4.setIcon(new ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png")));
 
         GroupLayout logoLayout = new GroupLayout(logo);
