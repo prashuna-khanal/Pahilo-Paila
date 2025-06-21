@@ -131,29 +131,45 @@ public class VacancyDao {
         String sql = "SELECT * FROM vacancies WHERE 1=1";
         if (jobType != null && !jobType.isEmpty()) sql += " AND job_type = ?";
         if (experienceLevel != null && !experienceLevel.isEmpty()) sql += " AND experience_level = ?";
-        if (startDate != null) sql += " AND deadline >= ?";
-        if (endDate != null) sql += " AND deadline <= ?";
+        if (startDate != null || endDate != null) {
+            long now = System.currentTimeMillis();
+            if (startDate != null) {
+                long startDays = (startDate.getTime() - now) / (1000 * 60 * 60 * 24);
+                sql += " AND days_left >= ?";
+            }
+            if (endDate != null) {
+                long endDays = (endDate.getTime() - now) / (1000 * 60 * 60 * 24);
+                sql += " AND days_left <= ?";
+            }
+        }
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             int index = 1;
             if (jobType != null && !jobType.isEmpty()) pstmt.setString(index++, jobType);
             if (experienceLevel != null && !experienceLevel.isEmpty()) pstmt.setString(index++, experienceLevel);
-            if (startDate != null) pstmt.setDate(index++, new java.sql.Date(startDate.getTime()));
-            if (endDate != null) pstmt.setDate(index++, new java.sql.Date(endDate.getTime()));
+            if (startDate != null) {
+                long startDays = (startDate.getTime() - System.currentTimeMillis()) / (1000 * 60 * 60 * 24);
+                pstmt.setInt(index++, (int) startDays);
+            }
+            if (endDate != null) {
+                long endDays = (endDate.getTime() - System.currentTimeMillis()) / (1000 * 60 * 60 * 24);
+                pstmt.setInt(index++, (int) endDays);
+            }
 
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Vacancy vacancy = new Vacancy();
+                vacancy.setId(rs.getInt("id"));
                 vacancy.setJobTitle(rs.getString("job_title"));
                 vacancy.setJobType(rs.getString("job_type"));
                 vacancy.setExperienceLevel(rs.getString("experience_level"));
-                vacancy.setDaysLeft(rs.getInt("days_left")); // Adjust based on your schema
-                vacancy.setDeadline(rs.getDate("deadline")); // Adjust based on your schema
+                vacancy.setDaysLeft(rs.getInt("days_left"));
                 vacancies.add(vacancy);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            System.err.println("SQL Error in getFilteredVacancies: " + e.getMessage());
         }
         return vacancies;
     }
-}
+    }

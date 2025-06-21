@@ -1,5 +1,7 @@
 package pahilopaila.model;
 
+import java.sql.Date;
+
 public class Vacancy {
     private int id;
     private int recruiterId;
@@ -90,5 +92,13 @@ public class Vacancy {
                ", daysLeft=" + daysLeft +
                ", description='" + description + '\'' +
                '}';
+    }
+
+    public void setDeadline(Date date) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void setId(int aInt) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

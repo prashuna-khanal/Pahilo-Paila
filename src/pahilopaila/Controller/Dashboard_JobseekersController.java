@@ -1,5 +1,6 @@
 package pahilopaila.Controller;
 
+import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.CVDao;
@@ -226,9 +227,7 @@ public class Dashboard_JobseekersController {
         }
     }
 
-        private void applyFilter() {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
+
 
     // Custom renderer for the notification list
     private static class NotificationRenderer extends DefaultListCellRenderer {
@@ -1698,13 +1697,36 @@ public class Dashboard_JobseekersController {
 
     private void handleFilter(ActionEvent e) {
         System.out.println("Filter button clicked");
-                JPanel filterPanel = createFilterPanel();
+        JPanel filterPanel = createFilterPanel();
         int result = JOptionPane.showConfirmDialog(view, filterPanel, "Filter Vacancies",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
-            applyFilter();
+            // Extract components from the panel
+            JComboBox<String> jobTypeCombo = null;
+            JComboBox<String> expLevelCombo = null;
+            JDateChooser startDateChooser = null;
+            JDateChooser endDateChooser = null;
+
+            for (Component comp : filterPanel.getComponents()) {
+                if (comp instanceof JComboBox && "filterJobType".equals(comp.getName())) {
+                    jobTypeCombo = (JComboBox<String>) comp;
+                } else if (comp instanceof JComboBox && "filterExpLevel".equals(comp.getName())) {
+                    expLevelCombo = (JComboBox<String>) comp;
+                } else if (comp instanceof JDateChooser && "filterStartDate".equals(comp.getName())) {
+                    startDateChooser = (JDateChooser) comp;
+                } else if (comp instanceof JDateChooser && "filterEndDate".equals(comp.getName())) {
+                    endDateChooser = (JDateChooser) comp;
+                }
+            }
+
+            if (jobTypeCombo != null && expLevelCombo != null && startDateChooser != null && endDateChooser != null) {
+                applyFilter(jobTypeCombo, expLevelCombo, startDateChooser, endDateChooser);
+            } else {
+                System.err.println("One or more filter components not found!");
+            }
         }
     }
+
 
     private JPanel createFilterPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -1723,8 +1745,9 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 0;
         panel.add(jobTypeLabel, gbc);
 
-        String[] jobTypes = {"Full-Time", "Part-Time", "Contract", "Internship"}; // Adjust based on your data
+        String[] jobTypes = {"Full-Time", "Part-Time", "Contract", "Internship"};
         JComboBox<String> jobTypeCombo = new JComboBox<>(jobTypes);
+        jobTypeCombo.setName("filterJobType"); // Set name for identification
         jobTypeCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         jobTypeCombo.setBackground(new Color(245, 245, 245));
         gbc.gridx = 1;
@@ -1738,8 +1761,9 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 1;
         panel.add(expLevelLabel, gbc);
 
-        String[] expLevels = {"Entry", "Mid", "Senior"}; // Adjust based on your data
+        String[] expLevels = {"Entry", "Mid", "Senior"};
         JComboBox<String> expLevelCombo = new JComboBox<>(expLevels);
+        expLevelCombo.setName("filterExpLevel"); // Set name for identification
         expLevelCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         expLevelCombo.setBackground(new Color(245, 245, 245));
         gbc.gridx = 1;
@@ -1754,6 +1778,7 @@ public class Dashboard_JobseekersController {
         panel.add(dateRangeLabel, gbc);
 
         JDateChooser startDateChooser = new JDateChooser();
+        startDateChooser.setName("filterStartDate"); // Set name for identification
         startDateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         startDateChooser.setBackground(new Color(245, 245, 245));
         gbc.gridx = 1;
@@ -1761,20 +1786,61 @@ public class Dashboard_JobseekersController {
         panel.add(startDateChooser, gbc);
 
         JDateChooser endDateChooser = new JDateChooser();
+        endDateChooser.setName("filterEndDate"); // Set name for identification
         endDateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         endDateChooser.setBackground(new Color(245, 245, 245));
         gbc.gridx = 1;
         gbc.gridy = 3;
         panel.add(endDateChooser, gbc);
 
-        // Store filter criteria in the controller (you can use instance variables or a map)
-        view.putClientProperty("filterJobType", jobTypeCombo);
-        view.putClientProperty("filterExpLevel", expLevelCombo);
-        view.putClientProperty("filterStartDate", startDateChooser);
-        view.putClientProperty("filterEndDate", endDateChooser);
-
         return panel;
     }
+   
+
+    private void applyFilter(JComboBox<String> jobTypeCombo, JComboBox<String> expLevelCombo,
+                        JDateChooser startDateChooser, JDateChooser endDateChooser) {
+        String jobType = (String) jobTypeCombo.getSelectedItem();
+        String expLevel = (String) expLevelCombo.getSelectedItem();
+        java.util.Date startDate = startDateChooser.getDate();
+        java.util.Date endDate = endDateChooser.getDate();
+
+        List<Vacancy> filteredVacancies = vacancyDao.getFilteredVacancies(
+                "All".equals(jobType) ? null : jobType,
+                "All".equals(expLevel) ? null : expLevel,
+                startDate,
+                endDate
+        );
+
+        // Rest of the method (e.g., updating the UI with filteredVacancies)
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBackground(new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        JLabel headerLabel = new JLabel("Filtered Vacancies");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        headerLabel.setForeground(new Color(0, 4, 80));
+        mainPanel.add(headerLabel, BorderLayout.NORTH);
+
+        JPanel vacanciesPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        vacanciesPanel.setBackground(new Color(245, 245, 245));
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+
+        if (filteredVacancies.isEmpty()) {
+            JLabel noVacanciesLabel = new JLabel("No vacancies match the filter criteria.");
+            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            vacanciesPanel.add(noVacanciesLabel);
+        } else {
+            for (Vacancy vacancy : filteredVacancies) {
+                JPanel vacancyCard = createVacancyCard(vacancy);
+                vacanciesPanel.add(vacancyCard);
+            }
+        }
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        updateContentPanel(mainPanel);
+    }
+    
     
 
     private boolean saveRatingToDatabase(int userId, int rating) {
