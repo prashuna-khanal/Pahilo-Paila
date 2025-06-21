@@ -13,6 +13,7 @@ import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_JobSeekers;
 import pahilopaila.view.LoginPageview;
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -24,6 +25,8 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Controller for the Dashboard_JobSeekers view, handling user interactions and navigation.
@@ -38,6 +41,7 @@ public class Dashboard_JobseekersController {
     private String currentEmail;
     private static boolean isDarkMode = false;
     private static boolean notificationsEnabled = true;
+    private int lastNotificationCount = 0;
 
     // Constructor
     public Dashboard_JobseekersController(Dashboard_JobSeekers view, int userId) {
@@ -47,14 +51,19 @@ public class Dashboard_JobseekersController {
         this.vacancyDao = new VacancyDao();
         this.notificationDao = new NotificationDao();
         this.userDao = new UserDao();
-        this.currentEmail = null; // Will be set later via setUserInfo
+        this.currentEmail = null;
+        initialize();
+    }
+
+    private void initialize() {
         initializeListeners();
+        startNotificationPolling();
+        updateNotificationBadge();
         showDashboardPanel();
     }
 
     // Initialize listeners for UI components
     private void initializeListeners() {
-        // Sidebar navigation listeners
         view.dashboard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -71,7 +80,6 @@ public class Dashboard_JobseekersController {
             }
         });
 
-        // CV label listener is handled in createStyledLabel for popup menu
         view.uploadCVItem.addActionListener(e -> {
             System.out.println("Upload CV menu item clicked");
             showCVUploadPanel();
@@ -86,7 +94,7 @@ public class Dashboard_JobseekersController {
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Notifications label clicked");
-                showNotificationsPanel();
+                showNotificationPopup();
             }
         });
 
@@ -114,7 +122,6 @@ public class Dashboard_JobseekersController {
             }
         });
 
-        // Button listeners
         view.getStarted.addActionListener(this::handleGetStarted);
         view.learnMore.addActionListener(this::handleLearnMore);
         view.search.addActionListener(this::handleSearch);
@@ -122,11 +129,160 @@ public class Dashboard_JobseekersController {
         view.filter.addActionListener(this::handleFilter);
     }
 
+    // Starts a timer to poll for new notifications every 5 seconds
+    private void startNotificationPolling() {
+        new Timer(true).scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                checkForNewNotifications();
+            }
+        }, 0, 5000);
+    }
+
+    // Checks for new notifications and triggers the pop-up if new unread notifications are found
+    private void checkForNewNotifications() {
+        try {
+            if (!notificationsEnabled) return;
+            List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
+            int unreadCount = (int) notifications.stream().filter(n -> !n.isRead()).count();
+            if (unreadCount > lastNotificationCount) {
+                showNotificationPopup();
+                lastNotificationCount = unreadCount;
+            }
+            updateNotificationBadge();
+        } catch (Exception e) {
+            showError("Error checking notifications: " + e.getMessage());
+        }
+    }
+
+    // Updates the notification badge on the bell icon with the unread count
+    private void updateNotificationBadge() {
+        try {
+            List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
+            int unreadCount = (int) notifications.stream().filter(n -> !n.isRead()).count();
+            view.notifications.setText("Notifications (" + unreadCount + ")");
+        } catch (Exception e) {
+            showError("Error updating notification badge: " + e.getMessage());
+        }
+    }
+
+    // Displays a pop-up dialog showing the user's notifications
+    private void showNotificationPopup() {
+        try {
+            List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
+
+            JDialog dialog = new JDialog(view, "Notifications", true);
+            dialog.setSize(400, 300);
+            dialog.setLocationRelativeTo(view);
+            dialog.setLayout(new BorderLayout());
+            dialog.getContentPane().setBackground(new Color(245, 245, 245));
+
+            JLabel titleLabel = new JLabel("Your Notifications", SwingConstants.CENTER);
+            titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            titleLabel.setForeground(new Color(0, 0, 102));
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+            dialog.add(titleLabel, BorderLayout.NORTH);
+
+            JList<Notification> notificationList = new JList<>(notifications.toArray(new Notification[0]));
+            notificationList.setCellRenderer(new NotificationRenderer());
+            notificationList.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            notificationList.setBackground(new Color(255, 255, 255));
+            JScrollPane scrollPane = new JScrollPane(notificationList);
+            scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+            dialog.add(scrollPane, BorderLayout.CENTER);
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(new Color(245, 245, 245));
+
+            JButton markReadButton = new JButton("Mark All as Read");
+            markReadButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            markReadButton.setBackground(new Color(0, 102, 0));
+            markReadButton.setForeground(Color.WHITE);
+            markReadButton.setFocusPainted(false);
+            markReadButton.addActionListener(_ -> {
+                markAllNotificationsRead();
+                dialog.dispose();
+                showNotificationPopup();
+            });
+            buttonPanel.add(markReadButton);
+
+            JButton closeButton = new JButton("Close");
+            closeButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            closeButton.setBackground(new Color(0, 0, 102));
+            closeButton.setForeground(Color.WHITE);
+            closeButton.setFocusPainted(false);
+            closeButton.addActionListener(e -> dialog.dispose());
+            buttonPanel.add(closeButton);
+
+            dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+            applyThemeToPanel(buttonPanel);
+            applyThemeToComponent(notificationList);
+            applyThemeToComponent(scrollPane);
+
+            dialog.setVisible(true);
+        } catch (Exception e) {
+            showError("Error loading notifications: " + e.getMessage());
+        }
+    }
+
+    // Custom renderer for the notification list
+    private static class NotificationRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            Notification notification = (Notification) value;
+            String text = notification.getMessage() + " (" + notification.getTimestamp() + ")";
+            label.setText(text);
+            label.setForeground(notification.isImportant() ? Color.RED : new Color(102, 102, 102));
+            label.setFont(new Font("Segoe UI", notification.isRead() ? Font.PLAIN : Font.BOLD, 14));
+            return label;
+        }
+    }
+
+    // Simulates a new notification and saves it to the database
+    private void simulateNewNotification() {
+        try {
+            ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
+            String timestamp = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+            boolean saved = notificationDao.saveNotification(userId, "New job match found!", timestamp, true);
+            if (saved) {
+                System.out.println("Test notification saved for user_id: " + userId);
+                updateNotificationBadge();
+            } else {
+                showError("Failed to save test notification");
+            }
+        } catch (Exception e) {
+            showError("Error saving test notification: " + e.getMessage());
+        }
+    }
+
+    // Marks all notifications as read in the database
+    private void markAllNotificationsRead() {
+        try {
+            boolean updated = notificationDao.markAllNotificationsRead(userId);
+            if (updated) {
+                System.out.println("All notifications marked as read for user_id: " + userId);
+                updateNotificationBadge();
+            } else {
+                showError("Failed to mark notifications as read");
+            }
+        } catch (Exception e) {
+            showError("Error marking notifications as read: " + e.getMessage());
+        }
+    }
+
+    // Displays an error message to the user via JOptionPane
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(view, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
     // Update the content panel with a new panel
     private void updateContentPanel(JPanel newPanel) {
         view.content.removeAll();
-        view.content.setLayout(new java.awt.BorderLayout());
-        view.content.add(newPanel, java.awt.BorderLayout.CENTER);
+        view.content.setLayout(new BorderLayout());
+        view.content.add(newPanel, BorderLayout.CENTER);
         applyThemeToPanel(newPanel);
         view.content.revalidate();
         view.content.repaint();
@@ -138,6 +294,35 @@ public class Dashboard_JobseekersController {
             applyDarkModeToSettings(true, panel);
         } else {
             applyDarkModeToSettings(false, panel);
+        }
+    }
+
+    // Helper method to apply theme to individual components
+    private void applyThemeToComponent(Component component) {
+        if (isDarkMode) {
+            Color darkBackground = new Color(45, 45, 48);
+            Color darkPanel = new Color(37, 37, 38);
+            Color darkText = new Color(220, 220, 220);
+            Color darkBorder = new Color(60, 60, 60);
+            if (component instanceof JList) {
+                component.setBackground(darkPanel);
+                component.setForeground(darkText);
+            } else if (component instanceof JScrollPane) {
+                ((JScrollPane) component).setBackground(darkBackground);
+                ((JScrollPane) component).setBorder(BorderFactory.createLineBorder(darkBorder));
+            }
+        } else {
+            Color lightBackground = new Color(245, 245, 245);
+            Color lightPanel = new Color(255, 255, 255);
+            Color lightText = Color.BLACK;
+            Color lightBorder = new Color(200, 200, 200);
+            if (component instanceof JList) {
+                component.setBackground(lightPanel);
+                component.setForeground(lightText);
+            } else if (component instanceof JScrollPane) {
+                ((JScrollPane) component).setBackground(lightBackground);
+                ((JScrollPane) component).setBorder(BorderFactory.createLineBorder(lightBorder));
+            }
         }
     }
 
@@ -156,7 +341,6 @@ public class Dashboard_JobseekersController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
 
-        // Job Title
         JLabel titleLabel = new JLabel(vacancy.getJobTitle());
         titleLabel.setFont(new Font("Yu Gothic UI Semibold", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);
@@ -164,28 +348,24 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 0;
         card.add(titleLabel, gbc);
 
-        // Job Type
         JLabel typeLabel = new JLabel(vacancy.getJobType());
         typeLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         typeLabel.setForeground(Color.WHITE);
         gbc.gridy = 1;
         card.add(typeLabel, gbc);
 
-        // Experience Level
         JLabel experienceLabel = new JLabel(vacancy.getExperienceLevel());
         experienceLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         experienceLabel.setForeground(Color.WHITE);
         gbc.gridy = 2;
         card.add(experienceLabel, gbc);
 
-        // Days Left
         JLabel daysLeftLabel = new JLabel(vacancy.getDaysLeft() + " Days Left");
         daysLeftLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         daysLeftLabel.setForeground(Color.WHITE);
         gbc.gridy = 3;
         card.add(daysLeftLabel, gbc);
 
-        // Apply Button
         JButton applyButton = new JButton("Apply") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -210,7 +390,6 @@ public class Dashboard_JobseekersController {
         gbc.insets = new Insets(10, 5, 5, 5);
         card.add(applyButton, gbc);
 
-        // Apply Button Action
         ApplicationDao applicationDao = new ApplicationDao();
         applyButton.addActionListener(e -> {
             if (applicationDao.hasApplied(userId, vacancy.getId())) {
@@ -230,13 +409,15 @@ public class Dashboard_JobseekersController {
 
                 boolean success = applicationDao.saveApplication(userId, vacancy.getRecruiterId(), vacancy.getId(), cvId);
                 if (success) {
-                    JOptionPane.showMessageDialog(view, "Application submitted successfully!", "Success ", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(view, "Application submitted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
+                    String timestamp = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
+                    notificationDao.saveNotification(userId, "Application submitted for " + vacancy.getJobTitle(), timestamp, false);
                 } else {
                     JOptionPane.showMessageDialog(view, "Failed to submit application. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
-                System.err.println("Error checking CV: " + ex.getMessage());
-                JOptionPane.showMessageDialog(view, "Error processing application.", "Error", JOptionPane.ERROR_MESSAGE);
+                showError("Error processing application: " + ex.getMessage());
             }
         });
 
@@ -249,7 +430,6 @@ public class Dashboard_JobseekersController {
         JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
         contentPanel.setBackground(new java.awt.Color(245, 245, 245));
 
-        // Message Panel
         JPanel messagePanel = new JPanel();
         messagePanel.setBackground(new java.awt.Color(0, 4, 80));
         messagePanel.setLayout(new javax.swing.GroupLayout(messagePanel));
@@ -275,7 +455,6 @@ public class Dashboard_JobseekersController {
             new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255)));
         learnMore.addActionListener(this::handleLearnMore);
 
-        // Layout for messagePanel
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(messagePanel);
         messagePanel.setLayout(layout);
         layout.setHorizontalGroup(
@@ -307,7 +486,6 @@ public class Dashboard_JobseekersController {
 
         contentPanel.add(messagePanel, BorderLayout.NORTH);
 
-        // Featured Jobs Section
         JPanel featuredPanel = new JPanel(new BorderLayout());
         featuredPanel.setBackground(new Color(245, 245, 245));
 
@@ -326,13 +504,11 @@ public class Dashboard_JobseekersController {
         headerPanel.add(seeAllButton);
         featuredPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Vacancies Panel
         JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
         vacanciesPanel.setBackground(new Color(245, 245, 245));
         JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
         scrollPane.setBorder(null);
 
-        // Fetch vacancies (limit to 3 for Featured Jobs)
         List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
         if (allVacancies.isEmpty()) {
             JLabel noVacanciesLabel = new JLabel("No vacancies available.");
@@ -340,7 +516,6 @@ public class Dashboard_JobseekersController {
             noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
             vacanciesPanel.add(noVacanciesLabel);
         } else {
-            // Select up to 3 random vacancies
             Random rand = new Random();
             int count = Math.min(3, allVacancies.size());
             java.util.Collections.shuffle(allVacancies, rand);
@@ -353,7 +528,7 @@ public class Dashboard_JobseekersController {
         featuredPanel.add(scrollPane, BorderLayout.CENTER);
         contentPanel.add(featuredPanel, BorderLayout.CENTER);
 
-        // Rating Panel with Graphical Stars
+        
         JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         ratingPanel.setBackground(new Color(245, 245, 245));
         ratingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -363,7 +538,7 @@ public class Dashboard_JobseekersController {
 
         ButtonGroup ratingGroup = new ButtonGroup();
         JRadioButton[] stars = new JRadioButton[5];
-        final int[] currentHoverIndex = {-1}; // -1 means no hover
+        final int[] currentHoverIndex = {-1};
 
         class StarIcon implements Icon {
             private final int width;
@@ -492,7 +667,6 @@ public class Dashboard_JobseekersController {
         });
         ratingPanel.add(submitRating);
 
-        // Combine featured and rating panels
         JPanel centerPanel = new JPanel(new BorderLayout(15, 15));
         centerPanel.setBackground(new Color(245, 245, 245));
         centerPanel.add(featuredPanel, BorderLayout.CENTER);
@@ -509,19 +683,16 @@ public class Dashboard_JobseekersController {
         mainPanel.setBackground(new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Header
         JLabel headerLabel = new JLabel("Browse Vacancies");
         headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         headerLabel.setForeground(new Color(0, 4, 80));
         mainPanel.add(headerLabel, BorderLayout.NORTH);
 
-        // Vacancies Panel
-        JPanel vacanciesPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // 3 columns
+        JPanel vacanciesPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         vacanciesPanel.setBackground(new Color(245, 245, 245));
         JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
         scrollPane.setBorder(null);
 
-        // Fetch all vacancies
         List<Vacancy> vacancies = vacancyDao.getAllVacancies();
         if (vacancies.isEmpty()) {
             JLabel noVacanciesLabel = new JLabel("No vacancies available.");
@@ -546,7 +717,6 @@ public class Dashboard_JobseekersController {
         mainPanel.setLayout(new BorderLayout(15, 15));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Header panel
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -569,7 +739,6 @@ public class Dashboard_JobseekersController {
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
 
-        // Form panel
         JPanel formPanel = new JPanel();
         formPanel.setBackground(new Color(252, 252, 252));
         formPanel.setLayout(new GridBagLayout());
@@ -586,7 +755,6 @@ public class Dashboard_JobseekersController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        // First Name
         JLabel firstNameLabel = new JLabel("First Name:");
         firstNameLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         gbc.gridx = 0;
@@ -604,7 +772,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 0;
         formPanel.add(firstNameField, gbc);
 
-        // Last Name
         JLabel lastNameLabel = new JLabel("Last Name:");
         lastNameLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         gbc.gridx = 2;
@@ -622,7 +789,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 0;
         formPanel.add(lastNameField, gbc);
 
-        // Date of Birth
         JLabel dobLabel = new JLabel("Date of Birth:");
         dobLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         gbc.gridx = 0;
@@ -637,7 +803,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 1;
         formPanel.add(dateChooser, gbc);
 
-        // Contact
         JLabel contactLabel = new JLabel("Contact:");
         contactLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         gbc.gridx = 2;
@@ -655,7 +820,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 1;
         formPanel.add(contactField, gbc);
 
-        // Education
         JLabel educationLabel = new JLabel("Education:");
         educationLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         gbc.gridx = 0;
@@ -673,7 +837,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 2;
         formPanel.add(educationField, gbc);
 
-        // Skills
         JLabel skillsLabel = new JLabel("Skills:");
         skillsLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         gbc.gridx = 0;
@@ -691,7 +854,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 3;
         formPanel.add(skillsField, gbc);
 
-        // Experience
         JLabel experienceLabel = new JLabel("Experience:");
         experienceLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         gbc.gridx = 2;
@@ -714,7 +876,6 @@ public class Dashboard_JobseekersController {
         gbc.gridheight = 2;
         formPanel.add(experienceScroll, gbc);
 
-        // Submit Button
         JButton submitButton = new JButton("Submit") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -732,9 +893,6 @@ public class Dashboard_JobseekersController {
         submitButton.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
         submitButton.setForeground(Color.WHITE);
         submitButton.setContentAreaFilled(false);
-        submitButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
-        submitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        submitButton.setFocusPainted(false);
         gbc.gridx = 1;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
@@ -742,7 +900,6 @@ public class Dashboard_JobseekersController {
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(submitButton, gbc);
 
-        // Submit button action
         submitButton.addActionListener(e -> {
             String firstName = firstNameField.getText().trim();
             String lastName = lastNameField.getText().trim();
@@ -752,29 +909,23 @@ public class Dashboard_JobseekersController {
             String skills = skillsField.getText().trim();
             String experience = experienceArea.getText().trim();
 
-            // Basic validation
             if (firstName.isEmpty() || lastName.isEmpty() || dobDate == null || contact.isEmpty() ||
                 education.isEmpty() || skills.isEmpty() || experience.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Convert dobDate to String
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String dob = sdf.format(dobDate);
 
-            // Save to database
             boolean success = cvDao.saveCV(userId, firstName, lastName, dob, contact, education, skills, experience);
             if (success) {
                 JOptionPane.showMessageDialog(view, "CV saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                // Add notification for CV submission
                 ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("+0545"));
                 String timestamp = zonedDateTime.format(DateTimeFormatter.ofPattern("hh:mm a zzz 'on' EEEE, MMMM dd, yyyy"));
                 String message = "Your CV has been submitted successfully.";
                 notificationDao.saveNotification(userId, message, timestamp, false);
-                // Simulate status change notifications (for demonstration)
                 simulateStatusChangeNotifications();
-                // Reset fields
                 firstNameField.setText("");
                 lastNameField.setText("");
                 dateChooser.setDate(null);
@@ -787,7 +938,6 @@ public class Dashboard_JobseekersController {
             }
         });
 
-        // Center the form
         JPanel centerWrapper = new JPanel();
         centerWrapper.setBackground(new Color(245, 245, 245));
         centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -804,7 +954,6 @@ public class Dashboard_JobseekersController {
         mainPanel.setBackground(new Color(240, 242, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Header panel with gradient
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -824,7 +973,6 @@ public class Dashboard_JobseekersController {
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
 
-        // Form panel for CV data
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -837,10 +985,8 @@ public class Dashboard_JobseekersController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Retrieve CV data
         try (ResultSet rs = cvDao.getCVByUserId(userId)) {
             if (rs != null && rs.next()) {
-                // CV data
                 String[] labels = {"First Name", "Last Name", "Date of Birth", "Contact", "Education", "Skills", "Experience"};
                 String[] values = {
                     rs.getString("first_name"),
@@ -852,7 +998,6 @@ public class Dashboard_JobseekersController {
                     rs.getString("experience")
                 };
 
-                // Add labels and values to form
                 int row = 0;
                 for (int i = 0; i < labels.length; i++) {
                     JLabel label = new JLabel(labels[i] + ":");
@@ -903,7 +1048,6 @@ public class Dashboard_JobseekersController {
             JOptionPane.showMessageDialog(null, "Error retrieving resume data.", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        // Center the form panel
         JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerWrapper.setBackground(new Color(240, 242, 245));
         centerWrapper.add(formPanel);
@@ -953,35 +1097,42 @@ public class Dashboard_JobseekersController {
             )
         ));
 
-        List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
-        if (notifications.isEmpty()) {
-            JLabel noNotificationsLabel = new JLabel("No notifications available.");
-            noNotificationsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            noNotificationsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            notificationsPanel.add(noNotificationsLabel);
+        if (!notificationsEnabled) {
+            JLabel disabledLabel = new JLabel("Notifications are disabled. Enable them in Settings.");
+            disabledLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            disabledLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            notificationsPanel.add(disabledLabel);
         } else {
-            for (Notification notification : notifications) {
-                JPanel notificationCard = new JPanel();
-                notificationCard.setLayout(new BorderLayout(10, 10));
-                notificationCard.setBackground(notification.isImportant() ? new Color(255, 245, 245) : Color.WHITE);
-                notificationCard.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(notification.isImportant() ? new Color(255, 100, 100) : new Color(200, 200, 200), 1, true),
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
-                ));
-                notificationCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+            List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
+            if (notifications.isEmpty()) {
+                JLabel noNotificationsLabel = new JLabel("No notifications available.");
+                noNotificationsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                noNotificationsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                notificationsPanel.add(noNotificationsLabel);
+            } else {
+                for (Notification notification : notifications) {
+                    JPanel notificationCard = new JPanel();
+                    notificationCard.setLayout(new BorderLayout(10, 10));
+                    notificationCard.setBackground(notification.isImportant() ? new Color(255, 245, 245) : Color.WHITE);
+                    notificationCard.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(notification.isImportant() ? new Color(255, 100, 100) : new Color(200, 200, 200), 1, true),
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                    ));
+                    notificationCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
-                JLabel messageLabel = new JLabel(notification.getMessage());
-                messageLabel.setFont(new Font("Segoe UI", notification.isImportant() ? Font.BOLD : Font.PLAIN, 12));
-                messageLabel.setForeground(notification.isImportant() ? new Color(200, 0, 0) : Color.BLACK);
-                notificationCard.add(messageLabel, BorderLayout.CENTER);
+                    JLabel messageLabel = new JLabel(notification.getMessage());
+                    messageLabel.setFont(new Font("Segoe UI", notification.isImportant() ? Font.BOLD : Font.PLAIN, 12));
+                    messageLabel.setForeground(notification.isImportant() ? new Color(200, 0, 0) : Color.BLACK);
+                    notificationCard.add(messageLabel, BorderLayout.CENTER);
 
-                JLabel timestampLabel = new JLabel(notification.getTimestamp());
-                timestampLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-                timestampLabel.setForeground(Color.GRAY);
-                notificationCard.add(timestampLabel, BorderLayout.SOUTH);
+                    JLabel timestampLabel = new JLabel(notification.getTimestamp());
+                    timestampLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+                    timestampLabel.setForeground(Color.GRAY);
+                    notificationCard.add(timestampLabel, BorderLayout.SOUTH);
 
-                notificationsPanel.add(notificationCard);
-                notificationsPanel.add(Box.createVerticalStrut(10));
+                    notificationsPanel.add(notificationCard);
+                    notificationsPanel.add(Box.createVerticalStrut(10));
+                }
             }
         }
 
@@ -999,7 +1150,7 @@ public class Dashboard_JobseekersController {
     }
 
     private void simulateStatusChangeNotifications() {
-        // Simulate status changes for demonstration
+        if (!notificationsEnabled) return;
         String[] statuses = {
             "Your application is under review.",
             "Your application has been shortlisted.",
@@ -1016,111 +1167,97 @@ public class Dashboard_JobseekersController {
 
     public void showSettingsPanel() {
         System.out.println("Navigating to Settings");
-        
-        // Main container panel (white background like My Account)
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(new Color(245, 245, 245));
         settingsPanel.setLayout(new java.awt.BorderLayout(15, 15));
         settingsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Dark blue title bar
         JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(0, 20, 90));  // Dark blue
+        titlePanel.setBackground(new Color(0, 20, 90));
         titlePanel.setPreferredSize(new java.awt.Dimension(680, 70));
         titlePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 25, 20));
-        
+
         JLabel titleLabel = new JLabel("Settings");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
         titlePanel.add(titleLabel);
 
-        // Content box (like the white form in My Account tab)
         JPanel contentBox = new JPanel();
         contentBox.setBackground(Color.WHITE);
         contentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
-        contentBox.setPreferredSize(new Dimension(500, 250));  // Increased height for more content
+        contentBox.setPreferredSize(new Dimension(500, 250));
         contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Dark Mode checkbox
         JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
         darkModeCheck.setBackground(Color.WHITE);
         darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
         darkModeCheck.setSelected(isDarkMode);
-        
-        // Wrap checkbox inside a panel for alignment
+
         JPanel darkModePanel = new JPanel();
         darkModePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         darkModePanel.setBackground(Color.WHITE);
-        darkModePanel.add(new JLabel("🌙")); // Moon icon
+        darkModePanel.add(new JLabel("🌙"));
         darkModePanel.add(Box.createHorizontalStrut(10));
         darkModePanel.add(darkModeCheck);
 
-        // Notifications checkbox
         JCheckBox notificationCheck = new JCheckBox("Enable Notifications");
         notificationCheck.setBackground(Color.WHITE);
         notificationCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         notificationCheck.setSelected(notificationsEnabled);
         notificationCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        // Wrap notifications checkbox inside a panel for alignment
+
         JPanel notificationPanel = new JPanel();
         notificationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         notificationPanel.setBackground(Color.WHITE);
-        notificationPanel.add(new JLabel("🔔")); // Bell icon
+        notificationPanel.add(new JLabel("🔔"));
         notificationPanel.add(Box.createHorizontalStrut(10));
         notificationPanel.add(notificationCheck);
 
-        // Contact Us label
         JLabel contactUsLabel = new JLabel("Contact Us: support@pahilopaila.com");
         contactUsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        contactUsLabel.setForeground(new Color(0, 123, 255)); // Blue color for link appearance
+        contactUsLabel.setForeground(new Color(0, 123, 255));
         contactUsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         contactUsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        // Wrap contact label inside a panel for alignment
+
         JPanel contactPanel = new JPanel();
         contactPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         contactPanel.setBackground(Color.WHITE);
-        contactPanel.add(new JLabel("📞")); // Phone icon
+        contactPanel.add(new JLabel("📞"));
         contactPanel.add(Box.createHorizontalStrut(10));
         contactPanel.add(contactUsLabel);
 
-        // Update button
         JButton updateButton = new JButton("Update Settings");
-        updateButton.setBackground(new Color(0, 20, 90));  // Same dark blue as title
+        updateButton.setBackground(new Color(0, 20, 90));
         updateButton.setForeground(Color.WHITE);
         updateButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         updateButton.setPreferredSize(new Dimension(150, 35));
         updateButton.setFocusPainted(false);
         updateButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
-        
-        // Wrap update button in a panel for right alignment
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(updateButton);
 
-        // Add all components to content box with proper spacing
-        contentBox.add(Box.createVerticalStrut(20));  // Top spacing
+        contentBox.add(Box.createVerticalStrut(20));
         contentBox.add(darkModePanel);
-        contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
+        contentBox.add(Box.createVerticalStrut(15));
         contentBox.add(notificationPanel);
-        contentBox.add(Box.createVerticalStrut(15));  // Spacing between items
+        contentBox.add(Box.createVerticalStrut(15));
         contentBox.add(contactPanel);
-        contentBox.add(Box.createVerticalStrut(20));  // Spacing before button
+        contentBox.add(Box.createVerticalStrut(20));
         contentBox.add(buttonPanel);
-        contentBox.add(Box.createVerticalStrut(20));  // Bottom spacing
+        contentBox.add(Box.createVerticalStrut(20));
 
-        // Add event listeners
         darkModeCheck.addActionListener(e -> {
             isDarkMode = darkModeCheck.isSelected();
             applyDarkModeToSettings(isDarkMode, settingsPanel);
             String status = isDarkMode ? "enabled" : "disabled";
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
-                "Dark mode " + status + " successfully!", 
-                "Dark Mode", 
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
+                "Dark mode " + status + " successfully!",
+                "Dark Mode",
                 JOptionPane.INFORMATION_MESSAGE);
         });
 
@@ -1133,21 +1270,21 @@ public class Dashboard_JobseekersController {
         contactUsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
                     "Contact Information:\n\n" +
                     "Email: support@pahilopaila.com\n" +
                     "Phone: +977-123-456-789\n" +
                     "Address: Kathmandu, Nepal\n\n" +
-                    "We're here to help!", 
-                    "Contact Us", 
+                    "We're here to help!",
+                    "Contact Us",
                     JOptionPane.INFORMATION_MESSAGE);
             }
-            
+
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
                 contactUsLabel.setText("<html><u>Contact Us: support@pahilopaila.com</u></html>");
             }
-            
+
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
                 contactUsLabel.setText("Contact Us: support@pahilopaila.com");
@@ -1161,105 +1298,93 @@ public class Dashboard_JobseekersController {
             StringBuilder message = new StringBuilder("Settings Updated Successfully!\n\n");
             message.append("Dark Mode: ").append(isDarkMode ? "Enabled" : "Disabled").append("\n");
             message.append("Notifications: ").append(notificationsEnabled ? "Enabled" : "Disabled");
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel), 
-                message.toString(), 
-                "Settings Updated", 
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
+                message.toString(),
+                "Settings Updated",
                 JOptionPane.INFORMATION_MESSAGE);
         });
 
-        // Center wrapper for content box
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(Color.WHITE);
         centerPanel.setLayout(new GridBagLayout());
         centerPanel.add(contentBox);
 
-        // Add title and content to main settings panel
         settingsPanel.add(titlePanel, BorderLayout.NORTH);
         settingsPanel.add(centerPanel, BorderLayout.CENTER);
 
         updateContentPanel(settingsPanel);
     }
 
-    // Method to apply dark mode to the current settings panel and find parent frame
     private void applyDarkModeToSettings(boolean isDarkMode, JPanel settingsPanel) {
         Window parentWindow = SwingUtilities.getWindowAncestor(settingsPanel);
-        
+
         if (isDarkMode) {
             Color darkBackground = new Color(45, 45, 48);
             Color darkPanel = new Color(37, 37, 38);
             Color darkText = new Color(220, 220, 220);
             Color darkBorder = new Color(60, 60, 60);
-            
+
             if (parentWindow != null) {
                 parentWindow.setBackground(darkBackground);
                 if (parentWindow instanceof JFrame) {
                     ((JFrame) parentWindow).getContentPane().setBackground(darkBackground);
                 }
             }
-            
+
             applyDarkThemeToComponent(settingsPanel, darkBackground, darkPanel, darkText, darkBorder);
-            
         } else {
             Color lightBackground = Color.WHITE;
             Color lightPanel = new Color(245, 245, 245);
             Color lightText = Color.BLACK;
             Color lightBorder = Color.LIGHT_GRAY;
-            
+
             if (parentWindow != null) {
                 parentWindow.setBackground(lightBackground);
                 if (parentWindow instanceof JFrame) {
                     ((JFrame) parentWindow).getContentPane().setBackground(lightPanel);
                 }
             }
-            
+
             applyLightThemeToComponent(settingsPanel, lightBackground, lightPanel, lightText, lightBorder);
         }
-        
+
         if (parentWindow != null) {
             parentWindow.repaint();
         }
         settingsPanel.repaint();
     }
 
-    // Helper method to apply dark theme recursively
     private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, Color darkText, Color darkBorder) {
         for (Component component : container.getComponents()) {
             if (component instanceof JPanel) {
                 JPanel panel = (JPanel) component;
-                if (panel.getBackground().equals(new Color(0, 20, 90)) || 
+                if (panel.getBackground().equals(new Color(0, 20, 90)) ||
                     panel.getBackground().equals(new Color(0, 4, 80)) ||
                     (panel.getBorder() != null && panel.getBorder().toString().contains("TitledBorder"))) {
-                    // Keep original dark blue for title bars and buttons
                 } else if (panel.getBackground().equals(Color.WHITE)) {
                     panel.setBackground(darkPanel);
-                } else if (panel.getBackground().equals(new Color(245, 245, 245)) || 
+                } else if (panel.getBackground().equals(new Color(245, 245, 245)) ||
                            panel.getBackground().equals(new Color(240, 242, 245)) ||
                            panel.getBackground().equals(new Color(252, 252, 252))) {
                     panel.setBackground(darkBg);
                 }
-                
+
                 if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
                     panel.setBorder(BorderFactory.createLineBorder(darkBorder));
                 }
-                
+
                 applyDarkThemeToComponent(panel, darkBg, darkPanel, darkText, darkBorder);
-                
             } else if (component instanceof JLabel) {
                 JLabel label = (JLabel) component;
-                if (!label.getForeground().equals(Color.WHITE) && 
+                if (!label.getForeground().equals(Color.WHITE) &&
                     !label.getForeground().equals(new Color(0, 123, 255))) {
                     label.setForeground(darkText);
                 }
-                
             } else if (component instanceof JCheckBox) {
                 JCheckBox checkBox = (JCheckBox) component;
                 checkBox.setBackground(darkPanel);
                 checkBox.setForeground(darkText);
-                
             } else if (component instanceof JButton) {
-                JButton button = (JButton) component;
-                // Keep original button styling for consistency
-                
             } else if (component instanceof JTextField || component instanceof JTextArea) {
                 JTextComponent textComp = (JTextComponent) component;
                 textComp.setBackground(darkPanel);
@@ -1268,60 +1393,49 @@ public class Dashboard_JobseekersController {
                     BorderFactory.createLineBorder(darkBorder, 1, true),
                     BorderFactory.createEmptyBorder(4, 8, 4, 8)
                 ));
-                
             } else if (component instanceof JDateChooser) {
                 JDateChooser dateChooser = (JDateChooser) component;
                 dateChooser.setBackground(darkPanel);
                 dateChooser.setForeground(darkText);
-                
             } else if (component instanceof JScrollPane) {
                 JScrollPane scrollPane = (JScrollPane) component;
                 scrollPane.setBackground(darkBg);
                 scrollPane.setBorder(BorderFactory.createLineBorder(darkBorder));
-                
             } else if (component instanceof Container) {
                 applyDarkThemeToComponent((Container) component, darkBg, darkPanel, darkText, darkBorder);
             }
         }
     }
 
-    // Helper method to apply light theme recursively
     private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, Color lightText, Color lightBorder) {
         for (Component component : container.getComponents()) {
             if (component instanceof JPanel) {
                 JPanel panel = (JPanel) component;
-                if (panel.getBackground().equals(new Color(0, 20, 90)) || 
+                if (panel.getBackground().equals(new Color(0, 20, 90)) ||
                     panel.getBackground().equals(new Color(0, 4, 80)) ||
                     (panel.getBorder() != null && panel.getBorder().toString().contains("TitledBorder"))) {
-                    // Keep original dark blue for title bars and buttons
                 } else if (panel.getBackground().equals(new Color(37, 38, 38))) {
                     panel.setBackground(Color.WHITE);
                 } else if (panel.getBackground().equals(new Color(45, 45, 48))) {
                     panel.setBackground(new Color(245, 245, 245));
                 }
-                
+
                 if (panel.getBorder() instanceof javax.swing.border.LineBorder) {
                     panel.setBorder(BorderFactory.createLineBorder(lightBorder));
                 }
-                
+
                 applyLightThemeToComponent(panel, lightBg, lightPanel, lightText, lightBorder);
-                
             } else if (component instanceof JLabel) {
                 JLabel label = (JLabel) component;
-                if (!label.getForeground().equals(Color.WHITE) && 
+                if (!label.getForeground().equals(Color.WHITE) &&
                     !label.getForeground().equals(new Color(0, 123, 255))) {
                     label.setForeground(lightText);
                 }
-                
             } else if (component instanceof JCheckBox) {
                 JCheckBox checkBox = (JCheckBox) component;
                 checkBox.setBackground(Color.WHITE);
                 checkBox.setForeground(lightText);
-                
             } else if (component instanceof JButton) {
-                JButton button = (JButton) component;
-                // Keep original button styling
-                
             } else if (component instanceof JTextField || component instanceof JTextArea) {
                 JTextComponent textComp = (JTextComponent) component;
                 textComp.setBackground(new Color(245, 245, 245));
@@ -1330,31 +1444,26 @@ public class Dashboard_JobseekersController {
                     BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true),
                     BorderFactory.createEmptyBorder(4, 8, 4, 8)
                 ));
-                
             } else if (component instanceof JDateChooser) {
                 JDateChooser dateChooser = (JDateChooser) component;
                 dateChooser.setBackground(new Color(245, 245, 245));
                 dateChooser.setForeground(lightText);
-                
             } else if (component instanceof JScrollPane) {
                 JScrollPane scrollPane = (JScrollPane) component;
                 scrollPane.setBackground(lightBg);
                 scrollPane.setBorder(BorderFactory.createLineBorder(lightBorder));
-                
             } else if (component instanceof Container) {
                 applyLightThemeToComponent((Container) component, lightBg, lightPanel, lightText, lightBorder);
             }
         }
     }
 
-    // My account Panel to manually change and update the password 
     public void showMyAccountPanel() {
         System.out.println("Navigating to My Account");
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBackground(new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-        // Header Panel with Gradient
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -1377,12 +1486,10 @@ public class Dashboard_JobseekersController {
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
 
-        // Center Wrapper for Form
         JPanel centerWrapper = new JPanel();
         centerWrapper.setBackground(new Color(245, 245, 245));
         centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
-        // Form Panel
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(252, 252, 252));
         formPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -1396,16 +1503,13 @@ public class Dashboard_JobseekersController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Fetch user data from database
         UserData user = userDao.getUserById(userId);
         String usernameText = user != null ? user.getName() : view.username.getText();
         String emailText = user != null ? user.getEmail() : view.email.getText();
-        // Ensure currentEmail is set correctly
         if (user != null) {
             currentEmail = user.getEmail();
         }
 
-        // Username
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         usernameLabel.setForeground(new Color(0, 0, 102));
@@ -1425,7 +1529,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 0;
         formPanel.add(usernameField, gbc);
 
-        // Email
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         emailLabel.setForeground(new Color(0, 0, 102));
@@ -1445,7 +1548,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 1;
         formPanel.add(emailField, gbc);
 
-        // Password
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         passwordLabel.setForeground(new Color(0, 0, 102));
@@ -1464,7 +1566,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 2;
         formPanel.add(passwordField, gbc);
 
-        // New Password
         JLabel newPasswordLabel = new JLabel("New Password:");
         newPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         newPasswordLabel.setForeground(new Color(0, 0, 102));
@@ -1483,7 +1584,6 @@ public class Dashboard_JobseekersController {
         gbc.gridy = 3;
         formPanel.add(newPasswordField, gbc);
 
-        // Update Button
         JButton saveButton = new JButton("Update") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -1509,35 +1609,31 @@ public class Dashboard_JobseekersController {
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(saveButton, gbc);
 
-        // Button Action
         saveButton.addActionListener(e -> {
             String updatedUsername = usernameField.getText().trim();
             String updatedEmail = emailField.getText().trim();
             String passwordText = new String(passwordField.getPassword()).trim();
             String newPasswordText = new String(newPasswordField.getPassword()).trim();
 
-            // Validate inputs
             if (updatedUsername.isEmpty() || updatedEmail.isEmpty() || passwordText.isEmpty() || newPasswordText.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Please fill all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Validate email format
             if (!updatedEmail.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 JOptionPane.showMessageDialog(view, "Invalid email format.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            // Verify current password
+
             if (!verifyCurrentPassword(passwordText)) {
                 JOptionPane.showMessageDialog(view, "Current password is incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Update user info in database
             boolean success = updateUserInfo(updatedUsername, updatedEmail, newPasswordText);
             if (success) {
                 JOptionPane.showMessageDialog(view, "User info updated successfully!\nUsername: " + updatedUsername, "Success", JOptionPane.INFORMATION_MESSAGE);
-                view.setUserInfo(updatedUsername, updatedEmail); // Update view
+                view.setUserInfo(updatedUsername, updatedEmail);
                 currentEmail = updatedEmail;
             } else {
                 JOptionPane.showMessageDialog(view, "Failed to update user info. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1550,12 +1646,10 @@ public class Dashboard_JobseekersController {
         updateContentPanel(mainPanel);
     }
 
-    // Verify current password using UserDao
     private boolean verifyCurrentPassword(String password) {
         return userDao.verifyPassword(userId, password);
     }
 
-    // Update user info using UserDao
     private boolean updateUserInfo(String username, String email, String newPassword) {
         return userDao.updateUser(userId, username, email, newPassword);
     }
