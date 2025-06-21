@@ -296,7 +296,7 @@ private void applyTheme() {
                     .addContainerGap(309, Short.MAX_VALUE))
         );
 
-        getContentPane().add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 80, 680, 430));
+        getContentPane().add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 80, 710, 590));
 
         featurePanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
         logo.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(255, 255, 255));
@@ -354,7 +354,7 @@ private void applyTheme() {
                     .addContainerGap(105, Short.MAX_VALUE))
         );
 
-        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 520));
+        getContentPane().add(featurePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 700));
 
         pack();
     }
