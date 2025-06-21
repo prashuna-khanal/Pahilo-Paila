@@ -1,5 +1,6 @@
 package pahilopaila.view;
 
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -902,8 +903,22 @@ public class Dashboard_JobSeekers extends javax.swing.JFrame {
         });
     }
 
+
+    public void putClientProperty(String filterJobType, JComboBox<String> jobTypeCombo) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void putClientProperty(String filterEndDate, JDateChooser endDateChooser) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    /*public void putClientProperty(String filterEndDate, JDateChooser endDateChooser) {*/
+    /*   throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }*/
+
     public void setUserInfo(String updatedUsername, String updatedEmail) {
         username.setText(updatedUsername);
         email.setText(updatedEmail);
     }
+ 
 }
