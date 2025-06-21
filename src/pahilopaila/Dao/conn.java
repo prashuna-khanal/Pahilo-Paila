@@ -4,10 +4,16 @@
  */
 package pahilopaila.Dao;
 
+import java.sql.PreparedStatement;
+
 /**
  *
  * @author Mibish
  */
 class conn {
+
+    static PreparedStatement prepareStatement(String sql) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 }

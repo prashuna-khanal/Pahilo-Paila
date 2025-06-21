@@ -226,6 +226,10 @@ public class Dashboard_JobseekersController {
         }
     }
 
+        private void applyFilter() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
     // Custom renderer for the notification list
     private static class NotificationRenderer extends DefaultListCellRenderer {
         @Override
@@ -1694,8 +1698,84 @@ public class Dashboard_JobseekersController {
 
     private void handleFilter(ActionEvent e) {
         System.out.println("Filter button clicked");
-        JOptionPane.showMessageDialog(view, "Filter options coming soon!");
+                JPanel filterPanel = createFilterPanel();
+        int result = JOptionPane.showConfirmDialog(view, filterPanel, "Filter Vacancies",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            applyFilter();
+        }
     }
+
+    private JPanel createFilterPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Job Type
+        JLabel jobTypeLabel = new JLabel("Job Type:");
+        jobTypeLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(jobTypeLabel, gbc);
+
+        String[] jobTypes = {"Full-Time", "Part-Time", "Contract", "Internship"}; // Adjust based on your data
+        JComboBox<String> jobTypeCombo = new JComboBox<>(jobTypes);
+        jobTypeCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        jobTypeCombo.setBackground(new Color(245, 245, 245));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        panel.add(jobTypeCombo, gbc);
+
+        // Experience Level
+        JLabel expLevelLabel = new JLabel("Experience Level:");
+        expLevelLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(expLevelLabel, gbc);
+
+        String[] expLevels = {"Entry", "Mid", "Senior"}; // Adjust based on your data
+        JComboBox<String> expLevelCombo = new JComboBox<>(expLevels);
+        expLevelCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        expLevelCombo.setBackground(new Color(245, 245, 245));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        panel.add(expLevelCombo, gbc);
+
+        // Date Range
+        JLabel dateRangeLabel = new JLabel("Date Range:");
+        dateRangeLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(dateRangeLabel, gbc);
+
+        JDateChooser startDateChooser = new JDateChooser();
+        startDateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        startDateChooser.setBackground(new Color(245, 245, 245));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        panel.add(startDateChooser, gbc);
+
+        JDateChooser endDateChooser = new JDateChooser();
+        endDateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        endDateChooser.setBackground(new Color(245, 245, 245));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        panel.add(endDateChooser, gbc);
+
+        // Store filter criteria in the controller (you can use instance variables or a map)
+        view.putClientProperty("filterJobType", jobTypeCombo);
+        view.putClientProperty("filterExpLevel", expLevelCombo);
+        view.putClientProperty("filterStartDate", startDateChooser);
+        view.putClientProperty("filterEndDate", endDateChooser);
+
+        return panel;
+    }
+    
 
     private boolean saveRatingToDatabase(int userId, int rating) {
         if (rating < 1 || rating > 5) {
