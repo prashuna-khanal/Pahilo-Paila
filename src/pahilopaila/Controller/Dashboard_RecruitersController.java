@@ -808,7 +808,7 @@ public class Dashboard_RecruitersController {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
-
+        // Applicant name label
         JLabel nameLabel = new JLabel("Applicant: " + app.getJobSeekerName());
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         nameLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -816,13 +816,13 @@ public class Dashboard_RecruitersController {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         card.add(nameLabel, gbc);
-
+        // Applicant email label
         JLabel emailLabel = new JLabel("Email: " + app.getJobSeekerEmail());
         emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         emailLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         gbc.gridy = 1;
         card.add(emailLabel, gbc);
-
+        // CV details label
         Cv cv = app.getCv();
         JLabel cvDetailsLabel = new JLabel("<html><b>CV Details:</b><br>" +
             "First Name: " + cv.getFirstName() + "<br>" +
@@ -837,17 +837,17 @@ public class Dashboard_RecruitersController {
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         card.add(cvDetailsLabel, gbc);
-
+        // Application status label
         JLabel statusLabel = new JLabel("Status: " + app.getStatus());
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         statusLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         card.add(statusLabel, gbc);
-
+        // Create button panel for accept/reject actions
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
-
+        // Accept button
         JButton acceptButton = new JButton("Accept") {
             @Override
             protected void paintComponent(Graphics g) {
