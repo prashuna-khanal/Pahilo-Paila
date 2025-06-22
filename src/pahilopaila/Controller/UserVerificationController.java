@@ -16,7 +16,7 @@ public class UserVerificationController {
     }
 
     public boolean userExists(String email) {
-        Connection conn = dbConnector.openConnection();
+        Connection conn = dbConnector.getConnection();
         String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
@@ -32,7 +32,7 @@ public class UserVerificationController {
     }
 
     public boolean storeOTP(String email, String otp, LocalDateTime expiryTime) {
-        Connection conn = dbConnector.openConnection();
+        Connection conn = dbConnector.getConnection();
         String sql = "UPDATE users SET otp = ?, otp_expires_at = ? WHERE email = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, otp);
@@ -47,7 +47,7 @@ public class UserVerificationController {
     }
 
     public boolean verifyOTP(String email, String enteredOtp) {
-        Connection conn = dbConnector.openConnection();
+        Connection conn = dbConnector.getConnection();
         String sql = "SELECT otp, otp_expires_at FROM users WHERE email = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
@@ -73,7 +73,7 @@ public class UserVerificationController {
     }
 
     public void clearOTP(String email) {
-        Connection conn = dbConnector.openConnection();
+        Connection conn = dbConnector.getConnection();
         String sql = "UPDATE users SET otp = NULL, otp_expires_at = NULL WHERE email = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
@@ -85,7 +85,7 @@ public class UserVerificationController {
     }
 
     public boolean updatePassword(String email, String newHashedPassword) {
-        Connection conn = dbConnector.openConnection();
+        Connection conn = dbConnector.getConnection();
         String sql = "UPDATE users SET user_password = ?, otp = NULL, otp_expires_at = NULL WHERE email = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newHashedPassword);
