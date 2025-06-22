@@ -5,14 +5,20 @@ import pahilopaila.model.LoginRequest;
 import pahilopaila.model.UserData;
 import java.sql.*;
 
+// Data Access Object for user-related database operations
 public class UserDao {
     private final Connection connection;
 
+    // Constructor initializes database connection
+    // Uses singleton MySqlConnection to get connection instance
     public UserDao() {
         connection = MySqlConnection.getInstance().getConnection();
         System.out.println("UserDao initialized");
     }
 
+    // Login method to authenticate user
+    // Takes LoginRequest object with email and password
+    
     public UserData login(LoginRequest loginReq) {
         String sql = "SELECT id, username, email, user_password, roles FROM users WHERE email = ? AND user_password = ?";
         System.out.println("Executing login query for email: " + loginReq.getEmail());
@@ -39,6 +45,9 @@ public class UserDao {
         return null;
     }
 
+    // Checks if an email already exists in the database
+    // Returns true if email is found, false otherwise
+   
     public boolean checkEmailExists(String email) {
         String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
         System.out.println("Checking if email exists: " + email);
@@ -57,6 +66,9 @@ public class UserDao {
         return false;
     }
 
+    // Registers a new user in the database
+    // Takes username, email, password, and role as parameters
+   
     public boolean registerUser(String name, String email, String password, String role) {
         String sql = "INSERT INTO users (username, email, user_password, roles) VALUES (?, ?, ?, ?)";
         System.out.println("Registering user: " + name + ", Email: " + email + ", Role: " + role);
@@ -75,6 +87,9 @@ public class UserDao {
         return false;
     }
 
+    // Verifies password for a given user ID
+    // Compares hashed input password with stored hash
+    
     public boolean verifyPassword(int userId, String password) {
         String sql = "SELECT user_password FROM users WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -92,6 +107,9 @@ public class UserDao {
         return false;
     }
 
+    // Updates user information in the database
+    // Takes user ID, username, email, and new password
+    
     public boolean updateUser(int userId, String username, String email, String newPassword) {
         String sql = "UPDATE users SET username = ?, email = ?, user_password = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -109,6 +127,9 @@ public class UserDao {
         return false;
     }
 
+    // Retrieves user data by user ID
+    // Returns UserData object if found, null otherwise
+    
     public UserData getUserById(int userId) {
         String sql = "SELECT id, username, email, roles FROM users WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
