@@ -1516,29 +1516,8 @@ public void showDashboardPanel() {
         loginView.setVisible(true);
 
  new LoginController(loginView);
- } public void setUserInfo(String username, String email, int userId) {
- this.userId = userId;
- this.currentEmail = email;
- view.username.setText(username);
- view.email.setText(email);
- } private void handleGetStarted(ActionEvent e) {
- System.out.println("Get Started button clicked");
- JOptionPane.showMessageDialog(view, "Getting started with job search!");
- } private void handleLearnMore(ActionEvent e) {
- System.out.println("Learn More button clicked");
- JOptionPane.showMessageDialog(view, "Learn more about our platform!");
- } private void handleSearch(ActionEvent e) {
- System.out.println("Search button clicked");
- String query = view.Searchfield.getText().trim();
- JOptionPane.showMessageDialog(view, "Searching for: " + query);
- } private void handleSeeAll(ActionEvent e) {
- System.out.println("See All button clicked");
- showVacancyPanel();
- } 
- private void handleFilter(ActionEvent e) {
-    System.out.println("Filter button clicked");
-    showFilterPanel();
-}
+ }
+
 
 //Filter panel made for job seekers
 private void showFilterPanel() {
@@ -1746,14 +1725,6 @@ private void showVacancyPanelWithVacancies(List<Vacancy> vacancies) {
     updateContentPanel(mainPanel);
 }
  
- private boolean saveRatingToDatabase(int userId, int rating) {
- if (rating < 1 || rating > 5) {
-     System.err.println("Invalid rating value: " + rating + ". Must be between 1 and 5.");
-     return false;
- }
-=======
-        new LoginController(loginView);
- } 
     public void setUserInfo(String username, String email, int userId) {
         this.userId = userId;
         this.currentEmail = email;
@@ -1927,11 +1898,22 @@ private void showVacancyPanelWithVacancies(List<Vacancy> vacancies) {
         showFilterDialog();
     }
     private void applyFilters(String jobType, String experienceLevel, Integer minDays, Integer maxDays) {
+        java.sql.Date sqlStartDate = null;
+        java.sql.Date sqlEndDate = null;
+        // If minDays/maxDays are provided, calculate the corresponding future dates
+        if (minDays != null && minDays > 0) {
+            LocalDate startDate = LocalDate.now().plusDays(minDays);
+            sqlStartDate = java.sql.Date.valueOf(startDate);
+        }
+        if (maxDays != null && maxDays < 365) {
+            LocalDate endDate = LocalDate.now().plusDays(maxDays);
+            sqlEndDate = java.sql.Date.valueOf(endDate);
+        }
         List<Vacancy> filteredVacancies = vacancyDao.getFilteredVacancies(
-            jobType.equals("All") ? null : jobType,
-            experienceLevel.equals("All") ? null : experienceLevel,
-            minDays == 0 ? null : minDays,
-         maxDays == 365 ? null : maxDays
+            jobType != null && jobType.equals("All") ? null : jobType,
+            experienceLevel != null && experienceLevel.equals("All") ? null : experienceLevel,
+            sqlStartDate,
+            sqlEndDate
         );
         refreshVacancyPanel(filteredVacancies);
     }
