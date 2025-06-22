@@ -808,7 +808,7 @@ public class Dashboard_RecruitersController {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
-
+        // Applicant name label
         JLabel nameLabel = new JLabel("Applicant: " + app.getJobSeekerName());
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         nameLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -816,13 +816,13 @@ public class Dashboard_RecruitersController {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         card.add(nameLabel, gbc);
-
+        // Applicant email label
         JLabel emailLabel = new JLabel("Email: " + app.getJobSeekerEmail());
         emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         emailLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         gbc.gridy = 1;
         card.add(emailLabel, gbc);
-
+        // CV details label
         Cv cv = app.getCv();
         JLabel cvDetailsLabel = new JLabel("<html><b>CV Details:</b><br>" +
             "First Name: " + cv.getFirstName() + "<br>" +
@@ -837,17 +837,17 @@ public class Dashboard_RecruitersController {
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         card.add(cvDetailsLabel, gbc);
-
+        // Application status label
         JLabel statusLabel = new JLabel("Status: " + app.getStatus());
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         statusLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         card.add(statusLabel, gbc);
-
+        // Create button panel for accept/reject actions
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
-
+        // Accept button
         JButton acceptButton = new JButton("Accept") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -869,7 +869,7 @@ public class Dashboard_RecruitersController {
         acceptButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         acceptButton.setFocusPainted(false);
         acceptButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
-
+        // Reject button
         JButton rejectButton = new JButton("Reject") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -891,7 +891,7 @@ public class Dashboard_RecruitersController {
         rejectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         rejectButton.setFocusPainted(false);
         rejectButton.setEnabled(!app.getStatus().equals("Accepted") && !app.getStatus().equals("Rejected"));
-
+        // Action listener for accepting an application
         acceptButton.addActionListener(e -> {
             boolean success = applicationDao.updateApplicationStatus(app.getId(), "Accepted");
             if (success) {
@@ -903,7 +903,7 @@ public class Dashboard_RecruitersController {
                 JOptionPane.showMessageDialog(view, "Failed to update application status.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-
+        // Action listener for rejecting an application
         rejectButton.addActionListener(e -> {
             boolean success = applicationDao.updateApplicationStatus(app.getId(), "Rejected");
             if (success) {
@@ -925,45 +925,45 @@ public class Dashboard_RecruitersController {
 
         return card;
     }
-
+    //Displays the settings panel for configuring dark mode and notifications.
     public void showSettingsPanel() {
         System.out.println("Navigating to Settings");
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         settingsPanel.setLayout(new BorderLayout(15, 15));
         settingsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
+        // Create title panel
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(0, 20, 90));
         titlePanel.setPreferredSize(new Dimension(680, 70));
         titlePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 20));
-
+        
         JLabel titleLabel = new JLabel("Settings");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
         titlePanel.add(titleLabel);
-
+        // Create content panel for settings options
         JPanel contentBox = new JPanel();
         contentBox.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         contentBox.setBorder(BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : Color.LIGHT_GRAY));
         contentBox.setLayout(new BoxLayout(contentBox, BoxLayout.Y_AXIS));
         contentBox.setPreferredSize(new Dimension(500, 250));
         contentBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-
+        // Dark mode checkbox
         JCheckBox darkModeCheck = new JCheckBox("Dark Mode");
         darkModeCheck.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         darkModeCheck.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         darkModeCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         darkModeCheck.setSelected(isDarkMode);
         darkModeCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
-
+        
         JPanel darkModePanel = new JPanel();
         darkModePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         darkModePanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         darkModePanel.add(new JLabel("🌙"));
         darkModePanel.add(Box.createHorizontalStrut(10));
         darkModePanel.add(darkModeCheck);
-
+       // Notification checkbox
         JCheckBox notificationCheck = new JCheckBox("Enable Notifications");
         notificationCheck.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         notificationCheck.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
@@ -977,7 +977,7 @@ public class Dashboard_RecruitersController {
         notificationPanel.add(new JLabel("🔔"));
         notificationPanel.add(Box.createHorizontalStrut(10));
         notificationPanel.add(notificationCheck);
-
+        // Contact information label
         JLabel contactUsLabel = new JLabel("Contact Us: support@pahilopaila.com");
         contactUsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         contactUsLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 123, 255));
