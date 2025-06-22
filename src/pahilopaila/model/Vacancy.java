@@ -56,6 +56,9 @@ public class Vacancy {
     }
 
     // Setters
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setRecruiterId(int recruiterId) {
         this.recruiterId = recruiterId;
     }
@@ -98,7 +101,8 @@ public class Vacancy {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    public void setId(int aInt) {
+
+    public void setEndDate(String string) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

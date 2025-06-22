@@ -13,7 +13,24 @@ public class VacancyDao {
         connection = MySqlConnection.getInstance().getConnection();
         System.out.println("VacancyDao initialized");
     }
+
  
+
+
+    public List<Vacancy> getFilteredVacancies(String jobType, String experienceLevel, String endDate) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    public class DatabaseConnection {
+        private static final String URL = "jdbc:mysql://localhost:3306/pahilopaila";
+        private static final String USER = "root";
+        private static final String PASSWORD = "Pahilopaila@123";
+
+        public static Connection getConnection() throws SQLException {
+            return DriverManager.getConnection(URL, USER, PASSWORD);
+        }
+    }
+
+
     public boolean saveVacancy(int recruiterId, String jobTitle, String jobType, String experienceLevel, int daysLeft, String description) {
         String sql = "INSERT INTO vacancies (recruiter_id, job_title, job_type, experience_level, days_left, description) VALUES (?, ?, ?, ?, ?, ?)";
         System.out.println("Saving vacancy for recruiter_id: " + recruiterId);
@@ -127,6 +144,7 @@ public class VacancyDao {
         }
         return null;
     }
+
  
     public List<Vacancy> getFilteredVacancies(String jobType, String experienceLevel, Date startDate, Date endDate) {
     List<Vacancy> vacancies = new ArrayList<>();
@@ -162,6 +180,35 @@ public class VacancyDao {
             pstmt.setObject(i + 1, params.get(i));
         }
         try (ResultSet rs = pstmt.executeQuery()) {
+
+    public List<Vacancy> getFilteredVacancies(String jobType, String experienceLevel, Integer minDays, Integer maxDays) {
+        List<Vacancy> vacancies = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM vacancies WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (jobType != null && !jobType.isEmpty() && !jobType.equals("All")) {
+            sql.append(" AND job_type = ?");
+            params.add(jobType);
+        }
+        if (experienceLevel != null && !experienceLevel.isEmpty() && !experienceLevel.equals("All")) {
+            sql.append(" AND experience_level = ?");
+            params.add(experienceLevel);
+        }
+        if (minDays != null) {
+            sql.append(" AND days_left >= ?");
+            params.add(minDays);
+        }
+        if (maxDays != null) {
+            sql.append(" AND days_left <= ?");
+            params.add(maxDays);
+        }
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pstmt.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
                 Vacancy vacancy = new Vacancy(
                     rs.getInt("id"),
@@ -174,6 +221,12 @@ public class VacancyDao {
                 );
                 vacancies.add(vacancy);
             }
+
+            rs.close();
+        } catch (SQLException e) {
+            System.err.println("SQL Error in getFilteredVacancies: " + e.getMessage());
+            e.printStackTrace();
+
         }
         System.out.println("Retrieved " + vacancies.size() + " filtered vacancies");
     } catch (SQLException e) {
