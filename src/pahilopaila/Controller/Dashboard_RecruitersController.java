@@ -137,7 +137,7 @@ public class Dashboard_RecruitersController {
                                        Color.BLACK, Color.LIGHT_GRAY);
         }
     }
-
+    //Applies dark theme to a container and its child components recursively.
     private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, 
                                           Color darkText, Color darkBorder) {
         for (Component component : container.getComponents()) {
@@ -210,7 +210,7 @@ public class Dashboard_RecruitersController {
             }
         }
     }
-
+    //Applies light theme to a container and its child components recursively.
     private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, 
                                            Color lightText, Color lightBorder) {
         for (Component component : container.getComponents()) {
@@ -298,7 +298,7 @@ public class Dashboard_RecruitersController {
             }
         }
     }
-
+    //Applies the current theme to the sidebar feature panel.
     private void applyFeaturePanelTheme() {
         // Assume view.featurePanel is the sidebar panel (similar to JobSeekers)
         view.featurePanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
