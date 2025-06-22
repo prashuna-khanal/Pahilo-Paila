@@ -990,7 +990,7 @@ public class Dashboard_RecruitersController {
         contactPanel.add(new JLabel("📞"));
         contactPanel.add(Box.createHorizontalStrut(10));
         contactPanel.add(contactUsLabel);
-
+        // Update settings button
         JButton updateButton = new JButton("Update Settings") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -1027,7 +1027,7 @@ public class Dashboard_RecruitersController {
         contentBox.add(Box.createVerticalStrut(20));
         contentBox.add(buttonPanel);
         contentBox.add(Box.createVerticalStrut(20));
-
+        // Action listener for dark mode toggle
         darkModeCheck.addActionListener(e -> {
             isDarkMode = darkModeCheck.isSelected();
             applyDarkModeToSettings(isDarkMode, settingsPanel);
@@ -1038,13 +1038,13 @@ public class Dashboard_RecruitersController {
                 "Dark Mode",
                 JOptionPane.INFORMATION_MESSAGE);
         });
-
+        // Action listener for notification toggle
         notificationCheck.addActionListener(e -> {
             notificationsEnabled = notificationCheck.isSelected();
             String status = notificationsEnabled ? "enabled" : "disabled";
             System.out.println("Notifications " + status);
         });
-
+        // Action listener for contact information
         contactUsLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -1068,7 +1068,7 @@ public class Dashboard_RecruitersController {
                 contactUsLabel.setText("Contact Us: support@pahilopaila.com");
             }
         });
-
+        // Action listener for updating settings
         updateButton.addActionListener(e -> {
             isDarkMode = darkModeCheck.isSelected();
             notificationsEnabled = notificationCheck.isSelected();
@@ -1082,7 +1082,7 @@ public class Dashboard_RecruitersController {
                 "Settings Updated",
                 JOptionPane.INFORMATION_MESSAGE);
         });
-
+        
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         centerPanel.setLayout(new GridBagLayout());
