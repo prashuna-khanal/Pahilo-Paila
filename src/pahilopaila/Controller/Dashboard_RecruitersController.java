@@ -1,5 +1,5 @@
 package pahilopaila.Controller;
-
+ //Controller class for the Recruiters Dashboard in the PahiloPaila application.
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.VacancyDao;
 import pahilopaila.Dao.ApplicationDao;
@@ -20,16 +20,16 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import javax.swing.text.JTextComponent;
 
-public class Dashboard_RecruitersController {
-    private final Dashboard_Recruiters view;
-    private final VacancyDao vacancyDao;
+public class Dashboard_RecruitersController { 
+    private final Dashboard_Recruiters view; // Reference to the dashboard view
+    private final VacancyDao vacancyDao; // DAO for vacancy operations
     private final ApplicationDao applicationDao;
     private final int recruiterId;
-    private boolean isVacancyPosted = false;
+    private boolean isVacancyPosted = false; // Tracks if a vacancy has been posted
     private final UserDao userDao;
     private int userId;
-    private String currentEmail;
-    private static boolean notificationsEnabled = true;
+    private String currentEmail; // Current email of the logged-in user
+    private static boolean notificationsEnabled = true; // Notification toggle state
     private static boolean isDarkMode = false; // Replaced Theme with isDarkMode
 
     public Dashboard_RecruitersController(Dashboard_Recruiters view, int recruiterId) {
@@ -43,13 +43,13 @@ public class Dashboard_RecruitersController {
         applyFeaturePanelTheme(); // Apply initial theme to sidebar
         showDashboardPanel();
     }
-
+    //Initializes action and mouse listeners for navigation and interaction elements.
     private void initializeListeners() {
         // Existing listeners remain unchanged
         view.Searchfield.addActionListener(this::searchFieldActionPerformed);
         view.getStarted.addActionListener(this::getStartedActionPerformed);
         view.learnMore.addActionListener(this::learnMoreActionPerformed);
-
+        
         view.dashboard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
