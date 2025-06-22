@@ -10,7 +10,7 @@ public class MySqlConnection {
 
     private final String url = "jdbc:mysql://localhost:3306/pahilopaila?allowPublicKeyRetrieval=true&useSSL=false";
     private final String username = "root"; // Replace with your MySQL username
-    private final String password = "Pahilopaila@123"; // Replace with your MySQL password
+    private final String password = "sabi@195"; // Replace with your MySQL password
 
     private MySqlConnection() {
         try {
