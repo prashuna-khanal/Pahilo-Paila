@@ -355,7 +355,7 @@ public class Dashboard_RecruitersController {
 
         return card;
     }
-
+    //Styles a button with custom appearance and hover effects.
     private void styleButton(JButton button) {
         button.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
         button.setForeground(Color.WHITE);
@@ -390,12 +390,12 @@ public class Dashboard_RecruitersController {
             }
         });
     }
-
+    //Displays the dashboard panel with a welcome message and vacancy cards.
     public void showDashboardPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
+        // Create message panel for welcome text and buttons
         JPanel messagePanel = new JPanel();
         messagePanel.setBackground(new Color(0, 4, 80)); // Keep original dark blue
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
@@ -417,7 +417,7 @@ public class Dashboard_RecruitersController {
         messagePanel.add(right);
 
         messagePanel.add(Box.createVerticalStrut(12));
-
+        // Create button panel for Get Started and Learn More buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttonPanel.setBackground(new Color(0, 4, 80));
         JButton getStarted = new JButton("Get Started");
@@ -448,7 +448,7 @@ public class Dashboard_RecruitersController {
 
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         messagePanel.add(buttonPanel);
-
+        // Create panel for displaying vacancy cards
         JPanel vacanciesPanel = new JPanel(new GridBagLayout());
         vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -462,7 +462,7 @@ public class Dashboard_RecruitersController {
         scrollPane.setBorder(null);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+        // Fetch and display vacancies for the recruiter
         List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
         if (vacancies.isEmpty()) {
             JLabel noVacanciesLabel = new JLabel("No vacancies posted yet.");
