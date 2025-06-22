@@ -313,7 +313,7 @@ public class Dashboard_RecruitersController {
         view.featurePanel.revalidate();
         view.featurePanel.repaint();
     }
-
+    //Creates a card UI component for displaying vacancy details.
     private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(245, 245, 245));
@@ -327,7 +327,7 @@ public class Dashboard_RecruitersController {
         gbc.insets = new Insets(10, 10, 6, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
-
+        // Job title label
         JLabel titleLabel = new JLabel("<html>" + vacancy.getJobTitle().replaceAll("\n", "<br>") + "</html>");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         titleLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
@@ -336,18 +336,18 @@ public class Dashboard_RecruitersController {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         card.add(titleLabel, gbc);
-
+        // Days left button
         JButton daysLeftButton = new JButton(vacancy.getDaysLeft() + " days left");
         styleButton(daysLeftButton);
         gbc.gridy = 1;
         gbc.gridwidth = 2;
         card.add(daysLeftButton, gbc);
-
+        // Job type button
         JButton jobTypeButton = new JButton(vacancy.getJobType());
         styleButton(jobTypeButton);
         gbc.gridy = 2;
         card.add(jobTypeButton, gbc);
-
+        // Experience level button
         JButton experienceButton = new JButton(vacancy.getExperienceLevel());
         styleButton(experienceButton);
         gbc.gridy = 3;
