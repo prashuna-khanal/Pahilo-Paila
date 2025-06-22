@@ -1650,11 +1650,41 @@ public class Dashboard_JobseekersController {
  } private void handleLearnMore(ActionEvent e) {
  System.out.println("Learn More button clicked");
  JOptionPane.showMessageDialog(view, "Learn more about our platform!");
- } private void handleSearch(ActionEvent e) {
- System.out.println("Search button clicked");
- String query = view.Searchfield.getText().trim();
- JOptionPane.showMessageDialog(view, "Searching for: " + query);
- } private void handleSeeAll(ActionEvent e) {
+ } 
+private void handleSearch(ActionEvent e) {
+    System.out.println("Search button clicked");
+    String query = view.Searchfield.getText().trim();
+    
+    if (query.isEmpty()) {
+        JOptionPane.showMessageDialog(view, "Please enter a job title to search.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Get vacancies based on existing filters (if any) or all vacancies
+    List<Vacancy> vacancies;
+    if (isFiltered) {
+        // Convert util.Date to sql.Date for DAO method
+        java.sql.Date sqlStartDate = (startDate != null) ? new java.sql.Date(startDate.getTime()) : null;
+        java.sql.Date sqlEndDate = (endDate != null) ? new java.sql.Date(endDate.getTime()) : null;
+        vacancies = vacancyDao.getFilteredVacancies(jobType, experienceLevel, sqlStartDate, sqlEndDate);
+    } else {
+        vacancies = vacancyDao.getAllVacancies();
+    }
+
+    // Filter vacancies by job title (case-insensitive)
+    vacancies = vacancies.stream()
+            .filter(v -> v.getJobTitle().toLowerCase().contains(query.toLowerCase()))
+            .toList();
+
+    // Display the filtered vacancies
+    showVacancyPanelWithVacancies(vacancies);
+    
+    String message = vacancies.isEmpty() 
+            ? "No vacancies found for: " + query 
+            : "Showing results for: " + query + " (" + vacancies.size() + " found)";
+    JOptionPane.showMessageDialog(view, message, "Search Results", JOptionPane.INFORMATION_MESSAGE);
+}
+ private void handleSeeAll(ActionEvent e) {
  System.out.println("See All button clicked");
  showVacancyPanel();
  } 
@@ -1668,7 +1698,7 @@ private void showFilterPanel() {
             ? (Frame) SwingUtilities.getWindowAncestor(view)
             : null, "Filter Vacancies", true);
     filterDialog.setLayout(new BorderLayout(10, 10));
-    filterDialog.setSize(400, 350); // Increased height for new field
+    filterDialog.setSize(400, 300); // Adjusted height due to removed job title field
     filterDialog.setLocationRelativeTo(view);
 
     JPanel filterPanel = new JPanel(new GridBagLayout());
@@ -1678,47 +1708,28 @@ private void showFilterPanel() {
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.anchor = GridBagConstraints.WEST;
 
-    // Job Title
-    JLabel jobTitleLabel = new JLabel("Job Title:");
-    jobTitleLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    filterPanel.add(jobTitleLabel, gbc);
-
-    JTextField jobTitleField = new JTextField(15);
-    jobTitleField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-    jobTitleField.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
-    jobTitleField.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
-    jobTitleField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(isDarkMode ? new Color(50, 50, 50) : new Color(150, 150, 150), 1, true),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-    ));
-    gbc.gridx = 1;
-    gbc.gridy = 0;
-    filterPanel.add(jobTitleField, gbc);
-
     // Job Type
     JLabel jobTypeLabel = new JLabel("Job Type:");
     jobTypeLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
     gbc.gridx = 0;
-    gbc.gridy = 1;
+    gbc.gridy = 0;
     filterPanel.add(jobTypeLabel, gbc);
 
     view.jobTypeCombo.setPreferredSize(new Dimension(150, 25));
     gbc.gridx = 1;
-    gbc.gridy = 1;
+    gbc.gridy = 0;
     filterPanel.add(view.jobTypeCombo, gbc);
 
     // Experience Level
     JLabel experienceLabel = new JLabel("Experience Level:");
     experienceLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
     gbc.gridx = 0;
-    gbc.gridy = 2;
+    gbc.gridy = 1;
     filterPanel.add(experienceLabel, gbc);
 
     view.experienceLevelCombo.setPreferredSize(new Dimension(150, 25));
     gbc.gridx = 1;
-    gbc.gridy = 2;
+    gbc.gridy = 1;
     filterPanel.add(view.experienceLevelCombo, gbc);
 
     // Minimum Days Left
@@ -1726,12 +1737,12 @@ private void showFilterPanel() {
     startDateLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
     startDateLabel.setToolTipText("Select a future date to filter vacancies with at least this many days remaining");
     gbc.gridx = 0;
-    gbc.gridy = 3;
+    gbc.gridy = 2;
     filterPanel.add(startDateLabel, gbc);
 
     view.startDateChooser.setPreferredSize(new Dimension(150, 25));
     gbc.gridx = 1;
-    gbc.gridy = 3;
+    gbc.gridy = 2;
     filterPanel.add(view.startDateChooser, gbc);
 
     // Maximum Days Left
@@ -1739,12 +1750,12 @@ private void showFilterPanel() {
     endDateLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
     endDateLabel.setToolTipText("Select a future date to filter vacancies with up to this many days remaining");
     gbc.gridx = 0;
-    gbc.gridy = 4;
+    gbc.gridy = 3;
     filterPanel.add(endDateLabel, gbc);
 
     view.endDateChooser.setPreferredSize(new Dimension(150, 25));
     gbc.gridx = 1;
-    gbc.gridy = 4;
+    gbc.gridy = 3;
     filterPanel.add(view.endDateChooser, gbc);
 
     // Buttons
@@ -1753,13 +1764,12 @@ private void showFilterPanel() {
     buttonPanel.add(view.getApplyFilterButton());
     buttonPanel.add(view.getClearFilterButton());
     gbc.gridx = 0;
-    gbc.gridy = 5;
+    gbc.gridy = 4;
     gbc.gridwidth = 2;
     filterPanel.add(buttonPanel, gbc);
 
     // Apply Filter Action
     view.getApplyFilterButton().addActionListener(e -> {
-        String jobTitle = jobTitleField.getText().trim();
         jobType = view.getJobTypeFilter();
         experienceLevel = view.getExperienceLevelFilter();
         startDate = view.getStartDateFilter();
@@ -1785,14 +1795,7 @@ private void showFilterPanel() {
         // Convert util.Date to sql.Date for DAO method
         java.sql.Date sqlStartDate = (startDate != null) ? new java.sql.Date(startDate.getTime()) : null;
         java.sql.Date sqlEndDate = (endDate != null) ? new java.sql.Date(endDate.getTime()) : null;
-        // Store job title for filtering (you'll need to update VacancyDao to handle this)
-        // For now, we'll filter in-memory after fetching filtered vacancies
         List<Vacancy> vacancies = vacancyDao.getFilteredVacancies(jobType, experienceLevel, sqlStartDate, sqlEndDate);
-        if (!jobTitle.isEmpty()) {
-            vacancies = vacancies.stream()
-                    .filter(v -> v.getJobTitle().toLowerCase().contains(jobTitle.toLowerCase()))
-                    .toList();
-        }
         // Update UI with filtered vacancies
         showVacancyPanelWithVacancies(vacancies);
         JOptionPane.showMessageDialog(view, "Filters applied successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -1801,7 +1804,6 @@ private void showFilterPanel() {
 
     // Clear Filter Action
     view.getClearFilterButton().addActionListener(e -> {
-        jobTitleField.setText("");
         view.jobTypeCombo.setSelectedIndex(0);
         view.experienceLevelCombo.setSelectedIndex(0);
         view.startDateChooser.setDate(null);
@@ -1820,6 +1822,8 @@ private void showFilterPanel() {
     applyThemeToPanel(filterPanel);
     filterDialog.setVisible(true);
 }
+
+
 
 // Helper method to display vacancies (new method to avoid duplicating code)
 private void showVacancyPanelWithVacancies(List<Vacancy> vacancies) {
