@@ -1082,7 +1082,7 @@ public class Dashboard_RecruitersController {
                 "Settings Updated",
                 JOptionPane.INFORMATION_MESSAGE);
         });
-        
+
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
         centerPanel.setLayout(new GridBagLayout());
@@ -1093,7 +1093,7 @@ public class Dashboard_RecruitersController {
 
         updateContentPanel(settingsPanel);
     }
-
+    //Applies dark or light mode to the settings panel and its parent window.
     private void applyDarkModeToSettings(boolean isDarkMode, JPanel settingsPanel) {
         Window parentWindow = SwingUtilities.getWindowAncestor(settingsPanel);
         if (isDarkMode) {
@@ -1108,7 +1108,7 @@ public class Dashboard_RecruitersController {
                     ((JFrame) parentWindow).getContentPane().setBackground(darkBackground);
                 }
             }
-
+            
             applyDarkThemeToComponent(settingsPanel, darkBackground, darkPanel, darkText, darkBorder);
         } else {
             Color lightBackground = Color.WHITE;
@@ -1131,12 +1131,12 @@ public class Dashboard_RecruitersController {
         }
         settingsPanel.repaint();
     }
-
+    //Displays the account management panel for updating user information.
     public void showMyAccountPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
+        // Create header panel with gradient background
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -1156,7 +1156,7 @@ public class Dashboard_RecruitersController {
         headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
-
+        // Create form panel for account details
         JPanel centerWrapper = new JPanel();
         centerWrapper.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         centerWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -1173,14 +1173,14 @@ public class Dashboard_RecruitersController {
         gbc.insets = new Insets(12, 12, 12, 12);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
-
+        // Fetch user data
         UserData user = userDao.getUserById(userId);
         String usernameText = user != null ? user.getName() : view.username.getText();
         String emailText = user != null ? user.getEmail() : view.email.getText();
         if (user != null) {
             currentEmail = user.getEmail();
         }
-
+         // Username field
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         usernameLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -1200,7 +1200,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 0;
         formPanel.add(usernameField, gbc);
-
+        // Email field
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         emailLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -1220,14 +1220,14 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 1;
         formPanel.add(emailField, gbc);
-
+        // Current password field
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         passwordLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
         gbc.gridx = 0;
         gbc.gridy = 2;
         formPanel.add(passwordLabel, gbc);
-
+        
         JPasswordField passwordField = new JPasswordField(18);
         passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         passwordField.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
@@ -1239,7 +1239,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 2;
         formPanel.add(passwordField, gbc);
-
+        // New password field
         JLabel newPasswordLabel = new JLabel("New Password:");
         newPasswordLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         newPasswordLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -1258,7 +1258,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 3;
         formPanel.add(newPasswordField, gbc);
-
+         // Update button
         JButton saveButton = new JButton("Update") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -1284,28 +1284,28 @@ public class Dashboard_RecruitersController {
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(saveButton, gbc);
-
+        // Action listener for updating user information
         saveButton.addActionListener(e -> {
             String updatedUsername = usernameField.getText().trim();
             String updatedEmail = emailField.getText().trim();
             String passwordText = new String(passwordField.getPassword()).trim();
             String newPasswordText = new String(newPasswordField.getPassword()).trim();
-
+            // Validate input fields
             if (updatedUsername.isEmpty() || updatedEmail.isEmpty() || passwordText.isEmpty() || newPasswordText.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Please fill all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            // Validate email format
             if (!updatedEmail.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 JOptionPane.showMessageDialog(view, "Invalid email format.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            // Verify current password
             if (!verifyCurrentPassword(passwordText)) {
                 JOptionPane.showMessageDialog(view, "Current password is incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            // Update user information
             boolean success = updateUserInfo(updatedUsername, updatedEmail, newPasswordText);
             if (success) {
                 JOptionPane.showMessageDialog(view, "User info updated successfully!\nUsername: " + updatedUsername, "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -1315,41 +1315,41 @@ public class Dashboard_RecruitersController {
                 JOptionPane.showMessageDialog(view, "Failed to update user info. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-
+        
         centerWrapper.add(formPanel);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
         mainPanel.add(centerWrapper, BorderLayout.CENTER);
         updateContentPanel(mainPanel);
     }
-
+    //Verifies the current password of the user.
     private boolean verifyCurrentPassword(String password) {
         return userDao.verifyPassword(userId, password);
     }
-
+    //Updates user information in the database.
     private boolean updateUserInfo(String username, String email, String newPassword) {
         return userDao.updateUser(userId, username, email, newPassword);
     }
-
+    //Sets user information for the controller and view.
     public void setUserInfo(String username, String email, int userId) {
         this.userId = userId;
         this.currentEmail = email;
         view.setUserInfo(username, email);
     }
-
+    //Logs out the user and returns to the login screen.
     public void logout() {
         view.dispose();
         LoginPageview loginView = new LoginPageview();
         LoginController loginController = new LoginController(loginView);
         loginController.open();
     }
-
+    //Handles search field input and displays matching vacancies.
     public void searchFieldActionPerformed(ActionEvent e) {
         String searchText = view.Searchfield.getText().trim().toLowerCase();
         if (searchText.isEmpty()) {
             showDashboardPanel();
             return;
         }
-
+        // Create panel for search results
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -1365,7 +1365,7 @@ public class Dashboard_RecruitersController {
         find.setForeground(Color.WHITE);
         find.setAlignmentX(Component.LEFT_ALIGNMENT);
         messagePanel.add(find);
-
+        // Create panel for search result vacancy cards
         JPanel vacanciesPanel = new JPanel(new GridBagLayout());
         vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
