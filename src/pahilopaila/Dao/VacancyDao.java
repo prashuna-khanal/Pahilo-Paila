@@ -180,35 +180,6 @@ public class VacancyDao {
             pstmt.setObject(i + 1, params.get(i));
         }
         try (ResultSet rs = pstmt.executeQuery()) {
-
-    public List<Vacancy> getFilteredVacancies(String jobType, String experienceLevel, Integer minDays, Integer maxDays) {
-        List<Vacancy> vacancies = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM vacancies WHERE 1=1");
-        List<Object> params = new ArrayList<>();
-
-        if (jobType != null && !jobType.isEmpty() && !jobType.equals("All")) {
-            sql.append(" AND job_type = ?");
-            params.add(jobType);
-        }
-        if (experienceLevel != null && !experienceLevel.isEmpty() && !experienceLevel.equals("All")) {
-            sql.append(" AND experience_level = ?");
-            params.add(experienceLevel);
-        }
-        if (minDays != null) {
-            sql.append(" AND days_left >= ?");
-            params.add(minDays);
-        }
-        if (maxDays != null) {
-            sql.append(" AND days_left <= ?");
-            params.add(maxDays);
-        }
-
-        try (PreparedStatement pstmt = connection.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) {
-                pstmt.setObject(i + 1, params.get(i));
-            }
-            ResultSet rs = pstmt.executeQuery();
-
             while (rs.next()) {
                 Vacancy vacancy = new Vacancy(
                     rs.getInt("id"),
@@ -221,12 +192,6 @@ public class VacancyDao {
                 );
                 vacancies.add(vacancy);
             }
-
-            rs.close();
-        } catch (SQLException e) {
-            System.err.println("SQL Error in getFilteredVacancies: " + e.getMessage());
-            e.printStackTrace();
-
         }
         System.out.println("Retrieved " + vacancies.size() + " filtered vacancies");
     } catch (SQLException e) {
