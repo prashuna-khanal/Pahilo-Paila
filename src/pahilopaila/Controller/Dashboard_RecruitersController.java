@@ -312,7 +312,7 @@ public class Dashboard_RecruitersController {
         view.featurePanel.repaint();
     }
 
-private JPanel createVacancyCard(Vacancy vacancy) {
+    private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(245, 245, 245));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -354,7 +354,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         return card;
     }
 
-   private void styleButton(JButton button) {
+    private void styleButton(JButton button) {
         button.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
         button.setForeground(Color.WHITE);
         button.setContentAreaFilled(false);
@@ -388,6 +388,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
             }
         });
     }
+
     public void showDashboardPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
@@ -418,11 +419,13 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttonPanel.setBackground(new Color(0, 4, 80));
         JButton getStarted = new JButton("Get Started");
+        getStarted.setForeground(new Color(10, 10, 50));
         getStarted.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        getStarted.setForeground(isDarkMode ? Color.WHITE : new Color(0, 0, 102));
-        getStarted.setBackground(isDarkMode ? new Color(33, 150, 243) : null);
+        getStarted.setForeground(isDarkMode ? new Color(10, 10, 50) : new Color(0, 4, 80));
+        getStarted.setBackground(isDarkMode ? new Color(0, 4, 80) : null);
         getStarted.setPreferredSize(new Dimension(120, 30));
         getStarted.addActionListener(this::getStartedActionPerformed);
+        
         buttonPanel.add(getStarted);
 
         JButton learnMore = new JButton("Learn More");
@@ -1337,7 +1340,78 @@ private JPanel createVacancyCard(Vacancy vacancy) {
     }
 
     public void searchFieldActionPerformed(ActionEvent e) {
-        System.out.println("Search: " + view.Searchfield.getText());
+        String searchText = view.Searchfield.getText().trim().toLowerCase();
+        if (searchText.isEmpty()) {
+            showDashboardPanel();
+            return;
+        }
+
+        JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
+        mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        JPanel messagePanel = new JPanel();
+        messagePanel.setBackground(new Color(0, 4, 80));
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        messagePanel.setPreferredSize(new Dimension(680, 140));
+
+        JLabel find = new JLabel("Search Results");
+        find.setFont(new Font("Segoe UI Symbol", Font.BOLD, 22));
+        find.setForeground(Color.WHITE);
+        find.setAlignmentX(Component.LEFT_ALIGNMENT);
+        messagePanel.add(find);
+
+        JPanel vacanciesPanel = new JPanel(new GridBagLayout());
+        vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        GridBagConstraints cardGbc = new GridBagConstraints();
+        cardGbc.insets = new Insets(8, 8, 8, 8);
+        cardGbc.fill = GridBagConstraints.NONE;
+        cardGbc.anchor = GridBagConstraints.NORTHWEST;
+
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
+        boolean found = false;
+        int gridx = 0;
+        int gridy = 0;
+        for (Vacancy vacancy : vacancies) {
+            if (vacancy.getJobTitle().toLowerCase().contains(searchText)) {
+                found = true;
+                JPanel vacancyCard = createVacancyCard(vacancy);
+                cardGbc.gridx = gridx;
+                cardGbc.gridy = gridy;
+                vacanciesPanel.add(vacancyCard, cardGbc);
+                gridx++;
+                if (gridx > 2) {
+                    gridx = 0;
+                    gridy++;
+                }
+            }
+        }
+
+        if (!found) {
+            JLabel noResultsLabel = new JLabel("No vacancies found matching '" + searchText + "'.");
+            noResultsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            noResultsLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+            noResultsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            cardGbc.gridx = 0;
+            cardGbc.gridy = 0;
+            vacanciesPanel.add(noResultsLabel, cardGbc);
+        }
+
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+        contentPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
+
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        updateContentPanel(mainPanel);
     }
 
     public void getStartedActionPerformed(ActionEvent e) {
