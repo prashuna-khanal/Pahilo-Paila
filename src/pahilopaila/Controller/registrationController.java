@@ -25,7 +25,7 @@ public class registrationController {
         });
     }
 
-    private void handleRegistration(String userRole) {
+    public void handleRegistration(String userRole) {
         System.out.println("Handling registration for role: " + userRole);
         String name = view.getEnteredName().trim();
         String email = view.getEnteredEmail().trim();

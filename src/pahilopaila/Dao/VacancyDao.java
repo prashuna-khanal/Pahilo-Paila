@@ -1,18 +1,21 @@
 package pahilopaila.Dao;
-
+ 
 import pahilopaila.database.MySqlConnection;
 import pahilopaila.model.Vacancy;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+ 
 public class VacancyDao {
     private final Connection connection;
-
+ 
     public VacancyDao() {
         connection = MySqlConnection.getInstance().getConnection();
         System.out.println("VacancyDao initialized");
     }
+
+ 
+
 
     public List<Vacancy> getFilteredVacancies(String jobType, String experienceLevel, String endDate) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -26,6 +29,7 @@ public class VacancyDao {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         }
     }
+
 
     public boolean saveVacancy(int recruiterId, String jobTitle, String jobType, String experienceLevel, int daysLeft, String description) {
         String sql = "INSERT INTO vacancies (recruiter_id, job_title, job_type, experience_level, days_left, description) VALUES (?, ?, ?, ?, ?, ?)";
@@ -45,7 +49,7 @@ public class VacancyDao {
             return false;
         }
     }
-
+ 
     public boolean saveVacancy(Vacancy vacancy) {
         String sql = "INSERT INTO vacancies (recruiter_id, job_title, job_type, experience_level, days_left, description) VALUES (?, ?, ?, ?, ?, ?)";
         System.out.println("Saving vacancy for recruiter_id: " + vacancy.getRecruiterId());
@@ -58,19 +62,20 @@ public class VacancyDao {
             pstmt.setString(6, vacancy.getDescription());
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Vacancy saved successfully, rows affected: " + rowsAffected);
+            System.out.println("Vacancy returned successfully, rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Error saving vacancy: " + e.getMessage());
             return false;
         }
     }
-
-    public List<Vacancy> getVacanciesByRecruiterId(int recruiterId) {
+ 
+    public List<Vacancy> getVacanciesByRecruiterId(int applicantId) {
         List<Vacancy> vacancies = new ArrayList<>();
         String sql = "SELECT * FROM vacancies WHERE recruiter_id = ?";
-        System.out.println("Retrieving vacancies for recruiter_id: " + recruiterId);
+        System.out.println("Retrieving vacancies for recruiter_id: " + applicantId);
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, recruiterId);
+            pstmt.setInt(1, applicantId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Vacancy vacancy = new Vacancy(
@@ -90,7 +95,7 @@ public class VacancyDao {
         }
         return vacancies;
     }
-
+ 
     public List<Vacancy> getAllVacancies() {
         List<Vacancy> vacancies = new ArrayList<>();
         String sql = "SELECT * FROM vacancies";
@@ -113,7 +118,7 @@ public class VacancyDao {
         }
         return vacancies;
     }
-
+ 
     public Vacancy getVacancyById(int vacancyId) {
         String sql = "SELECT * FROM vacancies WHERE id = ?";
         System.out.println("Retrieving vacancy for id: " + vacancyId);
@@ -139,6 +144,43 @@ public class VacancyDao {
         }
         return null;
     }
+
+ 
+    public List<Vacancy> getFilteredVacancies(String jobType, String experienceLevel, Date startDate, Date endDate) {
+    List<Vacancy> vacancies = new ArrayList<>();
+    StringBuilder sql = new StringBuilder("SELECT * FROM vacancies WHERE 1=1");
+    List<Object> params = new ArrayList<>();
+ 
+    if (jobType != null && !jobType.isEmpty()) {
+        jobType = jobType.equals("Full-time") ? "Full time" : jobType.equals("Part-time") ? "Part time" : jobType;
+        sql.append(" AND job_type = ?");
+        params.add(jobType);
+    }
+    if (experienceLevel != null && !experienceLevel.isEmpty()) {
+        experienceLevel = experienceLevel.equals("Mid") ? "Mid-Level" :
+                         experienceLevel.equals("Junior") ? "Junior-Level" :
+                         experienceLevel.equals("Senior") ? "Senior-Level" : experienceLevel;
+        sql.append(" AND experience_level = ?");
+        params.add(experienceLevel);
+    }
+    // Date filtering will be fixed in the next section
+    if (startDate != null) {
+        sql.append(" AND days_left >= ?");
+        params.add(startDate.getTime());
+    }
+    if (endDate != null) {
+        sql.append(" AND days_left <= ?");
+        params.add(endDate.getTime());
+    }
+ 
+    System.out.println("Executing filtered vacancies query: " + sql.toString() + " with params: " + params);
+ 
+    try (PreparedStatement pstmt = connection.prepareStatement(sql.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+            pstmt.setObject(i + 1, params.get(i));
+        }
+        try (ResultSet rs = pstmt.executeQuery()) {
+
     public List<Vacancy> getFilteredVacancies(String jobType, String experienceLevel, Integer minDays, Integer maxDays) {
         List<Vacancy> vacancies = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM vacancies WHERE 1=1");
@@ -166,6 +208,7 @@ public class VacancyDao {
                 pstmt.setObject(i + 1, params.get(i));
             }
             ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
                 Vacancy vacancy = new Vacancy(
                     rs.getInt("id"),
@@ -178,11 +221,18 @@ public class VacancyDao {
                 );
                 vacancies.add(vacancy);
             }
+
             rs.close();
         } catch (SQLException e) {
             System.err.println("SQL Error in getFilteredVacancies: " + e.getMessage());
             e.printStackTrace();
+
         }
-        return vacancies;
+        System.out.println("Retrieved " + vacancies.size() + " filtered vacancies");
+    } catch (SQLException e) {
+        System.err.println("SQL Error in getFilteredVacancies: " + e.getMessage());
+        e.printStackTrace();
     }
-    }
+    return vacancies;
+}
+}

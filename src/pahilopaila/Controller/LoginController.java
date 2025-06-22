@@ -29,7 +29,7 @@ public class LoginController {
         view.getForgotPasswordLabel().addMouseListener(getForgotPasswordMouseListener());
     }
 
-    private void handleLogin() {
+    public void handleLogin() {
         String email = view.getEnteredEmail().trim();
         char[] passwordChars = view.getEnteredPassword();
         String password = new String(passwordChars);

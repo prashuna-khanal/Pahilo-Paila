@@ -1,5 +1,5 @@
 package pahilopaila.Controller;
-
+ //Controller class for the Recruiters Dashboard in the PahiloPaila application.
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.VacancyDao;
 import pahilopaila.Dao.ApplicationDao;
@@ -20,16 +20,16 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import javax.swing.text.JTextComponent;
 
-public class Dashboard_RecruitersController {
-    private final Dashboard_Recruiters view;
-    private final VacancyDao vacancyDao;
+public class Dashboard_RecruitersController { 
+    private final Dashboard_Recruiters view; // Reference to the dashboard view
+    private final VacancyDao vacancyDao; // DAO for vacancy operations
     private final ApplicationDao applicationDao;
     private final int recruiterId;
-    private boolean isVacancyPosted = false;
+    private boolean isVacancyPosted = false; // Tracks if a vacancy has been posted
     private final UserDao userDao;
     private int userId;
-    private String currentEmail;
-    private static boolean notificationsEnabled = true;
+    private String currentEmail; // Current email of the logged-in user
+    private static boolean notificationsEnabled = true; // Notification toggle state
     private static boolean isDarkMode = false; // Replaced Theme with isDarkMode
 
     public Dashboard_RecruitersController(Dashboard_Recruiters view, int recruiterId) {
@@ -43,13 +43,14 @@ public class Dashboard_RecruitersController {
         applyFeaturePanelTheme(); // Apply initial theme to sidebar
         showDashboardPanel();
     }
-
+    //Initializes action and mouse listeners for navigation and interaction elements.
     private void initializeListeners() {
         // Existing listeners remain unchanged
         view.Searchfield.addActionListener(this::searchFieldActionPerformed);
         view.getStarted.addActionListener(this::getStartedActionPerformed);
         view.learnMore.addActionListener(this::learnMoreActionPerformed);
 
+        // Add mouse listeners for navigation menu items
         view.dashboard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
@@ -87,7 +88,8 @@ public class Dashboard_RecruitersController {
             }
         });
     }
-
+    //Updates the content panel with a new panel, applying theme and hover effects.
+    //@param panel The new panel to display
     private void updateContentPanel(JPanel panel) {
         view.getContentPanel().removeAll();
         view.getContentPanel().setLayout(new BorderLayout());
@@ -97,12 +99,12 @@ public class Dashboard_RecruitersController {
         view.getContentPanel().revalidate();
         view.getContentPanel().repaint();
     }
-
+    //Applies hover effects to buttons within a panel recursively.
     private void addButtonHoverEffects(JPanel panel) {
         Component[] components = panel.getComponents();
         applyHoverEffectsRecursively(components);
     }
-
+    //Recursively applies hover effects to buttons within a component array
     private void applyHoverEffectsRecursively(Component[] components) {
         for (Component component : components) {
             if (component instanceof JButton) {
@@ -125,7 +127,7 @@ public class Dashboard_RecruitersController {
             }
         }
     }
-
+    //Applies the current theme (dark or light) to a panel and its components.
     private void applyThemeToPanel(JPanel panel) {
         if (isDarkMode) {
             applyDarkThemeToComponent(panel, new Color(18, 18, 18), new Color(30, 30, 30), 
@@ -135,7 +137,7 @@ public class Dashboard_RecruitersController {
                                        Color.BLACK, Color.LIGHT_GRAY);
         }
     }
-
+    //Applies dark theme to a container and its child components recursively.
     private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, 
                                           Color darkText, Color darkBorder) {
         for (Component component : container.getComponents()) {
@@ -208,7 +210,7 @@ public class Dashboard_RecruitersController {
             }
         }
     }
-
+    //Applies light theme to a container and its child components recursively.
     private void applyLightThemeToComponent(Container container, Color lightBg, Color lightPanel, 
                                            Color lightText, Color lightBorder) {
         for (Component component : container.getComponents()) {
@@ -296,7 +298,7 @@ public class Dashboard_RecruitersController {
             }
         }
     }
-
+    //Applies the current theme to the sidebar feature panel.
     private void applyFeaturePanelTheme() {
         // Assume view.featurePanel is the sidebar panel (similar to JobSeekers)
         view.featurePanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
@@ -311,8 +313,8 @@ public class Dashboard_RecruitersController {
         view.featurePanel.revalidate();
         view.featurePanel.repaint();
     }
-
-private JPanel createVacancyCard(Vacancy vacancy) {
+    //Creates a card UI component for displaying vacancy details.
+    private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(245, 245, 245));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -325,7 +327,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.insets = new Insets(10, 10, 6, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
-
+        // Job title label
         JLabel titleLabel = new JLabel("<html>" + vacancy.getJobTitle().replaceAll("\n", "<br>") + "</html>");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         titleLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
@@ -334,18 +336,18 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         card.add(titleLabel, gbc);
-
+        // Days left button
         JButton daysLeftButton = new JButton(vacancy.getDaysLeft() + " days left");
         styleButton(daysLeftButton);
         gbc.gridy = 1;
         gbc.gridwidth = 2;
         card.add(daysLeftButton, gbc);
-
+        // Job type button
         JButton jobTypeButton = new JButton(vacancy.getJobType());
         styleButton(jobTypeButton);
         gbc.gridy = 2;
         card.add(jobTypeButton, gbc);
-
+        // Experience level button
         JButton experienceButton = new JButton(vacancy.getExperienceLevel());
         styleButton(experienceButton);
         gbc.gridy = 3;
@@ -353,8 +355,8 @@ private JPanel createVacancyCard(Vacancy vacancy) {
 
         return card;
     }
-
-   private void styleButton(JButton button) {
+    //Styles a button with custom appearance and hover effects.
+    private void styleButton(JButton button) {
         button.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
         button.setForeground(Color.WHITE);
         button.setContentAreaFilled(false);
@@ -388,11 +390,12 @@ private JPanel createVacancyCard(Vacancy vacancy) {
             }
         });
     }
+    //Displays the dashboard panel with a welcome message and vacancy cards.
     public void showDashboardPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
+        // Create message panel for welcome text and buttons
         JPanel messagePanel = new JPanel();
         messagePanel.setBackground(new Color(0, 4, 80)); // Keep original dark blue
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
@@ -414,15 +417,17 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         messagePanel.add(right);
 
         messagePanel.add(Box.createVerticalStrut(12));
-
+        // Create button panel for Get Started and Learn More buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttonPanel.setBackground(new Color(0, 4, 80));
         JButton getStarted = new JButton("Get Started");
+        getStarted.setForeground(new Color(10, 10, 50));
         getStarted.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        getStarted.setForeground(isDarkMode ? Color.WHITE : new Color(0, 0, 102));
-        getStarted.setBackground(isDarkMode ? new Color(33, 150, 243) : null);
+        getStarted.setForeground(isDarkMode ? new Color(10, 10, 50) : new Color(0, 4, 80));
+        getStarted.setBackground(isDarkMode ? new Color(0, 4, 80) : null);
         getStarted.setPreferredSize(new Dimension(120, 30));
         getStarted.addActionListener(this::getStartedActionPerformed);
+        
         buttonPanel.add(getStarted);
 
         JButton learnMore = new JButton("Learn More");
@@ -443,7 +448,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
 
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         messagePanel.add(buttonPanel);
-
+        // Create panel for displaying vacancy cards
         JPanel vacanciesPanel = new JPanel(new GridBagLayout());
         vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -457,7 +462,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         scrollPane.setBorder(null);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+        // Fetch and display vacancies for the recruiter
         List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
         if (vacancies.isEmpty()) {
             JLabel noVacanciesLabel = new JLabel("No vacancies posted yet.");
@@ -492,12 +497,12 @@ private JPanel createVacancyCard(Vacancy vacancy) {
 
         updateContentPanel(mainPanel);
     }
-
+    //Displays the vacancy posting panel with a form for creating new vacancies.
     public void showVacancyPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-
+        // Create header panel with gradient background
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -517,7 +522,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
-
+        // Create form panel for vacancy input fields
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(252, 252, 252));
         formPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -562,7 +567,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridx = 1;
         gbc.gridy = 0;
         formPanel.add(jobTitleField, gbc);
-
+        // Job Title Row
         JLabel jobTypeLabel = new JLabel("Job Type:");
         jobTypeLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         jobTypeLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -578,7 +583,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridx = 1;
         gbc.gridy = 1;
         formPanel.add(jobTypeCombo, gbc);
-
+        // Experience Level Row
         JLabel experienceLabel = new JLabel("Experience Level:");
         experienceLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         experienceLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -594,7 +599,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridx = 1;
         gbc.gridy = 2;
         formPanel.add(experienceCombo, gbc);
-
+        // Deadline Date Row
         JLabel deadlineLabel = new JLabel("Deadline Date:");
         deadlineLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         deadlineLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -622,7 +627,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridx = 0;
         gbc.gridy = 4;
         formPanel.add(descriptionLabel, gbc);
-
+        // Status Label
         JTextArea descriptionArea = new JTextArea(6, 25);
         descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         descriptionArea.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
@@ -638,7 +643,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridx = 1;
         gbc.gridy = 4;
         formPanel.add(descriptionScroll, gbc);
-
+        // Post Vacancy Button
         JLabel statusLabel = new JLabel("");
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         statusLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
@@ -646,6 +651,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridy = 5;
         formPanel.add(statusLabel, gbc);
 
+        // Action listener for posting a vacancy
         JButton postButton = new JButton("Post Vacancy") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -672,20 +678,20 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(postButton, gbc);
-
+        // Action listener for posting a vacancy
         postButton.addActionListener(e -> {
             String jobTitle = jobTitleField.getText().trim();
             String jobType = (String) jobTypeCombo.getSelectedItem();
             String experienceLevel = (String) experienceCombo.getSelectedItem();
             Date deadlineDate = deadlineDateChooser.getDate();
             String description = descriptionArea.getText().trim();
-
+            // Validate input fields
             if (jobTitle.isEmpty() || jobType == null || experienceLevel == null || deadlineDate == null) {
                 statusLabel.setText("Please fill in all required fields.");
                 statusLabel.setForeground(Color.RED);
                 return;
             }
-
+            // Validate deadline date
             LocalDate currentDate = LocalDate.now();
             LocalDate selectedDate = deadlineDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
             long daysLeft = ChronoUnit.DAYS.between(currentDate, selectedDate);
@@ -694,7 +700,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
                 statusLabel.setForeground(Color.RED);
                 return;
             }
-
+            // Create and save vacancy
             Vacancy vacancy = new Vacancy();
             vacancy.setRecruiterId(recruiterId);
             vacancy.setJobTitle(jobTitle);
@@ -725,12 +731,13 @@ private JPanel createVacancyCard(Vacancy vacancy) {
 
         updateContentPanel(mainPanel);
     }
+    //Displays the applications panel showing all applications for the recruiter's vacancies.
 
     public void showApplicationsPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-
+        // Create header panel with gradient background
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -750,19 +757,19 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
-
+         // Create panel for application cards
         JPanel applicationsPanel = new JPanel(new GridBagLayout());
         applicationsPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         JScrollPane scrollPane = new JScrollPane(applicationsPanel);
         scrollPane.setBorder(null);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-
+        // Fetch and display applications
         List<Application> applications = applicationDao.getApplicationsByRecruiterId(recruiterId);
         if (applications.isEmpty()) {
             JLabel noApplicationsLabel = new JLabel("No applications received yet.");
@@ -787,7 +794,7 @@ private JPanel createVacancyCard(Vacancy vacancy) {
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         updateContentPanel(mainPanel);
     }
-
+    //Creates a card UI component for displaying application details.
     private JPanel createApplicationCard(Application app, ApplicationDao applicationDao) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
@@ -1337,7 +1344,78 @@ private JPanel createVacancyCard(Vacancy vacancy) {
     }
 
     public void searchFieldActionPerformed(ActionEvent e) {
-        System.out.println("Search: " + view.Searchfield.getText());
+        String searchText = view.Searchfield.getText().trim().toLowerCase();
+        if (searchText.isEmpty()) {
+            showDashboardPanel();
+            return;
+        }
+
+        JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
+        mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        JPanel messagePanel = new JPanel();
+        messagePanel.setBackground(new Color(0, 4, 80));
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        messagePanel.setPreferredSize(new Dimension(680, 140));
+
+        JLabel find = new JLabel("Search Results");
+        find.setFont(new Font("Segoe UI Symbol", Font.BOLD, 22));
+        find.setForeground(Color.WHITE);
+        find.setAlignmentX(Component.LEFT_ALIGNMENT);
+        messagePanel.add(find);
+
+        JPanel vacanciesPanel = new JPanel(new GridBagLayout());
+        vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        vacanciesPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        GridBagConstraints cardGbc = new GridBagConstraints();
+        cardGbc.insets = new Insets(8, 8, 8, 8);
+        cardGbc.fill = GridBagConstraints.NONE;
+        cardGbc.anchor = GridBagConstraints.NORTHWEST;
+
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
+        boolean found = false;
+        int gridx = 0;
+        int gridy = 0;
+        for (Vacancy vacancy : vacancies) {
+            if (vacancy.getJobTitle().toLowerCase().contains(searchText)) {
+                found = true;
+                JPanel vacancyCard = createVacancyCard(vacancy);
+                cardGbc.gridx = gridx;
+                cardGbc.gridy = gridy;
+                vacanciesPanel.add(vacancyCard, cardGbc);
+                gridx++;
+                if (gridx > 2) {
+                    gridx = 0;
+                    gridy++;
+                }
+            }
+        }
+
+        if (!found) {
+            JLabel noResultsLabel = new JLabel("No vacancies found matching '" + searchText + "'.");
+            noResultsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            noResultsLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+            noResultsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            cardGbc.gridx = 0;
+            cardGbc.gridy = 0;
+            vacanciesPanel.add(noResultsLabel, cardGbc);
+        }
+
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+        contentPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
+
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        updateContentPanel(mainPanel);
     }
 
     public void getStartedActionPerformed(ActionEvent e) {
