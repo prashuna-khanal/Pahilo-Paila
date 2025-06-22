@@ -49,7 +49,8 @@ public class Dashboard_RecruitersController {
         view.Searchfield.addActionListener(this::searchFieldActionPerformed);
         view.getStarted.addActionListener(this::getStartedActionPerformed);
         view.learnMore.addActionListener(this::learnMoreActionPerformed);
-        
+
+        // Add mouse listeners for navigation menu items
         view.dashboard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
@@ -87,7 +88,8 @@ public class Dashboard_RecruitersController {
             }
         });
     }
-
+    //Updates the content panel with a new panel, applying theme and hover effects.
+    //@param panel The new panel to display
     private void updateContentPanel(JPanel panel) {
         view.getContentPanel().removeAll();
         view.getContentPanel().setLayout(new BorderLayout());
@@ -97,12 +99,12 @@ public class Dashboard_RecruitersController {
         view.getContentPanel().revalidate();
         view.getContentPanel().repaint();
     }
-
+    //Applies hover effects to buttons within a panel recursively.
     private void addButtonHoverEffects(JPanel panel) {
         Component[] components = panel.getComponents();
         applyHoverEffectsRecursively(components);
     }
-
+    //Recursively applies hover effects to buttons within a component array
     private void applyHoverEffectsRecursively(Component[] components) {
         for (Component component : components) {
             if (component instanceof JButton) {
@@ -125,7 +127,7 @@ public class Dashboard_RecruitersController {
             }
         }
     }
-
+    //Applies the current theme (dark or light) to a panel and its components.
     private void applyThemeToPanel(JPanel panel) {
         if (isDarkMode) {
             applyDarkThemeToComponent(panel, new Color(18, 18, 18), new Color(30, 30, 30), 
