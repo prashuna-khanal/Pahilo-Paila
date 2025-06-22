@@ -583,3 +583,78 @@ public class PahiloPailaTest {
         try (ResultSet rsCv = cvDao.getCVByUserId(jobseekerId)) {
             Assert.assertTrue(rsCv.next()); cvId = rsCv.getInt("id");
         }
+
+        vacancyDao.saveVacancy(new Vacancy(0, recruiterId, "Job ById DAO", "Full time", "Entry-Level", 10, "Desc"));
+        List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
+        Assert.assertFalse("Recruiter should have vacancies.", vacancies.isEmpty());
+        int vacancyId = vacancies.get(0).getId();
+
+        applicationDao.saveApplication(jobseekerId, recruiterId, vacancyId, cvId);
+        List<Application> pendingApps = applicationDao.getApplicationsByRecruiterId(recruiterId);
+        Assert.assertFalse("Should retrieve at least one pending application.", pendingApps.isEmpty());
+        int applicationId = pendingApps.get(0).getId();
+
+        Application retrievedApp = applicationDao.getApplicationById(applicationId);
+        Assert.assertNotNull("Should retrieve application by ID (DAO direct).", retrievedApp);
+        Assert.assertEquals("Retrieved application's job seeker ID should match.", jobseekerId, retrievedApp.getJobSeekerId());
+        Assert.assertNotNull("Retrieved application should have CV details.", retrievedApp.getCv());
+        Assert.assertEquals("Retrieved CV's first name should match.", "JSByID", retrievedApp.getCv().getFirstName());
+    }
+
+    /**
+     * Test ApplicationDao.hasApplied.
+     */
+    @Test // JUnit 4 annotation
+    public void testApplicationDao_hasApplied_DAO() throws SQLException {
+        System.out.println("ApplicationDao: hasApplied (DAO direct)");
+        int jobseekerId = registerTestUser("App JS Has DAO", "app_js_has_dao@example.com", "pass", "Job Seeker");
+        int recruiterId = registerTestUser("App Rec Has DAO", "app_rec_has_dao@example.com", "pass", "Employer");
+
+        cvDao.saveCV(jobseekerId, "JS Has", "User", "1990-01-01", "111", "Edu", "Skills", "Exp");
+        int cvId;
+        try (ResultSet rsCv = cvDao.getCVByUserId(jobseekerId)) {
+            Assert.assertTrue(rsCv.next()); cvId = rsCv.getInt("id");
+        }
+
+        vacancyDao.saveVacancy(new Vacancy(0, recruiterId, "Job Has DAO", "Full time", "Entry-Level", 10, "Desc"));
+        List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
+        Assert.assertFalse("Recruiter should have vacancies.", vacancies.isEmpty());
+        int vacancyId = vacancies.get(0).getId();
+
+        Assert.assertFalse("Job seeker should not have applied yet.", applicationDao.hasApplied(jobseekerId, vacancyId));
+        applicationDao.saveApplication(jobseekerId, recruiterId, vacancyId, cvId);
+        Assert.assertTrue("Job seeker should have applied after saving (DAO direct).", applicationDao.hasApplied(jobseekerId, vacancyId));
+    }
+
+    /**
+     * Test ApplicationDao.updateApplicationStatus.
+     */
+    @Test // JUnit 4 annotation
+    public void testApplicationDao_updateApplicationStatus_DAO() throws SQLException {
+        System.out.println("ApplicationDao: updateApplicationStatus (DAO direct)");
+        int jobseekerId = registerTestUser("App JS Update DAO", "app_js_update_dao@example.com", "pass", "Job Seeker");
+        int recruiterId = registerTestUser("App Rec Update DAO", "app_rec_update_dao@example.com", "pass", "Employer");
+
+        cvDao.saveCV(jobseekerId, "JS Update", "User", "1990-01-01", "111", "Uni", "Skills", "Exp");
+        int cvId;
+        try (ResultSet rsCv = cvDao.getCVByUserId(jobseekerId)) {
+            Assert.assertTrue(rsCv.next()); cvId = rsCv.getInt("id");
+        }
+
+        vacancyDao.saveVacancy(new Vacancy(0, recruiterId, "Job Update DAO", "Full time", "Entry-Level", 10, "Desc"));
+        List<Vacancy> vacancies = vacancyDao.getVacanciesByRecruiterId(recruiterId);
+        Assert.assertFalse("Recruiter should have vacancies.", vacancies.isEmpty());
+        int vacancyId = vacancies.get(0).getId();
+
+        applicationDao.saveApplication(jobseekerId, recruiterId, vacancyId, cvId);
+        List<Application> pendingApps = applicationDao.getApplicationsByRecruiterId(recruiterId);
+        Assert.assertFalse("Should retrieve at least one pending application.", pendingApps.isEmpty());
+        int applicationId = pendingApps.get(0).getId();
+
+        boolean updated = applicationDao.updateApplicationStatus(applicationId, "Rejected");
+        Assert.assertTrue("Application status should be updated (DAO direct).", updated);
+
+        Application updatedApp = applicationDao.getApplicationById(applicationId);
+        Assert.assertEquals("Status should be 'Rejected' after update.", "Rejected", updatedApp.getStatus());
+    }
+}
