@@ -3,9 +3,11 @@ package pahilopaila.Controller;
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.CVDao;
+import pahilopaila.Dao.NotificationDao;
 import pahilopaila.Dao.RatingDao;
 import pahilopaila.Dao.UserDao;
 import pahilopaila.Dao.VacancyDao;
+import pahilopaila.model.Notification;
 import pahilopaila.model.UserData;
 import pahilopaila.model.Vacancy;
 import pahilopaila.view.Dashboard_JobSeekers;
@@ -17,11 +19,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Random;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Random;
 import javax.swing.text.JTextComponent;
 
 /**
@@ -32,6 +34,7 @@ public class Dashboard_JobseekersController {
     private final CVDao cvDao;
     private final VacancyDao vacancyDao;
     private final UserDao userDao;
+    private final NotificationDao notificationDao;
     private int userId;
     private String currentEmail;
     private static boolean isDarkMode = false;
@@ -52,9 +55,11 @@ public class Dashboard_JobseekersController {
         this.cvDao = new CVDao();
         this.vacancyDao = new VacancyDao();
         this.userDao = new UserDao();
+        this.notificationDao = new NotificationDao();
         initializeListeners();
-        applyFeaturePanelTheme(); // Apply initial theme to featurePanel
+        applyFeaturePanelTheme();
         showDashboardPanel();
+        loadNotifications(); // Load notifications on initialization
     }
 
     private void initializeListeners() {
@@ -71,6 +76,44 @@ public class Dashboard_JobseekersController {
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Vacancy label clicked");
                 showVacancyPanel();
+            }
+        });
+
+        // Listener for notifications to show popup
+        view.notifications.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Notifications label clicked");
+                if (!view.notificationsPressed) { // Prevent multiple popups
+                    List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
+                    view.showNotificationPopup(notifications); // Show the popup
+                    view.notificationsPressed = false;
+                    view.notificationsHovered = false;
+                    view.notifications.repaint();
+                }
+            }
+        });
+
+        // Listener for notification list (single click to mark as read)
+        view.notificationList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    Notification selected = view.notificationList.getSelectedValue();
+                    if (selected != null && !selected.isRead()) {
+                        markNotificationAsRead(selected.getId());
+                    }
+                }
+            }
+        });
+
+        // Listener for Mark All Read button
+        view.markAllReadButton.addActionListener(e -> {
+            if (notificationDao.markAllNotificationsRead(userId)) {
+                JOptionPane.showMessageDialog(view, "All notifications marked as read.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadNotifications();
+            } else {
+                JOptionPane.showMessageDialog(view, "Failed to mark notifications as read.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -115,6 +158,46 @@ public class Dashboard_JobseekersController {
         view.filter.addActionListener(this::handleFilter);
     }
 
+    // Public method for popup to mark a notification as read
+    public void markNotificationAsRead(int notificationId) {
+    String sql = "UPDATE notifications SET is_read = ? WHERE id = ?";
+    try (java.sql.Connection conn = pahilopaila.database.MySqlConnection.getInstance().getConnection();
+         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setBoolean(1, true);
+        stmt.setInt(2, notificationId);
+        int rows = stmt.executeUpdate();
+        if (rows > 0) {
+            System.out.println("Notification ID " + notificationId + " marked as read.");
+            loadNotifications(); // Refresh notifications and badge
+        } else {
+            System.err.println("Failed to mark notification ID " + notificationId + " as read.");
+        }
+    } catch (SQLException ex) {
+        System.err.println("Error marking notification as read: " + ex.getMessage());
+    }
+}
+
+    // Method to load notifications
+    public List<Notification> loadNotifications() {
+    if (notificationsEnabled) {
+        List<Notification> notifications = notificationDao.getNotificationsByUserId(userId);
+        view.updateNotifications(notifications); // This now updates the badge
+        return notifications;
+    }
+    view.updateNotifications(List.of()); // Clear notifications and badge if disabled
+    return List.of();
+}
+    // Method to create a notification
+    private void createNotification(int userId, String message, boolean isImportant) {
+    if (notificationsEnabled) {
+        String timestamp = ZonedDateTime.now(ZoneId.of("Asia/Kathmandu"))
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        boolean success = notificationDao.saveNotification(userId, message, timestamp, isImportant);
+        if (success) {
+            loadNotifications(); // Refresh notifications and badge
+        }
+    }
+}
     private void updateContentPanel(JPanel newPanel) {
         view.content.removeAll();
         view.content.setLayout(new java.awt.BorderLayout());
@@ -131,134 +214,127 @@ public class Dashboard_JobseekersController {
             applyDarkModeToSettings(false, panel);
         }
     }
-private void applyFeaturePanelTheme() {
-    // Set background color for the feature panel with a lighter dark mode
-    view.featurePanel.setBackground(isDarkMode ? new Color(70, 70, 70) : new Color(245, 245, 245)); // Lightened from 51,51,51
 
-    // Initialize or update logo panel
-    if (view.logo.getComponentCount() == 0) {
-        JLabel dynamicLogo = new JLabel();
-        dynamicLogo.setOpaque(false);
-        ImageIcon logoIcon = null;
-        try {
-            logoIcon = new ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"));
-            if (logoIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
-                dynamicLogo.setIcon(logoIcon);
-                System.out.println("Logo loaded successfully. Icon size: " + logoIcon.getIconWidth() + "x" + logoIcon.getIconHeight());
-            } else {
-                System.err.println("Logo image failed to load.");
+    private void applyFeaturePanelTheme() {
+        view.featurePanel.setBackground(isDarkMode ? new Color(70, 70, 70) : new Color(245, 245, 245));
+
+        if (view.logo.getComponentCount() == 0) {
+            JLabel dynamicLogo = new JLabel();
+            dynamicLogo.setOpaque(false);
+            ImageIcon logoIcon = null;
+            try {
+                logoIcon = new ImageIcon(getClass().getResource("/Image/pahilopaila_logo.png"));
+                if (logoIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                    dynamicLogo.setIcon(logoIcon);
+                    System.out.println("Logo loaded successfully. Icon size: " + logoIcon.getIconWidth() + "x" + logoIcon.getIconHeight());
+                } else {
+                    System.err.println("Logo image failed to load.");
+                    dynamicLogo.setText("Logo Unavailable");
+                    dynamicLogo.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading logo image: " + e.getMessage());
                 dynamicLogo.setText("Logo Unavailable");
                 dynamicLogo.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
             }
-        } catch (Exception e) {
-            System.err.println("Error loading logo image: " + e.getMessage());
-            dynamicLogo.setText("Logo Unavailable");
-            dynamicLogo.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
-        }
 
-        // Reduced preferred size of logo
-        int logoWidth = (logoIcon != null && logoIcon.getIconWidth() > 0) ? logoIcon.getIconWidth() : 120; // Reduced from 150
-        int logoHeight = (logoIcon != null && logoIcon.getIconHeight() > 0) ? logoIcon.getIconHeight() : 80;
-        dynamicLogo.setPreferredSize(new Dimension(logoWidth, logoHeight));
-        view.logo.setOpaque(false);
-        view.logo.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        view.logo.add(dynamicLogo, gbc);
-        view.logo.setPreferredSize(new Dimension(logoWidth, logoHeight)); // Reduced from 150x80
-    } else {
-        // Update existing logo to force image repaint
-        Component logoComp = view.logo.getComponent(0);
-        if (logoComp instanceof JLabel) {
-            JLabel dynamicLogo = (JLabel) logoComp;
-            ImageIcon logoIcon = (ImageIcon) dynamicLogo.getIcon();
-            if (logoIcon != null) {
-                logoIcon.getImage().flush();
-                dynamicLogo.setIcon(new ImageIcon(logoIcon.getImage()));
-                System.out.println("Logo icon refreshed. New size: " + logoIcon.getIconWidth() + "x" + logoIcon.getIconHeight());
+            int logoWidth = (logoIcon != null && logoIcon.getIconWidth() > 0) ? logoIcon.getIconWidth() : 120;
+            int logoHeight = (logoIcon != null && logoIcon.getIconHeight() > 0) ? logoIcon.getIconHeight() : 80;
+            dynamicLogo.setPreferredSize(new Dimension(logoWidth, logoHeight));
+            view.logo.setOpaque(false);
+            view.logo.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.anchor = GridBagConstraints.CENTER;
+            view.logo.add(dynamicLogo, gbc);
+            view.logo.setPreferredSize(new Dimension(logoWidth, logoHeight));
+        } else {
+            Component logoComp = view.logo.getComponent(0);
+            if (logoComp instanceof JLabel) {
+                JLabel dynamicLogo = (JLabel) logoComp;
+                ImageIcon logoIcon = (ImageIcon) dynamicLogo.getIcon();
+                if (logoIcon != null) {
+                    logoIcon.getImage().flush();
+                    dynamicLogo.setIcon(new ImageIcon(logoIcon.getImage()));
+                    System.out.println("Logo icon refreshed. New size: " + logoIcon.getIconWidth() + "x" + logoIcon.getIconHeight());
+                }
+                dynamicLogo.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
+                dynamicLogo.repaint();
             }
-            dynamicLogo.setForeground(isDarkMode ? Color.WHITE : Color.BLACK); // Update text color if placeholder
-            dynamicLogo.repaint();
         }
-    }
 
-    // Debug logo state
-    if (view.logo.getComponentCount() > 0) {
-        Component logoComp = view.logo.getComponent(0);
-        System.out.println("Logo component: " + logoComp.getClass().getSimpleName() + 
-                           ", Visible: " + logoComp.isVisible() + 
-                           ", Bounds: " + logoComp.getBounds() + 
-                           ", Parent visible: " + view.logo.isVisible() + 
-                           ", Parent bounds: " + view.logo.getBounds());
-    }
-
-    // Create or update top panel
-    JPanel topPanel = new JPanel();
-    topPanel.setPreferredSize(new Dimension(0, 80)); // Height unchanged
-    topPanel.setBackground(isDarkMode ? Color.WHITE : new Color(245, 245, 245));
-    topPanel.setOpaque(false); // Ensure transparency
-    topPanel.setLayout(new BorderLayout());
-    topPanel.removeAll(); // Clear to avoid duplicate adds
-    topPanel.add(view.logo, BorderLayout.CENTER);
-
-    // Setup GroupLayout for feature panel with reduced width
-    javax.swing.GroupLayout featurePanelLayout = new javax.swing.GroupLayout(view.featurePanel);
-    view.featurePanel.setLayout(featurePanelLayout);
-    featurePanelLayout.setHorizontalGroup(
-        featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE) // Reduced max width to 140
-            .addGroup(featurePanelLayout.createSequentialGroup()
-                .addGap(15, 15, 15) // Reduced from 25 to 15
-                .addGroup(featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(view.dashboard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(view.vacancy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(view.CV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(view.settings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(view.myAccount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(view.signOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(20, Short.MAX_VALUE)) // Reduced from 30 to 20
-    );
-    featurePanelLayout.setVerticalGroup(
-        featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(featurePanelLayout.createSequentialGroup()
-                .addComponent(topPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addComponent(view.dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(view.vacancy, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(view.CV, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(view.settings, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(85, 85, 85)
-                .addComponent(view.myAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(view.signOut, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(105, Short.MAX_VALUE))
-    );
-
-    // Apply theme to inner panels, including darkening button backgrounds
-    for (Component comp : view.featurePanel.getComponents()) {
-        if (comp instanceof JPanel && comp != view.logo && comp != topPanel) {
-            JPanel panel = (JPanel) comp;
-            panel.setBackground(isDarkMode ? new Color(40, 40, 40) : Color.WHITE); // Darkened from white in dark mode
-            applyThemeToPanel(panel);
+        if (view.logo.getComponentCount() > 0) {
+            Component logoComp = view.logo.getComponent(0);
+            System.out.println("Logo component: " + logoComp.getClass().getSimpleName() +
+                               ", Visible: " + logoComp.isVisible() +
+                               ", Bounds: " + logoComp.getBounds() +
+                               ", Parent visible: " + view.logo.isVisible() +
+                               ", Parent bounds: " + view.logo.getBounds());
         }
-    }
 
-    // Force complete UI refresh
-    topPanel.revalidate();
-    topPanel.repaint();
-    view.logo.revalidate();
-    view.logo.repaint();
-    view.featurePanel.revalidate();
-    view.featurePanel.repaint();
-    SwingUtilities.invokeLater(() -> {
+        JPanel topPanel = new JPanel();
+        topPanel.setPreferredSize(new Dimension(0, 80));
+        topPanel.setBackground(isDarkMode ? Color.WHITE : new Color(245, 245, 245));
+        topPanel.setOpaque(false);
+        topPanel.setLayout(new BorderLayout());
+        topPanel.removeAll();
+        topPanel.add(view.logo, BorderLayout.CENTER);
+
+        javax.swing.GroupLayout featurePanelLayout = new javax.swing.GroupLayout(view.featurePanel);
+        view.featurePanel.setLayout(featurePanelLayout);
+        featurePanelLayout.setHorizontalGroup(
+            featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                .addGroup(featurePanelLayout.createSequentialGroup()
+                    .addGap(15, 15, 15)
+                    .addGroup(featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(view.dashboard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(view.vacancy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(view.CV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(view.settings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(view.myAccount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(view.signOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addContainerGap(20, Short.MAX_VALUE))
+        );
+        featurePanelLayout.setVerticalGroup(
+            featurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(featurePanelLayout.createSequentialGroup()
+                    .addComponent(topPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(29, 29, 29)
+                    .addComponent(view.dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(view.vacancy, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(view.CV, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(view.settings, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(85, 85, 85)
+                    .addComponent(view.myAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(view.signOut, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(105, Short.MAX_VALUE))
+        );
+
+        for (Component comp : view.featurePanel.getComponents()) {
+            if (comp instanceof JPanel && comp != view.logo && comp != topPanel) {
+                JPanel panel = (JPanel) comp;
+                panel.setBackground(isDarkMode ? new Color(40, 40, 40) : Color.WHITE);
+                applyThemeToPanel(panel);
+            }
+        }
+
+        topPanel.revalidate();
+        topPanel.repaint();
+        view.logo.revalidate();
+        view.logo.repaint();
+        view.featurePanel.revalidate();
         view.featurePanel.repaint();
-        System.out.println("Theme applied. Mode: " + (isDarkMode ? "Dark" : "Light") + 
-                           ", Logo visible: " + (view.logo.getComponentCount() > 0 && view.logo.getComponent(0).isVisible()));
-    });
-}
+        SwingUtilities.invokeLater(() -> {
+            view.featurePanel.repaint();
+            System.out.println("Theme applied. Mode: " + (isDarkMode ? "Dark" : "Light") +
+                               ", Logo visible: " + (view.logo.getComponentCount() > 0 && view.logo.getComponent(0).isVisible()));
+        });
+    }
+
     private JPanel createVacancyCard(Vacancy vacancy) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(245, 245, 245));
@@ -340,7 +416,14 @@ private void applyFeaturePanelTheme() {
                 rs.close();
                 boolean success = applicationDao.saveApplication(userId, vacancy.getRecruiterId(), vacancy.getId(), cvId);
                 if (success) {
-                    JOptionPane.showMessageDialog(view, "Application submitted successfully!", "Success ", JOptionPane.INFORMATION_MESSAGE);
+                    String jobSeekerMessage = "You have successfully applied for the position: " + vacancy.getJobTitle();
+                    createNotification(userId, jobSeekerMessage, true);
+
+                    UserData jobSeeker = userDao.getUserById(userId);
+                    String recruiterMessage = "New application received from " + jobSeeker.getName() + " for position: " + vacancy.getJobTitle();
+                    createNotification(vacancy.getRecruiterId(), recruiterMessage, true);
+
+                    JOptionPane.showMessageDialog(view, "Application submitted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(view, "Failed to submit application. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -353,132 +436,129 @@ private void applyFeaturePanelTheme() {
         return card;
     }
 
-public void showDashboardPanel() {
-    System.out.println("Navigating to Dashboard");
-    JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
-    contentPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245)); // Lightened from 25,25,25
+    public void showDashboardPanel() {
+        System.out.println("Navigating to Dashboard");
+        JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
+        contentPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
 
-    // Create a wrapper panel with BoxLayout for vertical control
-    JPanel wrapperPanel = new JPanel();
-    wrapperPanel.setLayout(new BoxLayout(wrapperPanel, BoxLayout.Y_AXIS));
-    wrapperPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245)); // Match contentPanel
+        JPanel wrapperPanel = new JPanel();
+        wrapperPanel.setLayout(new BoxLayout(wrapperPanel, BoxLayout.Y_AXIS));
+        wrapperPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
 
-    // Add left padding for horizontal gap
-    JPanel leftPadding = new JPanel();
-    leftPadding.setPreferredSize(new Dimension(25, 0)); // Match featurePanel gap
-    leftPadding.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
-    wrapperPanel.add(leftPadding);
+        JPanel leftPadding = new JPanel();
+        leftPadding.setPreferredSize(new Dimension(25, 0));
+        leftPadding.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        wrapperPanel.add(leftPadding);
 
-    // Message panel
-    JPanel messagePanel = new JPanel(new BorderLayout());
-    messagePanel.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(0, 4, 80)); // Original color unchanged
-    messagePanel.setLayout(new javax.swing.GroupLayout(messagePanel));
+        wrapperPanel.add(Box.createVerticalStrut(15));
 
-    JLabel discover = new JLabel("Discover Opportunities That");
-    discover.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
-    discover.setForeground(isDarkMode ? Color.WHITE : new Color(255, 255, 255));
+        JPanel messagePanel = new JPanel(new BorderLayout());
+        messagePanel.setBackground(isDarkMode ? new Color(0, 4, 80) : new Color(0, 4, 80));
+        messagePanel.setLayout(new javax.swing.GroupLayout(messagePanel));
 
-    JLabel match = new JLabel("Match Your Skill");
-    match.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
-    match.setForeground(isDarkMode ? Color.WHITE : new Color(255, 255, 255));
+        JLabel discover = new JLabel("Discover Opportunities That");
+        discover.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
+        discover.setForeground(isDarkMode ? Color.WHITE : new Color(255, 255, 255));
 
-    JButton getStarted = new JButton("Get Started");
-    getStarted.setForeground(isDarkMode ? Color.WHITE : new Color(0, 0, 102));
-    getStarted.setBackground(isDarkMode ? new Color(20, 20, 20) : null); // Darkened from 33,150,243
-    getStarted.addActionListener(this::handleGetStarted);
+        JLabel match = new JLabel("Match Your Skill");
+        match.setFont(new java.awt.Font("Segoe UI Symbol", 1, 24));
+        match.setForeground(isDarkMode ? Color.WHITE : new Color(255, 255, 255));
 
-    JButton learnMore = new JButton("Learn More");
-    learnMore.setForeground(isDarkMode ? Color.WHITE : new Color(255, 255, 255));
-    learnMore.setBackground(isDarkMode ? new Color(10, 10, 50) : new Color(0, 4, 80)); // Darkened from 0,4,80
-    learnMore.setBorder(isDarkMode ? BorderFactory.createEmptyBorder() : javax.swing.BorderFactory.createTitledBorder(null, "",
-        javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
-        javax.swing.border.TitledBorder.DEFAULT_POSITION,
-        new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255)));
-    learnMore.addActionListener(this::handleLearnMore);
+        JButton getStarted = new JButton("Get Started");
+        getStarted.setForeground(isDarkMode ? Color.WHITE : new Color(0, 0, 102));
+        getStarted.setBackground(isDarkMode ? new Color(20, 20, 20) : null);
+        getStarted.addActionListener(this::handleGetStarted);
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(messagePanel);
-    messagePanel.setLayout(layout);
-    layout.setHorizontalGroup(
-        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(discover, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(match, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(276, Short.MAX_VALUE))
-    );
-    layout.setVerticalGroup(
-        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(discover)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(match)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(getStarted)
-                    .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(12, Short.MAX_VALUE))
-    );
+        JButton learnMore = new JButton("Learn More");
+        learnMore.setForeground(isDarkMode ? Color.WHITE : new Color(255, 255, 255));
+        learnMore.setBackground(isDarkMode ? new Color(10, 10, 50) : new Color(0, 4, 80));
+        learnMore.setBorder(isDarkMode ? BorderFactory.createEmptyBorder() : javax.swing.BorderFactory.createTitledBorder(null, "",
+            javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+            javax.swing.border.TitledBorder.DEFAULT_POSITION,
+            new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(255, 255, 255)));
+        learnMore.addActionListener(this::handleLearnMore);
 
-    // Featured panel (containing vacancies)
-    JPanel featuredPanel = new JPanel(new BorderLayout());
-    featuredPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245)); // Match contentPanel
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(messagePanel);
+        messagePanel.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(39, 39, 39)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(discover, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(match, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(getStarted, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addContainerGap(276, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(discover)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(match)
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(getStarted)
+                        .addComponent(learnMore, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(12, Short.MAX_VALUE))
+        );
 
-    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    headerPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
-    JLabel featuredLabel = new JLabel("Featured Jobs");
-    featuredLabel.setFont(new Font("Microsoft Himalaya", Font.BOLD, 36));
-    featuredLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
-    headerPanel.add(featuredLabel);
+        JPanel featuredPanel = new JPanel(new BorderLayout());
+        featuredPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
 
-    JButton seeAllButton = new JButton("See all");
-    seeAllButton.setBackground(isDarkMode ? new Color(20, 20, 20) : new Color(0, 4, 80)); // Darkened
-    seeAllButton.setForeground(Color.WHITE);
-    seeAllButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
-    seeAllButton.addActionListener(this::handleSeeAll);
-    headerPanel.add(Box.createHorizontalGlue());
-    headerPanel.add(seeAllButton);
-    featuredPanel.add(headerPanel, BorderLayout.NORTH);
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        headerPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        JLabel featuredLabel = new JLabel("Featured Jobs");
+        featuredLabel.setFont(new Font("Microsoft Himalaya", Font.BOLD, 36));
+        featuredLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
+        headerPanel.add(featuredLabel);
 
-    JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
-    vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
-    JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
-    scrollPane.setBorder(null);
+        JButton seeAllButton = new JButton("See all");
+        seeAllButton.setBackground(isDarkMode ? new Color(20, 20, 20) : new Color(0, 4, 80));
+        seeAllButton.setForeground(Color.WHITE);
+        seeAllButton.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
+        seeAllButton.addActionListener(this::handleSeeAll);
+        headerPanel.add(Box.createHorizontalGlue());
+        headerPanel.add(seeAllButton);
+        featuredPanel.add(headerPanel, BorderLayout.NORTH);
 
-    List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
-    if (allVacancies.isEmpty()) {
-        JLabel noVacanciesLabel = new JLabel("No vacancies available.");
-        noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        noVacanciesLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
-        noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        vacanciesPanel.add(noVacanciesLabel);
-    } else {
-        Random rand = new Random();
-        int count = Math.min(3, allVacancies.size());
-        java.util.Collections.shuffle(allVacancies, rand);
-        for (int i = 0; i < count; i++) {
-            JPanel card = createVacancyCard(allVacancies.get(i));
-            vacanciesPanel.add(card);
+        JPanel vacanciesPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+        vacanciesPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
+        JScrollPane scrollPane = new JScrollPane(vacanciesPanel);
+        scrollPane.setBorder(null);
+
+        List<Vacancy> allVacancies = vacancyDao.getAllVacancies();
+        if (allVacancies.isEmpty()) {
+            JLabel noVacanciesLabel = new JLabel("No vacancies available.");
+            noVacanciesLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            noVacanciesLabel.setForeground(isDarkMode ? Color.WHITE : new Color(0, 4, 80));
+            noVacanciesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            vacanciesPanel.add(noVacanciesLabel);
+        } else {
+            Random rand = new Random();
+            int count = Math.min(3, allVacancies.size());
+            java.util.Collections.shuffle(allVacancies, rand);
+            for (int i = 0; i < count; i++) {
+                JPanel card = createVacancyCard(allVacancies.get(i));
+                vacanciesPanel.add(card);
+            }
         }
+
+        featuredPanel.add(scrollPane, BorderLayout.CENTER);
+
+        wrapperPanel.add(messagePanel);
+        wrapperPanel.add(Box.createVerticalStrut(15));
+        wrapperPanel.add(featuredPanel);
+
+        contentPanel.add(wrapperPanel, BorderLayout.CENTER);
+
+        updateContentPanel(contentPanel);
+        loadNotifications(); // Keep this to ensure notifications are loaded for the popup
     }
-
-    featuredPanel.add(scrollPane, BorderLayout.CENTER);
-
-    // Add panels to wrapper with explicit gap
-    wrapperPanel.add(messagePanel);
-    wrapperPanel.add(Box.createVerticalStrut(15)); // Consistent gap
-    wrapperPanel.add(featuredPanel);
-
-    // Add wrapper to content panel
-    contentPanel.add(wrapperPanel, BorderLayout.CENTER);
-
-    updateContentPanel(contentPanel);
-}
 
     public void showVacancyPanel() {
         System.out.println("Navigating to Vacancy");
@@ -977,8 +1057,9 @@ public void showDashboardPanel() {
 
         darkModeCheck.addActionListener(e -> {
             isDarkMode = darkModeCheck.isSelected();
+            view.toggleDarkMode(isDarkMode);
             applyDarkModeToSettings(isDarkMode, settingsPanel);
-            applyFeaturePanelTheme(); // Update featurePanel theme
+            applyFeaturePanelTheme();
             String status = isDarkMode ? "enabled" : "disabled";
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(settingsPanel),
                 "Dark mode " + status + " successfully!",
@@ -990,6 +1071,11 @@ public void showDashboardPanel() {
             notificationsEnabled = notificationCheck.isSelected();
             String status = notificationsEnabled ? "enabled" : "disabled";
             System.out.println("Notifications " + status);
+            if (!notificationsEnabled) {
+                view.updateNotifications(List.of());
+            } else {
+                loadNotifications();
+            }
         });
 
         contactUsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1019,8 +1105,9 @@ public void showDashboardPanel() {
         updateButton.addActionListener(e -> {
             isDarkMode = darkModeCheck.isSelected();
             notificationsEnabled = notificationCheck.isSelected();
+            view.toggleDarkMode(isDarkMode);
             applyDarkModeToSettings(isDarkMode, settingsPanel);
-            applyFeaturePanelTheme(); // Update featurePanel theme
+            applyFeaturePanelTheme();
             StringBuilder message = new StringBuilder("Settings Updated Successfully!\n\n");
             message.append("Dark Mode: ").append(isDarkMode ? "Enabled" : "Disabled").append("\n");
             message.append("Notifications: ").append(notificationsEnabled ? "Enabled" : "Disabled");
@@ -1028,6 +1115,11 @@ public void showDashboardPanel() {
                 message.toString(),
                 "Settings Updated",
                 JOptionPane.INFORMATION_MESSAGE);
+            if (!notificationsEnabled) {
+                view.updateNotifications(List.of());
+            } else {
+                loadNotifications();
+            }
         });
 
         JPanel centerPanel = new JPanel();
@@ -1057,6 +1149,9 @@ public void showDashboardPanel() {
             }
 
             applyDarkThemeToComponent(settingsPanel, darkBackground, darkPanel, darkText, darkBorder);
+            // Explicitly apply theme to notifications label
+            view.notifications.setForeground(new Color(220, 220, 220));
+            view.notifications.setBackground(darkPanel);
         } else {
             Color lightBackground = Color.WHITE;
             Color lightPanel = new Color(245, 245, 245);
@@ -1071,12 +1166,16 @@ public void showDashboardPanel() {
             }
 
             applyLightThemeToComponent(settingsPanel, lightBackground, lightPanel, lightText, lightBorder);
+            // Explicitly apply theme to notifications label
+            view.notifications.setForeground(new Color(51, 51, 51));
+            view.notifications.setBackground(lightPanel);
         }
 
         if (parentWindow != null) {
             parentWindow.repaint();
         }
         settingsPanel.repaint();
+        view.notifications.repaint();
     }
 
     private void applyDarkThemeToComponent(Container container, Color darkBg, Color darkPanel, Color darkText, Color darkBorder) {
@@ -1085,7 +1184,6 @@ public void showDashboardPanel() {
                 JPanel panel = (JPanel) component;
                 if (panel.getBackground().equals(new Color(0, 20, 90)) ||
                     panel.getBackground().equals(new Color(0, 4, 80))) {
-                    // Keep original dark blue for title bars
                 } else if (panel.getBackground().equals(Color.WHITE) ||
                            panel.getBackground().equals(new Color(252, 252, 252)) ||
                            panel.getBackground().equals(new Color(245, 245, 245)) ||
@@ -1142,7 +1240,6 @@ public void showDashboardPanel() {
                 JPanel panel = (JPanel) component;
                 if (panel.getBackground().equals(new Color(0, 20, 90)) ||
                     panel.getBackground().equals(new Color(0, 4, 80))) {
-                    // Keep original dark blue for title bars
                 } else if (panel.getBackground().equals(new Color(37, 38, 38))) {
                     panel.setBackground(Color.WHITE);
                 } else if (panel.getBackground().equals(new Color(45, 45, 48))) {
@@ -1207,7 +1304,6 @@ public void showDashboardPanel() {
             }
         }
     }
-
     public void showMyAccountPanel() {
         System.out.println("Navigating to My Account");
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
