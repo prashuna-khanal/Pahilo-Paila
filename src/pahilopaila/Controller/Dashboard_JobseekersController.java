@@ -1,5 +1,5 @@
 package pahilopaila.Controller;
-
+// Import required libraries for UI components, database operations, and utilities
 import com.toedter.calendar.JDateChooser;
 import pahilopaila.Dao.ApplicationDao;
 import pahilopaila.Dao.CVDao;
@@ -57,7 +57,7 @@ public class Dashboard_JobseekersController {
         showDashboardPanel();
     }
 
-    private void initializeListeners() {
+    private void initializeListeners() { // Listener for the dashboard label click
         view.dashboard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -65,7 +65,7 @@ public class Dashboard_JobseekersController {
                 showDashboardPanel();
             }
         });
-
+         // Listener for the vacancy label click
         view.vacancy.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -1567,6 +1567,7 @@ public void showDashboardPanel() {
     showFilterPanel();
 }
 
+//Filter panel made for job seekers
 private void showFilterPanel() {
     JDialog filterDialog = new JDialog(SwingUtilities.getWindowAncestor(view) instanceof Frame
             ? (Frame) SwingUtilities.getWindowAncestor(view)
@@ -1662,6 +1663,7 @@ private void showFilterPanel() {
     filterPanel.add(buttonPanel, gbc);
 
     // Apply Filter Action
+    //clear button included
     view.getApplyFilterButton().addActionListener(e -> {
         String jobTitle = jobTitleField.getText().trim();
         jobType = view.getJobTypeFilter();
