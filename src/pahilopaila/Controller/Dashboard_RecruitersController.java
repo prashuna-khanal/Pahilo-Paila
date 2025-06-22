@@ -497,12 +497,12 @@ public class Dashboard_RecruitersController {
 
         updateContentPanel(mainPanel);
     }
-
+    //Displays the vacancy posting panel with a form for creating new vacancies.
     public void showVacancyPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-
+        // Create header panel with gradient background
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -522,7 +522,7 @@ public class Dashboard_RecruitersController {
         headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
-
+        // Create form panel for vacancy input fields
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(252, 252, 252));
         formPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -567,7 +567,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 0;
         formPanel.add(jobTitleField, gbc);
-
+        // Job Title Row
         JLabel jobTypeLabel = new JLabel("Job Type:");
         jobTypeLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         jobTypeLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -583,7 +583,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 1;
         formPanel.add(jobTypeCombo, gbc);
-
+        // Experience Level Row
         JLabel experienceLabel = new JLabel("Experience Level:");
         experienceLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         experienceLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -599,7 +599,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 2;
         formPanel.add(experienceCombo, gbc);
-
+        // Deadline Date Row
         JLabel deadlineLabel = new JLabel("Deadline Date:");
         deadlineLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         deadlineLabel.setForeground(isDarkMode ? new Color(100, 181, 246) : new Color(0, 0, 102));
@@ -627,7 +627,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 0;
         gbc.gridy = 4;
         formPanel.add(descriptionLabel, gbc);
-
+        // Status Label
         JTextArea descriptionArea = new JTextArea(6, 25);
         descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         descriptionArea.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
@@ -643,14 +643,15 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 4;
         formPanel.add(descriptionScroll, gbc);
-
+        // Post Vacancy Button
         JLabel statusLabel = new JLabel("");
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         statusLabel.setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
         gbc.gridx = 1;
         gbc.gridy = 5;
         formPanel.add(statusLabel, gbc);
-
+        
+        // Action listener for posting a vacancy
         JButton postButton = new JButton("Post Vacancy") {
             @Override
             protected void paintComponent(Graphics g) {
