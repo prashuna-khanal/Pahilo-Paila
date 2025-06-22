@@ -650,7 +650,7 @@ public class Dashboard_RecruitersController {
         gbc.gridx = 1;
         gbc.gridy = 5;
         formPanel.add(statusLabel, gbc);
-        
+
         // Action listener for posting a vacancy
         JButton postButton = new JButton("Post Vacancy") {
             @Override
@@ -678,20 +678,20 @@ public class Dashboard_RecruitersController {
         gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(postButton, gbc);
-
+        // Action listener for posting a vacancy
         postButton.addActionListener(e -> {
             String jobTitle = jobTitleField.getText().trim();
             String jobType = (String) jobTypeCombo.getSelectedItem();
             String experienceLevel = (String) experienceCombo.getSelectedItem();
             Date deadlineDate = deadlineDateChooser.getDate();
             String description = descriptionArea.getText().trim();
-
+            // Validate input fields
             if (jobTitle.isEmpty() || jobType == null || experienceLevel == null || deadlineDate == null) {
                 statusLabel.setText("Please fill in all required fields.");
                 statusLabel.setForeground(Color.RED);
                 return;
             }
-
+            // Validate deadline date
             LocalDate currentDate = LocalDate.now();
             LocalDate selectedDate = deadlineDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
             long daysLeft = ChronoUnit.DAYS.between(currentDate, selectedDate);
@@ -700,7 +700,7 @@ public class Dashboard_RecruitersController {
                 statusLabel.setForeground(Color.RED);
                 return;
             }
-
+            // Create and save vacancy
             Vacancy vacancy = new Vacancy();
             vacancy.setRecruiterId(recruiterId);
             vacancy.setJobTitle(jobTitle);
@@ -731,12 +731,13 @@ public class Dashboard_RecruitersController {
 
         updateContentPanel(mainPanel);
     }
+    //Displays the applications panel showing all applications for the recruiter's vacancies.
 
     public void showApplicationsPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout(12, 12));
         mainPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-
+        // Create header panel with gradient background
         JPanel headerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -756,19 +757,19 @@ public class Dashboard_RecruitersController {
         headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
-
+         // Create panel for application cards
         JPanel applicationsPanel = new JPanel(new GridBagLayout());
         applicationsPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         JScrollPane scrollPane = new JScrollPane(applicationsPanel);
         scrollPane.setBorder(null);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-
+        // Fetch and display applications
         List<Application> applications = applicationDao.getApplicationsByRecruiterId(recruiterId);
         if (applications.isEmpty()) {
             JLabel noApplicationsLabel = new JLabel("No applications received yet.");
@@ -793,7 +794,7 @@ public class Dashboard_RecruitersController {
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         updateContentPanel(mainPanel);
     }
-
+    //Creates a card UI component for displaying application details.
     private JPanel createApplicationCard(Application app, ApplicationDao applicationDao) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
