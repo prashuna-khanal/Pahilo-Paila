@@ -81,6 +81,7 @@ public class Dashboard_RecruitersController {
             public void mouseClicked(MouseEvent evt) {
                 List<Notification> notifications = loadNotifications();
                 view.showNotificationPopup(notifications);
+                // Reset pressed and hovered states
                 try {
                     java.lang.reflect.Field pressedField = Dashboard_Recruiters.class.getDeclaredField("notificationsPressed");
                     java.lang.reflect.Field hoveredField = Dashboard_Recruiters.class.getDeclaredField("notificationsHovered");
@@ -125,7 +126,13 @@ public class Dashboard_RecruitersController {
                 }
             }
         });
-        view.markAllReadButton.addActionListener(e -> markAllNotificationsAsRead());
+        view.markAllReadButton.addActionListener(e -> {
+            notificationDao.markAllNotificationsRead(recruiterId);
+            List<Notification> notifications = loadNotifications();
+            view.showNotificationPopup(notifications);
+            showNotificationsPanel();
+            JOptionPane.showMessageDialog(view, "All notifications marked as read.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        });
     }
 
     public void open() {
@@ -142,7 +149,7 @@ public class Dashboard_RecruitersController {
         lastNotificationCount = notifications.size();
         SwingUtilities.invokeLater(() -> {
             view.updateNotifications(notifications);
-            view.setUnreadNotificationCount(unreadCount);
+            view.setUnreadNotificationCount(unreadCount); // Update badge
         });
         return notifications;
     }
@@ -150,18 +157,10 @@ public class Dashboard_RecruitersController {
     public void markNotificationAsRead(int notificationId) {
         boolean success = notificationDao.markNotificationRead(notificationId);
         if (success) {
-            loadNotifications();
+            loadNotifications(); // Reload notifications to update badge and list
         } else {
             JOptionPane.showMessageDialog(view, "Failed to mark notification as read.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    public void markAllNotificationsAsRead() {
-        notificationDao.markAllNotificationsRead(recruiterId);
-        List<Notification> notifications = loadNotifications();
-        view.showNotificationPopup(notifications);
-        showNotificationsPanel();
-        JOptionPane.showMessageDialog(view, "All notifications marked as read.", "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void checkForNewNotifications() {

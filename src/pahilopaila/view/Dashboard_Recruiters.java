@@ -64,35 +64,36 @@ public class Dashboard_Recruiters extends JFrame {
         applyTheme();
     }
 
+    // Method to set controller reference
     public void setController(Dashboard_RecruitersController controller) {
         this.controller = controller;
     }
 
+    // Method to update unread notification count for badge
     public void setUnreadNotificationCount(int count) {
         this.unreadNotificationCount = count;
-        notifications.repaint();
+        notifications.repaint(); // Repaint to update the badge
     }
 
- public void showNotificationPopup(List<Notification> notifications) {
+public void showNotificationPopup(List<Notification> notifications) {
     JPopupMenu popupMenu = new JPopupMenu();
     popupMenu.setBorder(BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200), 1));
     popupMenu.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
 
-    JPanel popupPanel = new JPanel();
-    popupPanel.setLayout(new BorderLayout(0, 5));
+    // Main panel
+    JPanel popupPanel = new JPanel(new BorderLayout());
     popupPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
     popupPanel.setBorder(new EmptyBorder(5, 0, 5, 0));
-    // Dynamically adjust popup height based on content, up to 400px
-    int estimatedHeight = Math.min(notifications.size() * 80 + 100, 400); // Increased estimate for wrapped text
-    popupPanel.setPreferredSize(new Dimension(350, estimatedHeight));
+    popupPanel.setPreferredSize(new Dimension(350, Math.min(notifications.size() * 75 + 50, 400)));
 
-    JPanel headerPanel = new JPanel(new BorderLayout(0, 0));
+    // Header
+    JPanel headerPanel = new JPanel(new BorderLayout(10, 10));
     headerPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
     headerPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
+
     JLabel titleLabel = new JLabel("Notifications");
     titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
     titleLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
-    headerPanel.add(titleLabel, BorderLayout.WEST);
 
     JButton markAllReadButton = new JButton("Mark All as Read");
     markAllReadButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -100,66 +101,30 @@ public class Dashboard_Recruiters extends JFrame {
     markAllReadButton.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
     markAllReadButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     markAllReadButton.setFocusPainted(false);
-    markAllReadButton.addActionListener(e -> {
-        if (controller != null) {
-            controller.markAllNotificationsAsRead();
-            popupMenu.setVisible(false);
-        }
-    });
-    headerPanel.add(markAllReadButton, BorderLayout.EAST);
 
+    headerPanel.add(titleLabel, BorderLayout.WEST);
+    headerPanel.add(markAllReadButton, BorderLayout.EAST);
     popupPanel.add(headerPanel, BorderLayout.NORTH);
 
+    // Notification list
     JList<Notification> notificationList = new JList<>(notifications.toArray(new Notification[0]));
     notificationList.setCellRenderer(new NotificationCellRenderer());
     notificationList.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
     notificationList.setSelectionBackground(isDarkMode ? new Color(60, 60, 60) : new Color(240, 240, 240));
-    notificationList.setSelectionForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 0));
-    // Removed: notificationList.setFixedCellHeight(60); // Allow dynamic heights
-
-    notificationList.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 1) {
-                Notification selected = notificationList.getSelectedValue();
-                if (selected != null && !selected.isRead() && controller != null) {
-                    controller.markNotificationAsRead(selected.getId());
-                    popupMenu.setVisible(false);
-                }
-            }
-        }
-    });
+    notificationList.setFixedCellHeight(-1); // Variable height based on content
 
     JScrollPane scrollPane = new JScrollPane(notificationList);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    scrollPane.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
-    scrollPane.getViewport().setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
+    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     popupPanel.add(scrollPane, BorderLayout.CENTER);
 
-    JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-    footerPanel.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
-    JButton closeButton = new JButton("Close");
-    closeButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-    closeButton.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 102));
-    closeButton.setBackground(isDarkMode ? new Color(45, 45, 48) : Color.WHITE);
-    closeButton.setBorderPainted(false);
-    closeButton.setFocusPainted(false);
-    closeButton.addActionListener(e -> popupMenu.setVisible(false));
-    footerPanel.add(closeButton);
-    popupPanel.add(footerPanel, BorderLayout.SOUTH);
-
-    popupMenu.add(popupPanel);
-
+    // Show popup
     Point labelLocation = this.notifications.getLocationOnScreen();
-    int xOffset = 0;
-    int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-    if (labelLocation.x + 350 > screenWidth) {
-        xOffset = -(labelLocation.x + 350 - screenWidth + 10);
-    }
-    popupMenu.show(this.notifications, xOffset, this.notifications.getHeight());
+    popupMenu.add(popupPanel);
+    popupMenu.show(this.notifications, 0, this.notifications.getHeight());
 }
 
-   private class NotificationCellRenderer extends JPanel implements ListCellRenderer<Notification> {
+private class NotificationCellRenderer extends JPanel implements ListCellRenderer<Notification> {
     private JTextArea messageLabel;
     private JLabel timeLabel;
     private JLabel unreadIndicator;
@@ -171,7 +136,8 @@ public class Dashboard_Recruiters extends JFrame {
         JPanel textPanel = new JPanel(new BorderLayout());
         textPanel.setOpaque(false);
         textPanel.setBorder(new EmptyBorder(0, 15, 0, 0));
-
+        
+        // Use JTextArea for wrapping text
         messageLabel = new JTextArea();
         messageLabel.setWrapStyleWord(true);
         messageLabel.setLineWrap(true);
@@ -179,10 +145,10 @@ public class Dashboard_Recruiters extends JFrame {
         messageLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         messageLabel.setEditable(false);
         messageLabel.setFocusable(false);
-
+        
         timeLabel = new JLabel();
         timeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-
+        
         textPanel.add(messageLabel, BorderLayout.CENTER);
         textPanel.add(timeLabel, BorderLayout.SOUTH);
         add(textPanel, BorderLayout.CENTER);
@@ -195,34 +161,32 @@ public class Dashboard_Recruiters extends JFrame {
 
     @Override
     public Component getListCellRendererComponent(JList<? extends Notification> list, Notification notification,
-                                                 int index, boolean isSelected, boolean cellHasFocus) {
+                                              int index, boolean isSelected, boolean cellHasFocus) {
+        // Set background and foreground
         setBackground(isSelected ? (isDarkMode ? new Color(60, 60, 60) : new Color(240, 240, 240))
                 : (isDarkMode ? new Color(45, 45, 48) : new Color(255, 255, 255)));
         messageLabel.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 0));
         timeLabel.setForeground(isDarkMode ? new Color(150, 150, 150) : new Color(100, 100, 100));
 
+        // Set notification data
         messageLabel.setText(notification.getMessage());
         timeLabel.setText(notification.getTimestamp());
         unreadIndicator.setVisible(!notification.isRead());
 
-        // Calculate dynamic height for wrapped text
-        int width = list.getWidth() - 40; // Account for padding and unread indicator
+        // Calculate preferred height based on wrapped text
+        int width = list.getWidth();
         if (width > 0) {
-            // Set messageLabel width to calculate wrapped height
             messageLabel.setSize(width, Short.MAX_VALUE);
-            // Force layout to compute preferred height
-            messageLabel.setPreferredSize(null); // Reset to allow natural height
-            Dimension messagePrefSize = messageLabel.getPreferredSize();
-            // Calculate total cell height: message + timeLabel + padding
-            int totalHeight = messagePrefSize.height + timeLabel.getPreferredSize().height + 15; // Extra padding
-            setPreferredSize(new Dimension(list.getWidth(), totalHeight));
+            int height = messageLabel.getPreferredSize().height;
+            messageLabel.setSize(width, height);
         }
 
-        // Add separator except for the last item
+        // Draw very light grey line at the bottom (except for the last item)
         if (index < list.getModel().getSize() - 1) {
             setBorder(BorderFactory.createCompoundBorder(
-                    new EmptyBorder(5, 0, 5, 0),
-                    BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(240, 240, 240))));
+                new EmptyBorder(5, 0, 5, 0),
+                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(240, 240, 240))
+            ));
         } else {
             setBorder(new EmptyBorder(5, 0, 5, 0));
         }
@@ -230,145 +194,173 @@ public class Dashboard_Recruiters extends JFrame {
         return this;
     }
 }
+    // Custom renderer for notification list in main panel
+    private class NotificationListCellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value instanceof Notification) {
+                Notification notification = (Notification) value;
+                String displayText = "<html>" + notification.getMessage() + "<br><small>" + notification.getTimestamp() +
+                        (notification.isRead() ? " (Read)" : " (Unread)") + "</small></html>";
+                setText(displayText);
+                setFont(new Font("Segoe UI", notification.isRead() ? Font.PLAIN : Font.BOLD, 12));
+                setForeground(isDarkMode ? new Color(230, 230, 230) : Color.BLACK);
+                setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(245, 245, 245));
+                if (isSelected) {
+                    setBackground(isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200));
+                }
+            }
+            return c;
+        }
+    }
 
     private JLabel createStyledLabel(String text, String iconPath) {
-        JLabel label = new JLabel(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color defaultBg = isDarkMode ? new Color(40, 40, 40) : new Color(240, 240, 240);
-                Color hoverBg = isDarkMode ? new Color(60, 60, 60) : new Color(220, 220, 220);
-                Color pressedBg = isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200);
+    JLabel label = new JLabel(text) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Color defaultBg = isDarkMode ? new Color(40, 40, 40) : new Color(240, 240, 240);
+            Color hoverBg = isDarkMode ? new Color(60, 60, 60) : new Color(220, 220, 220);
+            Color pressedBg = isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200);
 
-                if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
-                        this == application && applicationPressed || this == notifications && notificationsPressed ||
-                        this == settings && settingsPressed || this == myAccount && myAccountPressed ||
-                        this == signOut && signOutPressed) {
-                    g2d.setColor(pressedBg);
-                } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
-                        this == application && applicationHovered || this == notifications && notificationsHovered ||
-                        this == settings && settingsHovered || this == myAccount && myAccountHovered ||
-                        this == signOut && signOutHovered) {
-                    g2d.setColor(hoverBg);
-                } else {
-                    g2d.setColor(defaultBg);
-                }
-                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
-
-                if (this == notifications && unreadNotificationCount > 0) {
-                    String countText = unreadNotificationCount >= 100 ? "99+" : String.valueOf(unreadNotificationCount);
-                    Font badgeFont = new Font("Segoe UI", Font.BOLD, 13); // Match JobSeekers
-                    g2d.setFont(badgeFont);
-                    FontMetrics fm = g2d.getFontMetrics();
-                    int textWidth = fm.stringWidth(countText);
-                    int textHeight = fm.getHeight();
-                    int padding = 4;
-                    int badgeSize = Math.max(textWidth + padding, textHeight + padding);
-                    int badgeX = getWidth() - badgeSize - 10; // Match JobSeekers
-                    int badgeY = -4; // Match JobSeekers
-
-                    g2d.setColor(new Color(200, 0, 0));
-                    g2d.fillOval(badgeX + 1, badgeY + 1, badgeSize, badgeSize);
-                    g2d.setColor(new Color(255, 0, 0));
-                    g2d.fillOval(badgeX, badgeY, badgeSize, badgeSize);
-
-                    g2d.setColor(new Color(255, 255, 255, 200));
-                    int textX = badgeX + (badgeSize - textWidth) / 2;
-                    int textY = badgeY + (badgeSize - textHeight) / 2 + fm.getAscent();
-                    g2d.drawString(countText, textX + 1, textY + 1);
-                    g2d.setColor(Color.WHITE);
-                    g2d.drawString(countText, textX, textY);
-                }
-
-                super.paintComponent(g);
+            // Determine background color based on state
+            if (this == dashboard && dashboardPressed || this == vacancy && vacancyPressed ||
+                    this == application && applicationPressed || this == notifications && notificationsPressed ||
+                    this == settings && settingsPressed || this == myAccount && myAccountPressed ||
+                    this == signOut && signOutPressed) {
+                g2d.setColor(pressedBg);
+            } else if (this == dashboard && dashboardHovered || this == vacancy && vacancyHovered ||
+                    this == application && applicationHovered || this == notifications && notificationsHovered ||
+                    this == settings && settingsHovered || this == myAccount && myAccountHovered ||
+                    this == signOut && signOutHovered) {
+                g2d.setColor(hoverBg);
+            } else {
+                g2d.setColor(defaultBg);
             }
-        };
-        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        label.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(51, 51, 51));
-        try {
-            if (iconPath != null) {
-                ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
-                if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
-                    label.setIcon(icon);
-                    label.setVerticalTextPosition(JLabel.CENTER);
-                    label.setHorizontalTextPosition(JLabel.RIGHT);
-                    label.setIconTextGap(10);
-                } else {
-                    System.err.println("Failed to load icon: " + iconPath);
-                    label.setText("!");
-                }
+            g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+
+            // Draw badge for notifications label (small red circle with number)
+            if (this == notifications && unreadNotificationCount > 0) {
+                String countText = unreadNotificationCount >= 100 ? "99+" : String.valueOf(unreadNotificationCount);
+                Font badgeFont = new Font("Segoe UI", Font.BOLD, 13); // Font size 13 as requested
+                g2d.setFont(badgeFont);
+                FontMetrics fm = g2d.getFontMetrics();
+                int textWidth = fm.stringWidth(countText);
+                int textHeight = fm.getHeight();
+                int padding = 4; // Minimal padding for small circle
+                int badgeSize = Math.max(textWidth + padding, textHeight + padding); // Compact circular badge
+                int badgeX = getWidth() - badgeSize - 10; // Position to the right of the bell icon
+                int badgeY = -4; // Position slightly above the bell icon
+
+                // Draw red circle with slight shadow for depth
+                g2d.setColor(new Color(200, 0, 0)); // Slightly darker red for shadow
+                g2d.fillOval(badgeX + 1, badgeY + 1, badgeSize, badgeSize); // Shadow effect
+                g2d.setColor(new Color(255, 0, 0)); // Bright red for main badge
+                g2d.fillOval(badgeX, badgeY, badgeSize, badgeSize);
+
+                // Draw white text with slight shadow for clarity
+                g2d.setColor(new Color(255, 255, 255, 200)); // Slight shadow for text
+                int textX = badgeX + (badgeSize - textWidth) / 2;
+                int textY = badgeY + (badgeSize - textHeight) / 2 + fm.getAscent();
+                g2d.drawString(countText, textX + 1, textY + 1); // Shadow
+                g2d.setColor(Color.WHITE); // White text
+                g2d.drawString(countText, textX, textY); // Main text
             }
-        } catch (Exception e) {
-            System.err.println("Error loading icon for " + text + ": " + e.getMessage());
+
+            super.paintComponent(g);
         }
-        label.setOpaque(false);
-        label.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
-        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        label.addMouseListener(new MouseAdapter() {
-            private Timer pressTimer;
-
-            @Override
-            public void mousePressed(MouseEvent evt) {
-                if (label == dashboard) dashboardPressed = true;
-                else if (label == vacancy) vacancyPressed = true;
-                else if (label == application) applicationPressed = true;
-                else if (label == notifications) notificationsPressed = true;
-                else if (label == settings) settingsPressed = true;
-                else if (label == myAccount) myAccountPressed = true;
-                else if (label == signOut) signOutPressed = true;
-                label.repaint();
-                if (pressTimer != null) pressTimer.cancel();
-                pressTimer = new Timer();
-                pressTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (label == dashboard) dashboardPressed = false;
-                        else if (label == vacancy) vacancyPressed = false;
-                        else if (label == application) applicationPressed = false;
-                        else if (label == notifications) notificationsPressed = false;
-                        else if (label == settings) settingsPressed = false;
-                        else if (label == myAccount) myAccountPressed = false;
-                        else if (label == signOut) signOutPressed = false;
-                        label.repaint();
-                    }
-                }, 200);
+    };
+    label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    label.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(51, 51, 51));
+    try {
+        if (iconPath != null) {
+            ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
+            if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                label.setIcon(icon);
+                label.setVerticalTextPosition(JLabel.CENTER);
+                label.setHorizontalTextPosition(JLabel.RIGHT);
+                label.setIconTextGap(10);
+            } else {
+                System.err.println("Failed to load icon: " + iconPath);
+                label.setText("!"); // Fallback text
             }
-
-            @Override
-            public void mouseEntered(MouseEvent evt) {
-                if (label == dashboard) dashboardHovered = true;
-                else if (label == vacancy) vacancyHovered = true;
-                else if (label == application) applicationHovered = true;
-                else if (label == notifications) notificationsHovered = true;
-                else if (label == settings) settingsHovered = true;
-                else if (label == myAccount) myAccountHovered = true;
-                else if (label == signOut) signOutHovered = true;
-                label.repaint();
-            }
-
-            @Override
-            public void mouseExited(MouseEvent evt) {
-                if (label == dashboard) dashboardHovered = false;
-                else if (label == vacancy) vacancyHovered = false;
-                else if (label == application) applicationHovered = false;
-                else if (label == notifications) notificationsHovered = false;
-                else if (label == settings) settingsHovered = false;
-                else if (label == myAccount) myAccountHovered = false;
-                else if (label == signOut) signOutHovered = false;
-                label.repaint();
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                if (label == notifications && controller != null) {
-                    List<Notification> notificationsList = controller.loadNotifications();
-                    showNotificationPopup(notificationsList);
-                }
-            }
-        });
-        return label;
+        }
+    } catch (Exception e) {
+        System.err.println("Error loading icon for " + text + ": " + e.getMessage());
     }
+    label.setOpaque(false);
+    label.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    label.addMouseListener(new MouseAdapter() {
+        private Timer pressTimer;
+
+        @Override
+        public void mousePressed(MouseEvent evt) {
+            if (label == dashboard) dashboardPressed = true;
+            else if (label == vacancy) vacancyPressed = true;
+            else if (label == application) applicationPressed = true;
+            else if (label == notifications) notificationsPressed = true;
+            else if (label == settings) settingsPressed = true;
+            else if (label == myAccount) myAccountPressed = true;
+            else if (label == signOut) signOutPressed = true;
+            label.repaint();
+            if (pressTimer != null) pressTimer.cancel();
+            pressTimer = new Timer();
+            pressTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (label == dashboard) dashboardPressed = false;
+                    else if (label == vacancy) vacancyPressed = false;
+                    else if (label == application) applicationPressed = false;
+                    else if (label == notifications) notificationsPressed = false;
+                    else if (label == settings) settingsPressed = false;
+                    else if (label == myAccount) myAccountPressed = false;
+                    else if (label == signOut) signOutPressed = false;
+                    label.repaint();
+                }
+            }, 200);
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent evt) {
+            if (label == dashboard) dashboardHovered = true;
+            else if (label == vacancy) vacancyHovered = true;
+            else if (label == application) applicationHovered = true;
+            else if (label == notifications) notificationsHovered = true;
+            else if (label == settings) settingsHovered = true;
+            else if (label == myAccount) myAccountHovered = true;
+            else if (label == signOut) signOutHovered = true;
+            label.repaint();
+        }
+
+        @Override
+        public void mouseExited(MouseEvent evt) {
+            if (label == dashboard) dashboardHovered = false;
+            else if (label == vacancy) vacancyHovered = false;
+            else if (label == application) applicationHovered = false;
+            else if (label == notifications) notificationsHovered = false;
+            else if (label == settings) settingsHovered = false;
+            else if (label == myAccount) myAccountHovered = false;
+            else if (label == signOut) signOutHovered = false;
+            label.repaint();
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent evt) {
+            if (label == notifications && controller != null) {
+                notificationsPressed = true;
+                List<Notification> notificationsList = controller.loadNotifications();
+                showNotificationPopup(notificationsList);
+                notificationsPressed = false;
+                notificationsHovered = false;
+                notifications.repaint();
+            }
+        }
+    });
+    return label;
+}
 
     private void applyTheme() {
         getContentPane().setBackground(isDarkMode ? new Color(35, 35, 35) : new Color(255, 255, 255));
@@ -391,7 +383,7 @@ public class Dashboard_Recruiters extends JFrame {
         notificationPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         notificationList.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(255, 255, 255));
         notificationList.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 0));
-        notificationList.setCellRenderer(new NotificationCellRenderer());
+        notificationList.setCellRenderer(new NotificationListCellRenderer());
         markAllReadButton.setBackground(isDarkMode ? new Color(25, 118, 210) : new Color(0, 4, 80));
         markAllReadButton.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(255, 255, 255));
 
@@ -406,7 +398,7 @@ public class Dashboard_Recruiters extends JFrame {
 
     public void toggleDarkMode(boolean enableDarkMode) {
         isDarkMode = enableDarkMode;
-        notificationList.setCellRenderer(new NotificationCellRenderer());
+        notificationList.setCellRenderer(new NotificationListCellRenderer());
         applyTheme();
     }
 
@@ -450,11 +442,107 @@ public class Dashboard_Recruiters extends JFrame {
         myAccount = createStyledLabel("My Account", "/Image/logo/account.png");
         signOut = createStyledLabel("Sign Out", "/Image/logo/signout.png");
 
-        // Notification panel setup remains unchanged
+        // Custom notifications label with badge
+        notifications = new JLabel("") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw background based on hover/pressed state
+                Color defaultBg = isDarkMode ? new Color(40, 40, 40) : new Color(240, 240, 240);
+                Color hoverBg = isDarkMode ? new Color(60, 60, 60) : new Color(220, 220, 220);
+                Color pressedBg = isDarkMode ? new Color(50, 50, 50) : new Color(200, 200, 200);
+
+                if (notificationsPressed) {
+                    g2d.setColor(pressedBg);
+                } else if (notificationsHovered) {
+                    g2d.setColor(hoverBg);
+                } else {
+                    g2d.setColor(defaultBg);
+                }
+                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+
+                // Draw the badge if there are unread notifications
+                if (unreadNotificationCount > 0) {
+                    String countText = unreadNotificationCount > 99 ? "99+" : String.valueOf(unreadNotificationCount);
+                    Font badgeFont = new Font("Segoe UI", Font.BOLD, 12);
+                    g2d.setFont(badgeFont);
+                    FontMetrics fm = g2d.getFontMetrics();
+                    int textWidth = fm.stringWidth(countText);
+                    int textHeight = fm.getAscent();
+                    int badgeSize = Math.max(textWidth + 8, 20); // Ensure minimum size for single-digit counts
+                    int badgeX = getWidth() - badgeSize - 5;
+                    int badgeY = 5;
+
+                    // Draw badge background
+                    g2d.setColor(isDarkMode ? new Color(255, 69, 58) : new Color(220, 20, 60)); // Red badge, darker for light mode
+                    g2d.fillOval(badgeX, badgeY, badgeSize, badgeSize);
+
+                    // Draw badge text
+                    g2d.setColor(Color.WHITE);
+                    int textX = badgeX + (badgeSize - textWidth) / 2;
+                    int textY = badgeY + (badgeSize + textHeight) / 2 - fm.getDescent();
+                    g2d.drawString(countText, textX, textY);
+                }
+
+                super.paintComponent(g);
+            }
+        };
+        notifications.setIcon(new ImageIcon(getClass().getResource("/Image/logo/notification.png")));
+        notifications.setOpaque(false);
+        notifications.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        notifications.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        notifications.addMouseListener(new MouseAdapter() {
+            private Timer pressTimer;
+
+            @Override
+            public void mousePressed(MouseEvent evt) {
+                notificationsPressed = true;
+                notifications.repaint();
+                if (pressTimer != null) pressTimer.cancel();
+                pressTimer = new Timer();
+                pressTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        notificationsPressed = false;
+                        notifications.repaint();
+                    }
+                }, 200);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent evt) {
+                notificationsHovered = true;
+                notifications.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent evt) {
+                notificationsHovered = false;
+                notifications.repaint();
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                if (controller != null) {
+                    notificationsPressed = true;
+                    List<Notification> notificationsList = controller.loadNotifications();
+                    showNotificationPopup(notificationsList);
+                    notificationsPressed = false;
+                    notificationsHovered = false;
+                    notifications.repaint();
+                }
+            }
+        });
+
+        // Initialize notification components
         notificationPanel = new JPanel();
         notificationList = new JList<>();
         markAllReadButton = new JButton("Mark All as Read");
 
+        // Configure notification panel
         notificationPanel.setBackground(isDarkMode ? new Color(40, 40, 40) : new Color(245, 245, 245));
         notificationPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
@@ -468,15 +556,17 @@ public class Dashboard_Recruiters extends JFrame {
         notificationPanel.setLayout(new BorderLayout(5, 5));
         notificationPanel.setPreferredSize(new Dimension(680, 200));
 
+        // Configure notification list
         notificationList.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(255, 255, 255));
         notificationList.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(0, 0, 0));
         notificationList.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         notificationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        notificationList.setCellRenderer(new NotificationCellRenderer());
+        notificationList.setCellRenderer(new NotificationListCellRenderer());
         JScrollPane notificationScroll = new JScrollPane(notificationList);
         notificationScroll.setBorder(BorderFactory.createLineBorder(isDarkMode ? new Color(60, 60, 60) : new Color(200, 200, 200)));
         notificationPanel.add(notificationScroll, BorderLayout.CENTER);
 
+        // Configure mark all read button
         markAllReadButton.setBackground(isDarkMode ? new Color(25, 118, 210) : new Color(0, 4, 80));
         markAllReadButton.setForeground(isDarkMode ? new Color(220, 220, 220) : new Color(255, 255, 255));
         markAllReadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
